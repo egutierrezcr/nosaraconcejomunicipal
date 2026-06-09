@@ -80,16 +80,16 @@
 </head>
 <body>
 <div class="wrap" id="top">
-  <style>.cmd-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button.pdf{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 18px;cursor:pointer;font-family:inherit;line-height:1}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.pdf{border:none;background:#1AA3B0;color:#fff}.cmd-nav button.pdf:hover{background:#13848f}@media print{.cmd-nav{display:none!important}}</style>
-  <nav class="cmd-nav"><a class="back" href="../index.html">← Página Principal</a></nav>
+  <style>.cmd-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:inherit;line-height:1;border:none}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.lang{background:#0E6E7C;color:#fff}.cmd-nav button.pdf{background:#1AA3B0;color:#fff}.cmd-nav button:hover{filter:brightness(1.08)}@media print{.cmd-nav{display:none!important}}</style>
+  <nav class="cmd-nav"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="lang" id="lang-btn" aria-label="Switch language">ENGLISH</button></nav>
   <header>
-    <div class="tag">Nosara, Guanacaste · Distrito en red</div>
-    <h1>Sé Intendente/a de Nosara <span class="hip">SIMULADOR HIPOTÉTICO</span></h1>
-    <p class="sub">Ponete en los zapatos de quien gobierna: conocé el tema, <b>sopesá los argumentos a favor y en contra</b> y recomendá qué debería hacer el CMD. Al final ves cómo se decidiría cerca de la gente. Inspirado en las simulaciones de política pública de <i>Voice of the People / Program for Public Consultation</i>.</p>
+    <div class="tag" data-en="Nosara, Guanacaste · Networked district">Nosara, Guanacaste · Distrito en red</div>
+    <h1 data-en="Be Nosara's Intendente <span class='hip'>HYPOTHETICAL SIMULATOR</span>">Sé Intendente/a de Nosara <span class="hip">SIMULADOR HIPOTÉTICO</span></h1>
+    <p class="sub" data-en="Step into the shoes of those who govern: learn the issue, <b>weigh the arguments for and against</b> and recommend what the CMD should do. At the end you see how it would be decided close to the people. Inspired by the public-policy simulations of <i>Voice of the People / Program for Public Consultation</i>.">Ponete en los zapatos de quien gobierna: conocé el tema, <b>sopesá los argumentos a favor y en contra</b> y recomendá qué debería hacer el CMD. Al final ves cómo se decidiría cerca de la gente. Inspirado en las simulaciones de política pública de <i>Voice of the People / Program for Public Consultation</i>.</p>
   </header>
 
   <div id="picker">
-    <h2 class="sec">Elegí una decisión</h2>
+    <h2 class="sec" data-en="Choose a decision">Elegí una decisión</h2>
     <div class="grid" id="opts"></div>
   </div>
 
@@ -98,110 +98,118 @@
     <div class="prog" id="prog"></div>
     <div id="stages"></div>
     <div class="btns">
-      <button class="btn p" id="next">Siguiente paso →</button>
-      <button class="btn g" id="restart">↺ Probar otra decisión</button>
+      <button class="btn p" id="next" data-en="Next step →">Siguiente paso →</button>
+      <button class="btn g" id="restart" data-en="↺ Try another decision">↺ Probar otra decisión</button>
     </div>
   </div>
 
-  <footer>
+  <footer data-en="<b>Hypothetical</b> simulator for educational purposes about how the Nosara CMD would work. The path issue → arguments → recommendation → outcome is inspired by the public-policy simulations of Voice of the People / Program for Public Consultation, and reflects Law 8173 (Council that approves + Intendencia that executes) and the proposed functional org chart. Data from the 2024 Nosara Census and the district's fiscal balance. Illustrative arguments and recommendations; it is not an official vote or actual management.">
     Simulador <b>hipotético</b> con fines educativos sobre cómo funcionaría el CMD-Nosara. El recorrido tema →
     argumentos → recomendación → resultado se inspira en las simulaciones de política pública de Voice of the People /
     Program for Public Consultation, y refleja la Ley 8173 (Concejo que aprueba + Intendencia que ejecuta) y el
     organigrama funcional propuesto. Datos del Censo Nosara 2024 y del balance fiscal del distrito. Argumentos y
     recomendaciones ilustrativos; no es una votación oficial ni gestión real.
   </footer>
-  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html">← Página Principal</a><button class="pdf" onclick="window.print()">⬇️ Descargar PDF</button></nav>
+  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button></nav>
 </div>
 
 <script>
 "use strict";
+var LANG='es';try{LANG=localStorage.getItem('cmd-lang')||'es';}catch(e){}
+function EN(){return LANG==='en';}
 const STAGES=[
-  {s:"1 · El tema", ico:"📋", cls:"s1"},
-  {s:"2 · Sopesá los argumentos", ico:"⚖️", cls:"s2"},
-  {s:"3 · Resultado y tu voz", ico:"✅", cls:"s4"},
+  {s:"1 · El tema", se:"1 · The issue", ico:"📋", cls:"s1"},
+  {s:"2 · Sopesá los argumentos", se:"2 · Weigh the arguments", ico:"⚖️", cls:"s2"},
+  {s:"3 · Resultado y tu voz", se:"3 · Outcome and your voice", ico:"✅", cls:"s4"},
 ];
 const D=[
- {ico:"🛣️", title:"Arreglar un camino en mal estado", eje:"Eje 02 · Ambiente, agua y territorio",
-  briefing:"Vecinas y vecinos de un barrio reportan un camino intransitable en invierno: aísla casas, comercio y dificulta el paso de la ambulancia.",
-  dato:"El 77% de la red vial del distrito está en estado regular o malo.",
-  fav:["Un camino transitable todo el año conecta barrios, comercio y emergencias.","Existe una transferencia específica para red vial (Ley 8114), no sale solo de fondos propios."],
-  con:["La inversión vial compite con otras urgencias como el agua o las becas.","No basta la obra: requiere mantenimiento continuo después."],
-  options:[{label:"Priorizarlo este año con inversión directa + Ley 8114"},{label:"Hacerlo por etapas, con vecinos y cofinanciamiento"}],
-  concejo:"lo prioriza y lo incluye en el plan y el presupuesto del año.",
-  funciones:["Gestión Vial (UTGV)","Contratación","Tesorería","Planificación y Territorio"],
-  ejecuta:"contrata la obra, la supervisa y la financia con inversión propia y la transferencia de la Ley 8114.",
-  fin:"Inversión directa + transferencia Ley 8114/9329",
-  resultado:"El camino queda transitable todo el año; el contrato y el avance se publican.",
-  indicador:"Vías en mal estado: de 77% → menos cada año"},
- {ico:"🎓", title:"Becas para que estudiantes no dejen el colegio", eje:"Eje 03 · Desarrollo humano y social",
-  briefing:"El colegio y varias familias piden apoyo: jóvenes en riesgo están dejando los estudios por el costo de vida y la presión por trabajar.",
-  dato:"El costo de vida en Nosara es de los más altos del país, lo que empuja a familias y jóvenes a abandonar el colegio.",
-  fav:["Reduce la deserción y abre futuro a la juventud local.","Cuesta poco frente al impacto social que genera."],
-  con:["Hay que definir criterios de asignación justos y transparentes.","Debe sostenerse en el tiempo, no ser de un solo año."],
-  options:[{label:"Crear el programa distrital ya (≥200 becas/año)"},{label:"Empezar con un piloto y escalar según resultados"}],
-  concejo:"aprueba crear un programa distrital de becas con reglas claras de asignación.",
-  funciones:["Programas sociales","Tesorería","Plataforma de Servicios"],
-  ejecuta:"selecciona con criterios transparentes, gira las becas y da seguimiento a la permanencia escolar.",
-  fin:"Programas y servicios",
-  resultado:"Becas entregadas cada año; menos deserción y más jóvenes terminando el colegio.",
-  indicador:"Tasa de deserción escolar a la baja"},
- {ico:"🗣️", title:"Capacitación gratuita en inglés y oficios", eje:"Eje 01 · Economía local y empleo digno",
-  briefing:"Jóvenes y trabajadores del turismo piden aprender inglés y oficios gratis para acceder a los empleos mejor pagados del distrito.",
-  dato:"El turismo es la economía principal, pero muchos de sus empleos mejor remunerados exigen inglés que la gente local no pudo estudiar.",
-  fav:["Mejores empleos en el propio turismo del distrito, sin tener que migrar.","Aprovecha alianzas existentes con INA y universidades públicas."],
-  con:["Requiere constancia y seguimiento de quienes se inscriben.","Compite por recursos con otros programas sociales."],
-  options:[{label:"Programa amplio (≥600 personas/año)"},{label:"Arrancar con cupos y alianzas, y luego ampliar"}],
-  concejo:"aprueba el programa y habilita alianzas (INA, universidades, sector turismo).",
-  funciones:["Programas y servicios","Comunicación","Alianzas interinstitucionales"],
-  ejecuta:"organiza los cursos, convoca y certifica a las personas participantes.",
-  fin:"Programas y servicios + alianzas",
-  resultado:"Cientos de personas capacitadas por año; mejores empleos y mejor servicio al visitante.",
-  indicador:"Personas capacitadas / empleabilidad local"},
- {ico:"🛍️", title:"Campaña de comercio y turismo local", eje:"Eje 01 · Economía local y empleo digno",
-  briefing:"Sodas, hoteles pequeños y comercio local piden ayuda para atraer más turismo nacional costarricense, sobre todo en temporada baja.",
-  dato:"En temporada baja caen las ventas del comercio local, que compite con una oferta orientada al turismo extranjero.",
-  fav:["Más ventas para sodas y comercio del distrito en temporada baja.","Pone en valor el turismo nacional costarricense, más estable."],
-  con:["El impacto depende de una difusión sostenida, no de una sola campaña.","No sustituye mejoras de fondo como el agua o las vías."],
-  options:[{label:"Campaña anual + directorio del comercio local"},{label:"Empezar con un directorio digital de bajo costo"}],
-  concejo:"aprueba una campaña anual y un directorio del comercio local.",
-  funciones:["Comunicación","Hacienda (patentes)","Alianzas interinstitucionales"],
-  ejecuta:"lanza la campaña «consumí local», arma el directorio y mide su impacto.",
-  fin:"Programas y servicios",
-  resultado:"Campaña activa + directorio publicado; más ventas para el comercio del distrito.",
-  indicador:"Comercios participantes y ventas en temporada baja"},
- {ico:"🎉", title:"25 de julio + programas sociales (vivienda, salud, empleo)", eje:"Eje 03 · Desarrollo humano y social",
-  briefing:"La comunidad pide celebrar la Anexión de Guanacaste y, a la vez, reforzar apoyos en vivienda, salud y empleo para las familias.",
-  dato:"En Nosara conviven gran riqueza turística y familias locales que no acceden a vivienda digna ni a los mismos servicios.",
-  fav:["Fortalece la identidad guanacasteca y atiende necesidades sociales reales.","Articula instituciones nacionales (IMAS, CCSS, MIVAH) que ya existen."],
-  con:["Lo cultural no debe opacar lo social estructural.","Depende de coordinar con varias instituciones a la vez."],
-  options:[{label:"Agenda cultural + programas sociales juntos"},{label:"Concentrar primero el esfuerzo en programas sociales"}],
-  concejo:"aprueba la agenda cultural y articula los programas sociales con instituciones nacionales.",
-  funciones:["Programas sociales","Cultura y deporte","Alianzas (IMAS, CCSS, MIVAH)","Comunicación"],
-  ejecuta:"organiza la fiesta del 25 de julio y coordina vivienda, salud y empleo con las instituciones.",
-  fin:"Programas y servicios + alianzas interinstitucionales",
-  resultado:"Celebración de la Anexión y familias atendidas en vivienda, salud y empleo.",
-  indicador:"Familias atendidas + agenda cultural anual"},
- {ico:"🚑", title:"Reforzar la ambulancia (Cruz Roja) y los bomberos", eje:"Eje 03 · Desarrollo humano y social",
-  briefing:"La comunidad pide que la ambulancia y los bomberos respondan más rápido: Nosara está a unos 60 km de Nicoya y las emergencias no esperan.",
-  dato:"La tasa de homicidios es 7 veces el promedio nacional y crecen las emergencias médicas; retener personal es difícil por el costo de vida.",
-  fav:["Una respuesta más rápida salva vidas en un distrito alejado.","Un convenio claro con aporte anual ordena y da continuidad al apoyo."],
-  con:["El aporte debe rendirse y auditarse para que llegue a destino.","No reemplaza la responsabilidad de la CCSS y el Estado."],
-  options:[{label:"Convenio + aporte ₡40M/año"},{label:"Aporte inicial menor + gestión de donaciones y equipo"}],
-  concejo:"aprueba un convenio y un aporte anual a la Cruz Roja de Nosara y al Cuerpo de Bomberos.",
-  funciones:["Programas y servicios","Tesorería","Asesoría Legal (convenio)"],
-  ejecuta:"formaliza el convenio, gira el aporte y coordina la atención de emergencias con Cruz Roja y Bomberos.",
-  fin:"Programas y servicios (aporte ₡40M/año en el presupuesto)",
-  resultado:"Ambulancia y bomberos con más recursos y mejor respuesta; el aporte y su uso se publican.",
-  indicador:"Tiempo de respuesta en emergencias · aporte anual ejecutado"},
+ {ico:"🛣️", title:"Arreglar un camino en mal estado", te:"Fix a road in poor condition", eje:"Eje 02 · Ambiente, agua y territorio", ee:"Pillar 02 · Environment, water and land",
+  briefing:"Vecinas y vecinos de un barrio reportan un camino intransitable en invierno: aísla casas, comercio y dificulta el paso de la ambulancia.", be:"Neighbors report a road that's impassable in the rainy season: it isolates homes and businesses and blocks the ambulance.",
+  dato:"El 77% de la red vial del distrito está en estado regular o malo.", de:"77% of the district's road network is in fair or poor condition.",
+  fav:["Un camino transitable todo el año conecta barrios, comercio y emergencias.","Existe una transferencia específica para red vial (Ley 8114), no sale solo de fondos propios."], fave:["A road passable year-round connects neighborhoods, commerce and emergencies.","There's a specific transfer for the road network (Law 8114); it doesn't come only from own funds."],
+  con:["La inversión vial compite con otras urgencias como el agua o las becas.","No basta la obra: requiere mantenimiento continuo después."], cone:["Road investment competes with other urgent needs like water or scholarships.","The works aren't enough: they require ongoing maintenance afterward."],
+  options:[{label:"Priorizarlo este año con inversión directa + Ley 8114"},{label:"Hacerlo por etapas, con vecinos y cofinanciamiento"}], opte:["Prioritize it this year with direct investment + Law 8114","Do it in phases, with neighbors and co-funding"],
+  concejo:"lo prioriza y lo incluye en el plan y el presupuesto del año.", coe:"prioritizes it and includes it in the year's plan and budget.",
+  funciones:["Gestión Vial (UTGV)","Contratación","Tesorería","Planificación y Territorio"], fue:["Road Management (UTGV)","Procurement","Treasury","Planning & Land use"],
+  ejecuta:"contrata la obra, la supervisa y la financia con inversión propia y la transferencia de la Ley 8114.", exe:"contracts the works, supervises them and funds them with own investment and the Law 8114 transfer.",
+  fin:"Inversión directa + transferencia Ley 8114/9329", fne:"Direct investment + Law 8114/9329 transfer",
+  resultado:"El camino queda transitable todo el año; el contrato y el avance se publican.", rese:"The road becomes passable year-round; the contract and progress are published.",
+  indicador:"Vías en mal estado: de 77% → menos cada año", inde:"Roads in poor condition: from 77% → less each year"},
+ {ico:"🎓", title:"Becas para que estudiantes no dejen el colegio", te:"Scholarships so students don't drop out", eje:"Eje 03 · Desarrollo humano y social", ee:"Pillar 03 · Human and social development",
+  briefing:"El colegio y varias familias piden apoyo: jóvenes en riesgo están dejando los estudios por el costo de vida y la presión por trabajar.", be:"The school and several families ask for support: at-risk youth are dropping out due to the cost of living and pressure to work.",
+  dato:"El costo de vida en Nosara es de los más altos del país, lo que empuja a familias y jóvenes a abandonar el colegio.", de:"The cost of living in Nosara is among the highest in the country, pushing families and youth to leave school.",
+  fav:["Reduce la deserción y abre futuro a la juventud local.","Cuesta poco frente al impacto social que genera."], fave:["Reduces dropout and opens a future for local youth.","Costs little compared to the social impact it creates."],
+  con:["Hay que definir criterios de asignación justos y transparentes.","Debe sostenerse en el tiempo, no ser de un solo año."], cone:["Fair, transparent allocation criteria must be defined.","It must be sustained over time, not just one year."],
+  options:[{label:"Crear el programa distrital ya (≥200 becas/año)"},{label:"Empezar con un piloto y escalar según resultados"}], opte:["Create the district program now (≥200 scholarships/year)","Start with a pilot and scale based on results"],
+  concejo:"aprueba crear un programa distrital de becas con reglas claras de asignación.", coe:"approves creating a district scholarship program with clear allocation rules.",
+  funciones:["Programas sociales","Tesorería","Plataforma de Servicios"], fue:["Social programs","Treasury","Service desk"],
+  ejecuta:"selecciona con criterios transparentes, gira las becas y da seguimiento a la permanencia escolar.", exe:"selects with transparent criteria, disburses the scholarships and tracks school retention.",
+  fin:"Programas y servicios", fne:"Programs and services",
+  resultado:"Becas entregadas cada año; menos deserción y más jóvenes terminando el colegio.", rese:"Scholarships awarded each year; less dropout and more youth finishing school.",
+  indicador:"Tasa de deserción escolar a la baja", inde:"School dropout rate trending down"},
+ {ico:"🗣️", title:"Capacitación gratuita en inglés y oficios", te:"Free training in English and trades", eje:"Eje 01 · Economía local y empleo digno", ee:"Pillar 01 · Local economy and decent work",
+  briefing:"Jóvenes y trabajadores del turismo piden aprender inglés y oficios gratis para acceder a los empleos mejor pagados del distrito.", be:"Youth and tourism workers ask to learn English and trades for free to access the district's better-paid jobs.",
+  dato:"El turismo es la economía principal, pero muchos de sus empleos mejor remunerados exigen inglés que la gente local no pudo estudiar.", de:"Tourism is the main economy, but many of its better-paid jobs require English that local people couldn't study.",
+  fav:["Mejores empleos en el propio turismo del distrito, sin tener que migrar.","Aprovecha alianzas existentes con INA y universidades públicas."], fave:["Better jobs within the district's own tourism, without having to migrate.","Leverages existing partnerships with INA and public universities."],
+  con:["Requiere constancia y seguimiento de quienes se inscriben.","Compite por recursos con otros programas sociales."], cone:["Requires persistence and follow-up of those who enroll.","Competes for resources with other social programs."],
+  options:[{label:"Programa amplio (≥600 personas/año)"},{label:"Arrancar con cupos y alianzas, y luego ampliar"}], opte:["Broad program (≥600 people/year)","Start with limited slots and partnerships, then expand"],
+  concejo:"aprueba el programa y habilita alianzas (INA, universidades, sector turismo).", coe:"approves the program and sets up partnerships (INA, universities, tourism sector).",
+  funciones:["Programas y servicios","Comunicación","Alianzas interinstitucionales"], fue:["Programs and services","Communication","Inter-institutional partnerships"],
+  ejecuta:"organiza los cursos, convoca y certifica a las personas participantes.", exe:"organizes the courses, recruits and certifies participants.",
+  fin:"Programas y servicios + alianzas", fne:"Programs and services + partnerships",
+  resultado:"Cientos de personas capacitadas por año; mejores empleos y mejor servicio al visitante.", rese:"Hundreds of people trained per year; better jobs and better service for visitors.",
+  indicador:"Personas capacitadas / empleabilidad local", inde:"People trained / local employability"},
+ {ico:"🛍️", title:"Campaña de comercio y turismo local", te:"Local commerce and tourism campaign", eje:"Eje 01 · Economía local y empleo digno", ee:"Pillar 01 · Local economy and decent work",
+  briefing:"Sodas, hoteles pequeños y comercio local piden ayuda para atraer más turismo nacional costarricense, sobre todo en temporada baja.", be:"Sodas, small hotels and local businesses ask for help to attract more domestic Costa Rican tourism, especially in the low season.",
+  dato:"En temporada baja caen las ventas del comercio local, que compite con una oferta orientada al turismo extranjero.", de:"In the low season, local businesses' sales drop, competing with an offering geared to foreign tourism.",
+  fav:["Más ventas para sodas y comercio del distrito en temporada baja.","Pone en valor el turismo nacional costarricense, más estable."], fave:["More sales for the district's sodas and businesses in the low season.","Adds value to domestic Costa Rican tourism, which is more stable."],
+  con:["El impacto depende de una difusión sostenida, no de una sola campaña.","No sustituye mejoras de fondo como el agua o las vías."], cone:["Impact depends on sustained outreach, not a single campaign.","It doesn't replace deeper improvements like water or roads."],
+  options:[{label:"Campaña anual + directorio del comercio local"},{label:"Empezar con un directorio digital de bajo costo"}], opte:["Annual campaign + local business directory","Start with a low-cost digital directory"],
+  concejo:"aprueba una campaña anual y un directorio del comercio local.", coe:"approves an annual campaign and a local business directory.",
+  funciones:["Comunicación","Hacienda (patentes)","Alianzas interinstitucionales"], fue:["Communication","Treasury (licenses)","Inter-institutional partnerships"],
+  ejecuta:"lanza la campaña «consumí local», arma el directorio y mide su impacto.", exe:"launches the «buy local» campaign, builds the directory and measures its impact.",
+  fin:"Programas y servicios", fne:"Programs and services",
+  resultado:"Campaña activa + directorio publicado; más ventas para el comercio del distrito.", rese:"Active campaign + published directory; more sales for the district's businesses.",
+  indicador:"Comercios participantes y ventas en temporada baja", inde:"Participating businesses and low-season sales"},
+ {ico:"🎉", title:"25 de julio + programas sociales (vivienda, salud, empleo)", te:"July 25 + social programs (housing, health, jobs)", eje:"Eje 03 · Desarrollo humano y social", ee:"Pillar 03 · Human and social development",
+  briefing:"La comunidad pide celebrar la Anexión de Guanacaste y, a la vez, reforzar apoyos en vivienda, salud y empleo para las familias.", be:"The community asks to celebrate the Annexation of Guanacaste and, at the same time, strengthen support for housing, health and jobs for families.",
+  dato:"En Nosara conviven gran riqueza turística y familias locales que no acceden a vivienda digna ni a los mismos servicios.", de:"In Nosara, great tourism wealth coexists with local families who lack decent housing and the same services.",
+  fav:["Fortalece la identidad guanacasteca y atiende necesidades sociales reales.","Articula instituciones nacionales (IMAS, CCSS, MIVAH) que ya existen."], fave:["Strengthens Guanacaste identity and addresses real social needs.","Coordinates national institutions (IMAS, CCSS, MIVAH) that already exist."],
+  con:["Lo cultural no debe opacar lo social estructural.","Depende de coordinar con varias instituciones a la vez."], cone:["The cultural part shouldn't overshadow the structural social issues.","It depends on coordinating with several institutions at once."],
+  options:[{label:"Agenda cultural + programas sociales juntos"},{label:"Concentrar primero el esfuerzo en programas sociales"}], opte:["Cultural agenda + social programs together","Focus the effort on social programs first"],
+  concejo:"aprueba la agenda cultural y articula los programas sociales con instituciones nacionales.", coe:"approves the cultural agenda and coordinates the social programs with national institutions.",
+  funciones:["Programas sociales","Cultura y deporte","Alianzas (IMAS, CCSS, MIVAH)","Comunicación"], fue:["Social programs","Culture and sports","Partnerships (IMAS, CCSS, MIVAH)","Communication"],
+  ejecuta:"organiza la fiesta del 25 de julio y coordina vivienda, salud y empleo con las instituciones.", exe:"organizes the July 25 celebration and coordinates housing, health and jobs with the institutions.",
+  fin:"Programas y servicios + alianzas interinstitucionales", fne:"Programs and services + inter-institutional partnerships",
+  resultado:"Celebración de la Anexión y familias atendidas en vivienda, salud y empleo.", rese:"Annexation celebration and families assisted in housing, health and jobs.",
+  indicador:"Familias atendidas + agenda cultural anual", inde:"Families assisted + annual cultural agenda"},
+ {ico:"🚑", title:"Reforzar la ambulancia (Cruz Roja) y los bomberos", te:"Reinforce the ambulance (Red Cross) and firefighters", eje:"Eje 03 · Desarrollo humano y social", ee:"Pillar 03 · Human and social development",
+  briefing:"La comunidad pide que la ambulancia y los bomberos respondan más rápido: Nosara está a unos 60 km de Nicoya y las emergencias no esperan.", be:"The community asks that the ambulance and firefighters respond faster: Nosara is about 60 km from Nicoya and emergencies don't wait.",
+  dato:"La tasa de homicidios es 7 veces el promedio nacional y crecen las emergencias médicas; retener personal es difícil por el costo de vida.", de:"The homicide rate is 7 times the national average and medical emergencies are rising; retaining staff is hard due to the cost of living.",
+  fav:["Una respuesta más rápida salva vidas en un distrito alejado.","Un convenio claro con aporte anual ordena y da continuidad al apoyo."], fave:["A faster response saves lives in a remote district.","A clear agreement with an annual contribution organizes and sustains the support."],
+  con:["El aporte debe rendirse y auditarse para que llegue a destino.","No reemplaza la responsabilidad de la CCSS y el Estado."], cone:["The contribution must be accounted for and audited to reach its target.","It doesn't replace the responsibility of the CCSS and the State."],
+  options:[{label:"Convenio + aporte ₡40M/año"},{label:"Aporte inicial menor + gestión de donaciones y equipo"}], opte:["Agreement + ₡40M/year contribution","Smaller initial contribution + donations and equipment management"],
+  concejo:"aprueba un convenio y un aporte anual a la Cruz Roja de Nosara y al Cuerpo de Bomberos.", coe:"approves an agreement and an annual contribution to the Nosara Red Cross and the Fire Department.",
+  funciones:["Programas y servicios","Tesorería","Asesoría Legal (convenio)"], fue:["Programs and services","Treasury","Legal counsel (agreement)"],
+  ejecuta:"formaliza el convenio, gira el aporte y coordina la atención de emergencias con Cruz Roja y Bomberos.", exe:"formalizes the agreement, disburses the contribution and coordinates emergency response with the Red Cross and Firefighters.",
+  fin:"Programas y servicios (aporte ₡40M/año en el presupuesto)", fne:"Programs and services (₡40M/year contribution in the budget)",
+  resultado:"Ambulancia y bomberos con más recursos y mejor respuesta; el aporte y su uso se publican.", rese:"Ambulance and firefighters with more resources and better response; the contribution and its use are published.",
+  indicador:"Tiempo de respuesta en emergencias · aporte anual ejecutado", inde:"Emergency response time · annual contribution executed"},
 ];
+function dTitle(d){return EN()?d.te:d.title}
+function dEje(d){return EN()?d.ee:d.eje}
 
 const opts=document.getElementById('opts');
-D.forEach((d,i)=>{
-  const b=document.createElement('button');b.className='opt';
-  b.innerHTML=`<span class="ico">${d.ico}</span><span><span class="ti">${d.title}</span><span class="ej">${d.eje}</span></span>`;
-  b.onclick=()=>start(i);
-  opts.appendChild(b);
-});
+function buildOpts(){
+  opts.innerHTML='';
+  D.forEach((d,i)=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=`<span class="ico">${d.ico}</span><span><span class="ti">${dTitle(d)}</span><span class="ej">${dEje(d)}</span></span>`;
+    b.onclick=()=>start(i);
+    opts.appendChild(b);
+  });
+}
+buildOpts();
 
 const picker=document.getElementById('picker'),flow=document.getElementById('flow'),stagesEl=document.getElementById('stages'),progEl=document.getElementById('prog'),nextBtn=document.getElementById('next');
 let cur=-1,step=0,chosen=null;
@@ -209,8 +217,8 @@ let cur=-1,step=0,chosen=null;
 function start(i){
   cur=i;step=0;chosen=null;
   const d=D[i];
-  document.getElementById('f-title').textContent=d.title;
-  document.getElementById('f-eje').textContent=d.eje;
+  document.getElementById('f-title').textContent=dTitle(d);
+  document.getElementById('f-eje').textContent=dEje(d);
   document.getElementById('f-ico').textContent=d.ico;
   stagesEl.innerHTML='';
   progEl.innerHTML=STAGES.map((_,k)=>`<span class="p" data-k="${k}"></span>`).join('');
@@ -219,40 +227,62 @@ function start(i){
   flow.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function addStage(){
-  const d=D[cur],st=STAGES[step];
+  const d=D[cur],st=STAGES[step],en=EN();
+  const fav=en?d.fave:d.fav, con=en?d.cone:d.con, opt=en?d.opte:d.options.map(o=>o.label);
   let inner='';
   if(step===0){
-    inner=`<p>${d.briefing}</p><div class="meta">📊 ${d.dato}</div>`;
+    inner=`<p>${en?d.be:d.briefing}</p><div class="meta">📊 ${en?d.de:d.dato}</div>`;
   } else if(step===1){
     inner=`<div class="args">`
-      +`<div class="argcol fav"><h4>✔ A favor</h4><ul>${d.fav.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
-      +`<div class="argcol con"><h4>⚠ A considerar</h4><ul>${d.con.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
-      +`</div><p class="recq">¿Qué le recomendás al CMD?</p>`
-      +`<div class="recs">${d.options.map((o,k)=>`<button class="rec" data-o="${k}">${o.label}</button>`).join('')}</div>`;
+      +`<div class="argcol fav"><h4>${en?'✔ In favor':'✔ A favor'}</h4><ul>${fav.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
+      +`<div class="argcol con"><h4>${en?'⚠ To consider':'⚠ A considerar'}</h4><ul>${con.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
+      +`</div><p class="recq">${en?'What do you recommend to the CMD?':'¿Qué le recomendás al CMD?'}</p>`
+      +`<div class="recs">${opt.map((label,k)=>`<button class="rec" data-o="${k}">${label}</button>`).join('')}</div>`;
   } else {
-    inner=`<div class="youchose">Tu recomendación: <b>${chosen}</b></div>`
-      +`<p style="margin:0 0 8px">Así lo decidiría un Concejo Municipal cercano a la gente:</p>`
+    inner=`<div class="youchose">${en?'Your recommendation:':'Tu recomendación:'} <b>${chosen}</b></div>`
+      +`<p style="margin:0 0 8px">${en?'This is how a Municipal Council close to the people would decide it:':'Así lo decidiría un Concejo Municipal cercano a la gente:'}</p>`
       +`<div class="proc">`
-      +`<div class="row"><span class="ic">🧑‍🤝‍🧑</span><span><b>La comunidad</b> lo plantea y lo respalda.</span></div>`
-      +`<div class="row"><span class="ic">🏛️</span><span><b>El Concejo</b> (Sindicatura preside + concejales) ${d.concejo}</span></div>`
-      +`<div class="row"><span class="ic">⚙️</span><span><b>La Intendencia</b> ${d.ejecuta}</span></div>`
-      +`<div class="row"><span class="ic">✅</span><span class="res">${d.resultado}</span></div>`
-      +`</div><div class="chips">${d.funciones.map(f=>`<span class="chip">${f}</span>`).join('')}</div>`
-      +`<div class="meta">Financiamiento: ${d.fin} · Indicador: ${d.indicador} · se publica en el portal de transparencia.</div>`
-      +`<div class="cta"><p>Esto es exactamente lo que decidiría Nosara con su propio Concejo. ¿Querés que pueda hacerlo?</p><a href="../index.html#sumate">🙋 Sumate a que Nosara decida →</a></div>`;
+      +`<div class="row"><span class="ic">🧑‍🤝‍🧑</span><span>${en?'<b>The community</b> raises it and backs it.':'<b>La comunidad</b> lo plantea y lo respalda.'}</span></div>`
+      +`<div class="row"><span class="ic">🏛️</span><span>${en?'<b>The Council</b> (Síndico presides + councilors)':'<b>El Concejo</b> (Sindicatura preside + concejales)'} ${en?d.coe:d.concejo}</span></div>`
+      +`<div class="row"><span class="ic">⚙️</span><span>${en?'<b>The Intendencia</b>':'<b>La Intendencia</b>'} ${en?d.exe:d.ejecuta}</span></div>`
+      +`<div class="row"><span class="ic">✅</span><span class="res">${en?d.rese:d.resultado}</span></div>`
+      +`</div><div class="chips">${(en?d.fue:d.funciones).map(f=>`<span class="chip">${f}</span>`).join('')}</div>`
+      +`<div class="meta">${en?'Funding':'Financiamiento'}: ${en?d.fne:d.fin} · ${en?'Indicator':'Indicador'}: ${en?d.inde:d.indicador} · ${en?'published on the transparency portal.':'se publica en el portal de transparencia.'}</div>`
+      +`<div class="cta"><p>${en?'This is exactly what Nosara would decide with its own Council. Want it to be able to?':'Esto es exactamente lo que decidiría Nosara con su propio Concejo. ¿Querés que pueda hacerlo?'}</p><a href="../index.html#sumate">${en?'🙋 Join so Nosara can decide →':'🙋 Sumate a que Nosara decida →'}</a></div>`;
   }
   const el=document.createElement('div');el.className='stage '+st.cls;
-  el.innerHTML=`<div class="lab"><span class="dot">${st.ico}</span><span class="s">${st.s}</span></div>${inner}`;
+  el.innerHTML=`<div class="lab"><span class="dot">${st.ico}</span><span class="s">${en?st.se:st.s}</span></div>${inner}`;
   stagesEl.appendChild(el);
   requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));
   progEl.querySelector(`[data-k="${step}"]`).classList.add('on');
   if(step===1){
-    el.querySelectorAll('.rec').forEach(btn=>btn.onclick=()=>{chosen=d.options[+btn.dataset.o].label;step=2;nextBtn.style.display='none';addStage();});
+    el.querySelectorAll('.rec').forEach(btn=>btn.onclick=()=>{chosen=opt[+btn.dataset.o];step=2;nextBtn.style.display='none';addStage();});
   }
   nextBtn.style.display=(step===0)?'':'none';
 }
 nextBtn.onclick=()=>{ if(step===0){ step=1; addStage(); } };
 document.getElementById('restart').onclick=()=>{ flow.style.display='none';picker.style.display='block';chosen=null;window.scrollTo({top:0,behavior:'smooth'}); };
+
+/* ===== Idioma ES / EN ===== */
+(function(){
+  var btn=document.getElementById('lang-btn');
+  function apply(l){
+    LANG=l;
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      if(el.dataset.es===undefined) el.dataset.es=el.innerHTML;
+      el.innerHTML=(l==='en')?el.dataset.en:el.dataset.es;
+    });
+    document.documentElement.lang=l;
+    if(btn) btn.textContent=(l==='en')?'ESPAÑOL':'ENGLISH';
+    buildOpts();
+    flow.style.display='none';picker.style.display='block';chosen=null;
+  }
+  apply(LANG);
+  if(btn) btn.addEventListener('click',function(){
+    apply(LANG==='en'?'es':'en');
+    try{localStorage.setItem('cmd-lang',LANG);}catch(e){}
+  });
+})();
 </script>
 </body>
 </html>
