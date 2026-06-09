@@ -47,11 +47,20 @@
   .members .node .role{font-size:14px}
   .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--crema);color:var(--teal);margin-left:6px}
   .pill.pre{background:var(--gold);color:#3a2c05}
+  /* ---- móvil: apilar el árbol político para que no se corte ---- */
+  @media(max-width:640px){
+    .branchwrap{flex-direction:column;gap:30px}
+    .branchwrap::before{display:none}
+    .branch{width:100%}
+    .node{min-width:0;max-width:100%}
+    .members .node{min-width:0}
+    .tier{gap:22px}
+  }
 
   /* ---- organigrama funcional ---- */
   .fgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:6px}
-  @media(max-width:900px){.fgrid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:520px){.fgrid{grid-template-columns:1fr}}
+  @media(max-width:900px){.fgrid{grid-template-columns:repeat(2,1fr)!important}}
+  @media(max-width:520px){.fgrid{grid-template-columns:1fr!important}}
   .fcol{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(14,110,124,.06)}
   .fcol h3{margin:0;background:var(--teal);color:#fff;font-size:13px;font-weight:700;padding:11px 14px;letter-spacing:.2px}
   .fcol ul{list-style:none;margin:0;padding:10px 14px 14px}
@@ -78,52 +87,52 @@
 </head>
 <body>
 <div class="wrap">
-  <style>.cmd-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button.pdf{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 18px;cursor:pointer;font-family:inherit;line-height:1}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.pdf{border:none;background:#1AA3B0;color:#fff}.cmd-nav button.pdf:hover{background:#13848f}@media print{.cmd-nav{display:none!important}}</style>
-  <nav class="cmd-nav"><a class="back" href="../index.html">← Página Principal</a></nav>
+  <style>.cmd-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:inherit;line-height:1;border:none}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav .right{display:flex;gap:8px}.cmd-nav button.lang{background:#0E6E7C;color:#fff}.cmd-nav button.pdf{background:#1AA3B0;color:#fff}.cmd-nav button:hover{filter:brightness(1.08)}@media print{.cmd-nav{display:none!important}}</style>
+  <nav class="cmd-nav"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="lang" id="lang-btn" aria-label="Switch language">ENGLISH</button></nav>
   <header>
-    <div class="tag">Nosara, Guanacaste · Distrito en red</div>
-    <h1>Organigramas del CMD-Nosara <span class="hip">HIPOTÉTICO</span></h1>
-    <p class="lead">Estructura propuesta para el Concejo Municipal de Distrito de Nosara (figura de la Ley 8173).
+    <div class="tag" data-en="Nosara, Guanacaste · Networked district">Nosara, Guanacaste · Distrito en red</div>
+    <h1 data-en="Org charts of the Nosara CMD <span class='hip'>HYPOTHETICAL</span>">Organigramas del CMD-Nosara <span class="hip">HIPOTÉTICO</span></h1>
+    <p class="lead" data-en="Proposed structure for the Municipal District Council of Nosara (a body under Law 8173). It shows the <b>elected political structure</b> and the <b>structure by function</b> (no names of people or departments: only the functions the CMD must cover).">Estructura propuesta para el Concejo Municipal de Distrito de Nosara (figura de la Ley 8173).
     Se muestran dos vistas: la <b>estructura política electa</b> y la <b>estructura por funciones</b> (sin nombres
     de personas ni departamentos: solo las funciones que el CMD debe cubrir).</p>
     <div class="legend">
-      <span><i class="dot d-root"></i> Soberanía / electorado</span>
-      <span><i class="dot d-exec"></i> Órgano ejecutivo (Intendencia)</span>
-      <span><i class="dot d-cole"></i> Órgano colegiado (Concejo)</span>
+      <span data-en="<i class='dot d-root'></i> Sovereignty / electorate"><i class="dot d-root"></i> Soberanía / electorado</span>
+      <span data-en="<i class='dot d-exec'></i> Executive body (Intendencia)"><i class="dot d-exec"></i> Órgano ejecutivo (Intendencia)</span>
+      <span data-en="<i class='dot d-cole'></i> Collegiate body (Council)"><i class="dot d-cole"></i> Órgano colegiado (Concejo)</span>
     </div>
   </header>
 
   <!-- ====================== 1 · POLÍTICO ====================== -->
   <section>
-    <h2>Vista 1 · Estructura política</h2>
-    <div class="st">Quién se elige (Ley 8173)</div>
+    <h2 data-en="View 1 · Political structure">Vista 1 · Estructura política</h2>
+    <div class="st" data-en="Who is elected (Law 8173)">Quién se elige (Ley 8173)</div>
     <div class="tree">
-      <div class="node root"><div class="role">Electorado del distrito de Nosara</div>
-        <div class="meta">Elige por voto popular · elecciones municipales · período de 4 años</div></div>
+      <div class="node root"><div class="role" data-en="Electorate of the Nosara district">Electorado del distrito de Nosara</div>
+        <div class="meta" data-en="Elects by popular vote · municipal elections · 4-year term">Elige por voto popular · elecciones municipales · período de 4 años</div></div>
       <div class="vline"></div>
       <div class="branchwrap">
         <!-- ejecutivo -->
         <div class="branch">
-          <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta">Órgano ejecutivo, equivalente a la alcaldía del distrito</div></div>
+          <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta" data-en="Executive body, equivalent to the district mayor's office">Órgano ejecutivo, equivalente a la alcaldía del distrito</div></div>
           <div class="vline"></div>
           <div class="members">
-            <div class="node exec"><div class="role">Intendente/a</div><div class="meta">Dirige la administración y ejecuta el presupuesto</div></div>
-            <div class="node exec"><div class="role">Viceintendente/a</div><div class="meta">Sustituye al intendente; funciones que se le asignen</div></div>
+            <div class="node exec"><div class="role">Intendente/a</div><div class="meta" data-en="Leads the administration and executes the budget">Dirige la administración y ejecuta el presupuesto</div></div>
+            <div class="node exec"><div class="role">Viceintendente/a</div><div class="meta" data-en="Stands in for the Intendente; assigned duties">Sustituye al intendente; funciones que se le asignen</div></div>
           </div>
         </div>
         <!-- colegiado -->
         <div class="branch">
-          <div class="node cole"><div class="role">CONCEJO MUNICIPAL DE DISTRITO</div><div class="meta">Órgano colegiado: delibera, aprueba presupuesto y fiscaliza</div></div>
+          <div class="node cole"><div class="role" data-en="MUNICIPAL DISTRICT COUNCIL">CONCEJO MUNICIPAL DE DISTRITO</div><div class="meta" data-en="Collegiate body: deliberates, approves the budget and oversees">Órgano colegiado: delibera, aprueba presupuesto y fiscaliza</div></div>
           <div class="vline"></div>
           <div class="members">
-            <div class="node cole"><div class="role">Sindicatura <span class="pill pre">PRESIDE</span></div><div class="meta">Síndico/a propietario/a más su suplente. Preside el Concejo.</div></div>
-            <div class="node cole"><div class="role">4 concejales propietarios/as</div><div class="meta">Voz y voto</div></div>
-            <div class="node cole"><div class="role">4 concejales suplentes</div><div class="meta">Sustituyen a los propietarios</div></div>
+            <div class="node cole"><div class="role" data-en="Síndico's office <span class='pill pre'>PRESIDES</span>">Sindicatura <span class="pill pre">PRESIDE</span></div><div class="meta" data-en="Sitting Síndico plus alternate. Presides over the Council.">Síndico/a propietario/a más su suplente. Preside el Concejo.</div></div>
+            <div class="node cole"><div class="role" data-en="4 sitting councilors">4 concejales propietarios/as</div><div class="meta" data-en="Voice and vote">Voz y voto</div></div>
+            <div class="node cole"><div class="role" data-en="4 alternate councilors">4 concejales suplentes</div><div class="meta" data-en="Stand in for the sitting members">Sustituyen a los propietarios</div></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="note">
+    <div class="note" data-en="<b>Legal basis (Law 8173, art. 6 and 7):</b> the Council is a collegiate body of <b>5 sitting members and their alternates</b>; <b>one of those members is the sitting Síndico, who presides</b> (replaced by the alternate Síndico). That's why, in practice —as in the Cóbano CMD— <b>4 sitting councilors + 4 alternates</b> are elected and the <b>Síndico's office presides</b>. The executive body is the <b>Intendencia</b> (Intendente, equivalent to the mayor; the Viceintendente was added by reform and is now elected). All by <b>popular vote</b>, 4-year term, with gender parity.">
       <b>Base legal (Ley 8173, art. 6 y 7):</b> el Concejo es un órgano colegiado de <b>5 propietarios y sus suplentes</b>;
       <b>uno de esos miembros es el síndico/a propietario/a, que preside</b> (lo sustituye el síndico suplente). Por eso, en la
       práctica —como en el CMD de Cóbano— se eligen <b>4 concejales propietarios + 4 suplentes</b> y la <b>Sindicatura preside</b>.
@@ -134,82 +143,82 @@
 
   <!-- ====================== 2 · FUNCIONAL ====================== -->
   <section>
-    <h2>Vista 2 · Estructura por funciones</h2>
-    <div class="st">Qué tiene que hacer el CMD (funciones, no personas)</div>
+    <h2 data-en="View 2 · Structure by function">Vista 2 · Estructura por funciones</h2>
+    <div class="st" data-en="What the CMD must do (functions, not people)">Qué tiene que hacer el CMD (funciones, no personas)</div>
     <div class="tree" style="margin-bottom:8px">
-      <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta">Dirección ejecutiva · coordina todas las funciones</div></div>
+      <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta" data-en="Executive leadership · coordinates all functions">Dirección ejecutiva · coordina todas las funciones</div></div>
       <div class="vline"></div>
     </div>
-    <p style="font-size:13px;color:var(--mut);margin:0 0 14px">A · Funciones de gestión interna — cómo se administra el CMD</p>
+    <p style="font-size:13px;color:var(--mut);margin:0 0 14px" data-en="A · Internal management functions — how the CMD is run">A · Funciones de gestión interna — cómo se administra el CMD</p>
     <div class="fgrid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="fcol"><h3>Hacienda y Finanzas</h3>
+      <div class="fcol"><h3 data-en="Treasury &amp; Finance">Hacienda y Finanzas</h3>
         <ul>
-          <li><b>Cobro</b></li>
-          <li><b>Tesorería</b></li>
-          <li>Presupuesto y Contabilidad</li>
-          <li><b>Catastro y Valoración</b></li>
-          <li>Patentes y licencias</li>
+          <li data-en="<b>Collection</b>"><b>Cobro</b></li>
+          <li data-en="<b>Treasury</b>"><b>Tesorería</b></li>
+          <li data-en="Budget &amp; Accounting">Presupuesto y Contabilidad</li>
+          <li data-en="<b>Cadastre &amp; Valuation</b>"><b>Catastro y Valoración</b></li>
+          <li data-en="Licenses &amp; permits">Patentes y licencias</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Planificación y Territorio</h3>
+      <div class="fcol"><h3 data-en="Planning &amp; Land use">Planificación y Territorio</h3>
         <ul>
-          <li>Planificación institucional</li>
-          <li>Plan Regulador</li>
-          <li><b>Control Constructivo</b></li>
-          <li>Topografía</li>
+          <li data-en="Institutional planning">Planificación institucional</li>
+          <li data-en="Zoning plan">Plan Regulador</li>
+          <li data-en="<b>Building control</b>"><b>Control Constructivo</b></li>
+          <li data-en="Surveying">Topografía</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Atención a la persona</h3>
+      <div class="fcol"><h3 data-en="Public service">Atención a la persona</h3>
         <ul>
-          <li>Plataforma de Servicios</li>
-          <li>Secretaría del Concejo</li>
-          <li>Archivo y gestión documental</li>
+          <li data-en="Service desk">Plataforma de Servicios</li>
+          <li data-en="Council secretariat">Secretaría del Concejo</li>
+          <li data-en="Records &amp; document management">Archivo y gestión documental</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Apoyo institucional</h3>
+      <div class="fcol"><h3 data-en="Institutional support">Apoyo institucional</h3>
         <ul>
-          <li>Asesoría Legal</li>
-          <li>Tecnología y Datos</li>
-          <li>Recursos Humanos y Proveeduría</li>
-          <li>Comunicación y participación</li>
+          <li data-en="Legal counsel">Asesoría Legal</li>
+          <li data-en="Technology &amp; Data">Tecnología y Datos</li>
+          <li data-en="HR &amp; Procurement">Recursos Humanos y Proveeduría</li>
+          <li data-en="Communication &amp; participation">Comunicación y participación</li>
         </ul>
       </div>
     </div>
 
-    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px">B · Servicios y programas a la comunidad — marco IGSM de la Contraloría</p>
+    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px" data-en="B · Services and programs for the community — Comptroller's IGSM framework">B · Servicios y programas a la comunidad — marco IGSM de la Contraloría</p>
     <div class="fgrid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="fcol"><h3>Residuos y aseo</h3>
+      <div class="fcol"><h3 data-en="Waste &amp; cleaning">Residuos y aseo</h3>
         <ul>
-          <li>Recolección, depósito y tratamiento de residuos</li>
-          <li>Aseo de vías y sitios públicos</li>
+          <li data-en="Collection, disposal and treatment of waste">Recolección, depósito y tratamiento de residuos</li>
+          <li data-en="Cleaning of roads and public spaces">Aseo de vías y sitios públicos</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Infraestructura</h3>
+      <div class="fcol"><h3 data-en="Infrastructure">Infraestructura</h3>
         <ul>
-          <li>Mantenimiento de la red vial cantonal</li>
-          <li>Alcantarillado pluvial</li>
-          <li>Urbanismo</li>
+          <li data-en="Maintenance of the cantonal road network">Mantenimiento de la red vial cantonal</li>
+          <li data-en="Storm drainage">Alcantarillado pluvial</li>
+          <li data-en="Urban planning">Urbanismo</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Ambiente y agua</h3>
+      <div class="fcol"><h3 data-en="Environment &amp; water">Ambiente y agua</h3>
         <ul>
-          <li>Gestión ambiental</li>
-          <li>Protección del recurso hídrico</li>
-          <li>Gestión del riesgo</li>
+          <li data-en="Environmental management">Gestión ambiental</li>
+          <li data-en="Protection of water resources">Protección del recurso hídrico</li>
+          <li data-en="Risk management">Gestión del riesgo</li>
         </ul>
       </div>
-      <div class="fcol"><h3>Servicios a las personas</h3>
+      <div class="fcol"><h3 data-en="Services to people">Servicios a las personas</h3>
         <ul>
-          <li>Servicios sociales y complementarios</li>
-          <li>Servicios educativos, culturales y deportivos</li>
+          <li data-en="Social and complementary services">Servicios sociales y complementarios</li>
+          <li data-en="Educational, cultural and sports services">Servicios educativos, culturales y deportivos</li>
         </ul>
       </div>
     </div>
 
-    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px">C · Coordinación institucional y municipal — el CMD no trabaja solo</p>
+    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px" data-en="C · Institutional and municipal coordination — the CMD doesn't work alone">C · Coordinación institucional y municipal — el CMD no trabaja solo</p>
     <div class="coord">
-      <h3>Coordinación institucional y municipal</h3>
-      <p>Una función transversal del CMD: articular con otros niveles de gobierno e instituciones para gestionar el distrito, gestionar convenios y canalizar recursos y servicios hacia Nosara.</p>
+      <h3 data-en="Institutional and municipal coordination">Coordinación institucional y municipal</h3>
+      <p data-en="A cross-cutting CMD function: coordinating with other levels of government and institutions to manage the district, arrange agreements and channel resources and services to Nosara.">Una función transversal del CMD: articular con otros niveles de gobierno e instituciones para gestionar el distrito, gestionar convenios y canalizar recursos y servicios hacia Nosara.</p>
       <div class="ichips">
         <span class="ichip">Municipalidad de Nicoya</span>
         <span class="ichip">Municipalidad de Santa Cruz (Ostional)</span>
@@ -226,11 +235,11 @@
       </div>
     </div>
 
-    <div class="aside">
+    <div class="aside" data-en="<b>Internal Audit</b> — an oversight function that <b>does NOT report to the Intendencia</b>: it answers to the Municipal District Council. Independence required by the Office of the Comptroller General. Dotted line to the Council, not to the Intendencia.">
       <b>Auditoría Interna</b> — función de control que <b>NO depende de la Intendencia</b>: responde al Concejo Municipal de Distrito.
       Independencia exigida por la Contraloría General de la República. Línea punteada hacia el Concejo, no hacia la Intendencia.
     </div>
-    <div class="note" style="border-left:4px solid var(--ocean)">
+    <div class="note" style="border-left:4px solid var(--ocean)" data-en="<b>AI optimization:</b> staff-controlled artificial-intelligence agents can absorb repetitive functions —billing and reminders, intake of procedures, frequent answers, data organization and reports— to <b>reduce administrative cost</b> and free resources for investment and services. The person decides and is accountable; the AI executes the repetitive work under their control.">
       <b>Optimización con IA:</b> agentes de inteligencia artificial <b>controlados por personal</b> pueden absorber las
       funciones repetitivas —cobro y recordatorios, recepción de trámites, respuestas frecuentes, ordenamiento de datos y
       reportes— para <b>reducir el costo administrativo</b> y liberar recursos hacia la inversión y los servicios. La persona
@@ -240,28 +249,48 @@
 
   <!-- ====================== 3 · ÓRGANOS CONSULTIVOS ====================== -->
   <section>
-    <h2>Vista 3 · Órganos consultivos de la comunidad</h2>
-    <div class="st">La comunidad opina (voz, no voto)</div>
-    <p style="font-size:14px;color:var(--mut);margin:0 0 14px;max-width:62em">El CMD abre espacios para que distintos sectores asesoren al Concejo y a la Intendencia con opinión y propuestas. Son consultivos: aportan voz y conocimiento, sin sustituir la decisión de los órganos electos.</p>
+    <h2 data-en="View 3 · Community advisory bodies">Vista 3 · Órganos consultivos de la comunidad</h2>
+    <div class="st" data-en="The community advises (voice, not vote)">La comunidad opina (voz, no voto)</div>
+    <p style="font-size:14px;color:var(--mut);margin:0 0 14px;max-width:62em" data-en="The CMD opens spaces for different sectors to advise the Council and the Intendencia with opinions and proposals. They are advisory: they contribute voice and knowledge, without replacing the decisions of the elected bodies.">El CMD abre espacios para que distintos sectores asesoren al Concejo y a la Intendencia con opinión y propuestas. Son consultivos: aportan voz y conocimiento, sin sustituir la decisión de los órganos electos.</p>
     <div class="fgrid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="fcol"><h3>Personas Adultas Mayores</h3><ul><li>La voz de las personas mayores del distrito en las decisiones.</li></ul></div>
-      <div class="fcol"><h3>Consejo Juvenil</h3><ul><li>Voz y propuestas de la juventud de Nosara.</li></ul></div>
-      <div class="fcol"><h3>Consejo Jurídico</h3><ul><li>Abogados y abogadas de la comunidad que dan opinión jurídica: un lugar para que hablen y opinen.</li></ul></div>
-      <div class="fcol"><h3>Inversión, Empleo y Economía</h3><ul><li>Cámaras, emprendedores y negocios. Pro inversión, empleo y economía, de la mano con la comunidad.</li></ul></div>
-      <div class="fcol"><h3>Consejo Social</h3><ul><li>Programas comunitarios, áreas públicas, buen vivir y entidades que ayudan con programas sociales.</li></ul></div>
-      <div class="fcol"><h3>Consejo Ambiental</h3><ul><li>Conservación, zonas verdes, restauración y resiliencia ambiental.</li></ul></div>
+      <div class="fcol"><h3 data-en="Older Adults">Personas Adultas Mayores</h3><ul><li data-en="The voice of the district's older people in decisions.">La voz de las personas mayores del distrito en las decisiones.</li></ul></div>
+      <div class="fcol"><h3 data-en="Youth Council">Consejo Juvenil</h3><ul><li data-en="Voice and proposals from Nosara's youth.">Voz y propuestas de la juventud de Nosara.</li></ul></div>
+      <div class="fcol"><h3 data-en="Legal Council">Consejo Jurídico</h3><ul><li data-en="Community lawyers who provide legal opinion: a place for them to speak and advise.">Abogados y abogadas de la comunidad que dan opinión jurídica: un lugar para que hablen y opinen.</li></ul></div>
+      <div class="fcol"><h3 data-en="Investment, Jobs &amp; Economy">Inversión, Empleo y Economía</h3><ul><li data-en="Chambers, entrepreneurs and businesses. Pro investment, jobs and economy, hand in hand with the community.">Cámaras, emprendedores y negocios. Pro inversión, empleo y economía, de la mano con la comunidad.</li></ul></div>
+      <div class="fcol"><h3 data-en="Social Council">Consejo Social</h3><ul><li data-en="Community programs, public spaces, wellbeing and organizations that help with social programs.">Programas comunitarios, áreas públicas, buen vivir y entidades que ayudan con programas sociales.</li></ul></div>
+      <div class="fcol"><h3 data-en="Environmental Council">Consejo Ambiental</h3><ul><li data-en="Conservation, green areas, restoration and environmental resilience.">Conservación, zonas verdes, restauración y resiliencia ambiental.</li></ul></div>
     </div>
-    <div class="aside">Estos consejos se vinculan por <b>línea punteada</b> con el Concejo y la Intendencia: <b>asesoran, no deciden</b>. Su valor es sentar a la mesa a quienes saben de cada tema y a quienes lo viven.</div>
+    <div class="aside" data-en="These councils connect by a <b>dotted line</b> to the Council and the Intendencia: <b>they advise, they don't decide</b>. Their value is bringing to the table those who know each subject and those who live it.">Estos consejos se vinculan por <b>línea punteada</b> con el Concejo y la Intendencia: <b>asesoran, no deciden</b>. Su valor es sentar a la mesa a quienes saben de cada tema y a quienes lo viven.</div>
   </section>
 
-  <footer>
+  <footer data-en="<b>Hypothetical</b> document for proof of concept of the Nosara CMD. Basis: Law 8173 (General Law of Municipal District Councils), arts. 6 and 7; practice of the Cóbano CMD; FECOMUDI; services per the Municipal Services Management Index (IGSM) of the Office of the Comptroller General. Not an official structure; requires technical study and approval by the competent bodies. <b>Draft v0</b> — ideas or improvements? Take part via the form on the CMD-Nosara page.">
     Documento <b>hipotético</b> para validación de concepto del CMD-Nosara.
     Base: Ley 8173 (Ley General de Concejos Municipales de Distrito), arts. 6 y 7; práctica del CMD de Cóbano; FECOMUDI;
     servicios según el Índice de Gestión de Servicios Municipales (IGSM) de la Contraloría General de la República.
     No es estructura oficial; requiere estudio técnico y aprobación de los órganos competentes.
     <b>Borrador v0</b> — ¿ideas o mejoras? Participá por el formulario de la página del CMD-Nosara.
   </footer>
-  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html">← Página Principal</a><button class="pdf" onclick="window.print()">⬇️ Descargar PDF</button></nav>
+  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button></nav>
 </div>
+<script>
+"use strict";
+(function(){
+  var lang='es';try{lang=localStorage.getItem('cmd-lang')||'es';}catch(e){}
+  var btn=document.getElementById('lang-btn');
+  function apply(l){
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      if(el.dataset.es===undefined) el.dataset.es=el.innerHTML;
+      el.innerHTML=(l==='en')?el.dataset.en:el.dataset.es;
+    });
+    document.documentElement.lang=l;
+    if(btn) btn.textContent=(l==='en')?'ESPAÑOL':'ENGLISH';
+  }
+  apply(lang);
+  if(btn) btn.addEventListener('click',function(){
+    lang=(lang==='en')?'es':'en';apply(lang);
+    try{localStorage.setItem('cmd-lang',lang);}catch(e){}
+  });
+})();
+</script>
 </body>
 </html>

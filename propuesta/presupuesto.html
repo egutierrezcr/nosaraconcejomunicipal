@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMD-Nosara · Presupuesto hipotético</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--teal:#0E6E7C;--ocean:#1AA3B0;--celeste:#5EC6D4;--crema:#EDF7F9;--gold:#E8A82C;--bosque:#2F6B4F;
+    --rojo:#B12028;--ink:#103038;--mut:#5f7a80;--line:#bcd6da;--font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:#f4fafb;line-height:1.45}
+  .wrap{max-width:960px;margin:0 auto;padding:30px 20px 60px}
+  .cmd-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}
+  .cmd-nav a.back,.cmd-nav button{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:inherit;line-height:1;border:none}
+  .cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}
+  .cmd-nav a.back:hover{background:#EDF7F9}
+  .cmd-nav .right{display:flex;gap:8px}
+  .cmd-nav button.lang{background:#0E6E7C;color:#fff}
+  .cmd-nav button.pdf{background:#1AA3B0;color:#fff}
+  .cmd-nav button:hover{filter:brightness(1.08)}
+  @media print{.cmd-nav{display:none!important}}
+  header h1{font-size:clamp(23px,3.6vw,34px);font-weight:800;color:var(--teal);margin:6px 0 4px;letter-spacing:-.4px}
+  header .tag{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ocean);font-weight:700}
+  .hip{display:inline-block;background:var(--gold);color:#3a2c05;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-left:8px;vertical-align:middle}
+  .lead{color:var(--mut);font-size:14.5px;margin:10px 0 0;max-width:62em}
+  .banner{margin-top:14px;background:#fff;border:1.5px dashed var(--gold);border-radius:12px;padding:10px 14px;font-size:12.5px;color:var(--ink)}
+  .banner b{color:var(--teal)}
+  h2.sec{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--ocean);font-weight:700;margin:34px 0 12px}
+  /* balance cards */
+  .bal{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:620px){.bal{grid-template-columns:1fr}}
+  .bcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .bcard .big{font-size:26px;font-weight:800;color:var(--teal);line-height:1}
+  .bcard.in .big{color:var(--bosque)} .bcard.out .big{color:var(--ocean)} .bcard.eq .big{color:var(--gold)}
+  .bcard .lbl{font-size:13px;color:var(--mut);margin-top:5px}
+  /* gasto bars */
+  .gasto{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:620px){.gasto{grid-template-columns:1fr}}
+  .gcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:15px 17px;box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .gcard .pct{font-size:30px;font-weight:800;line-height:1}
+  .gcard .name{font-weight:700;color:var(--teal);font-size:14.5px;margin:4px 0 2px}
+  .gcard .amt{font-size:13px;color:var(--mut)}
+  .gcard .bar{height:7px;border-radius:99px;background:#e3eef0;margin-top:10px;overflow:hidden}
+  .gcard .bar i{display:block;height:100%;border-radius:99px}
+  .g-adm .pct{color:var(--mut)} .g-adm .bar i{background:var(--mut)}
+  .g-prog .pct{color:var(--ocean)} .g-prog .bar i{background:var(--ocean)}
+  .g-inv .pct{color:var(--bosque)} .g-inv .bar i{background:var(--bosque)}
+  .gcard .ref{font-size:11.5px;color:var(--mut);margin-top:8px}
+  /* tables */
+  .tbox{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(14,110,124,.06);margin-bottom:14px}
+  .tbox h3{margin:0;background:var(--teal);color:#fff;font-size:13.5px;font-weight:700;padding:11px 16px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  td,th{text-align:left;padding:9px 16px;border-bottom:1px solid #eef4f5;vertical-align:top}
+  th{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ocean)}
+  td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  tr.sub td{font-weight:800;color:var(--teal);background:var(--crema)}
+  td .src{font-size:11.5px;color:var(--mut)}
+  /* indicadores */
+  .ind{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:620px){.ind{grid-template-columns:1fr}}
+  .icard{background:var(--crema);border:1px solid #cfe6ea;border-radius:14px;padding:15px 18px}
+  .icard .big{font-size:22px;font-weight:800;color:var(--teal)}
+  .icard .lbl{font-size:13px;color:#3f5a60;margin-top:3px}
+  .note{margin-top:14px;background:var(--crema);border-radius:12px;padding:14px 18px;font-size:13px}
+  .note b{color:var(--teal)}
+  .supuestos{list-style:none;margin:0;padding:0}
+  .supuestos li{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin-bottom:8px;font-size:13.5px}
+  .supuestos li b{color:var(--teal)}
+  .fuentes{font-size:12.5px;color:var(--mut);margin-top:10px;line-height:1.7}
+  footer{margin-top:38px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
+  @media print{body{background:#fff}.bcard,.gcard,.tbox,.icard{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="cmd-nav">
+    <a class="back" href="../index.html" data-en="← Main page">← Página Principal</a>
+    <span class="right"><button class="lang" id="lang-btn" aria-label="Switch language">ENGLISH</button><button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button></span>
+  </nav>
+
+  <header>
+    <div class="tag">Nosara, Guanacaste · Distrito en red</div>
+    <h1 data-en="Hypothetical budget of the Nosara CMD">Presupuesto hipotético del CMD-Nosara <span class="hip">HIPOTÉTICO</span></h1>
+    <p class="lead" data-en="What the Municipal Council could manage and on what — &quot;active management&quot; scenario, with the CMD already operating. Figures in millions of colones (₡M) per year.">Cuánto podría administrar el Concejo Municipal y en qué — escenario «gestión activa», con el CMD ya en régimen. Cifras en millones de colones (₡M) por año.</p>
+    <div class="banner" data-en="<b>DRAFT v0 · HYPOTHETICAL DOCUMENT.</b> Built for proof of concept and discussion; not an official budget. Improvements welcome via the form on the CMD-Nosara page."><b>BORRADOR v0 · DOCUMENTO HIPOTÉTICO.</b> Hecho para validación de concepto y discusión; no es un presupuesto oficial. Sugerencias vía el formulario de la página del CMD-Nosara.</div>
+  </header>
+
+  <h2 class="sec" data-en="General balance">Balance general</h2>
+  <div class="bal">
+    <div class="bcard in"><div class="big">₡2.445,5 M</div><div class="lbl" data-en="Total income (own ₡2,115.5M + transfers ₡330M)">Ingresos totales (propios ₡2.115,5M + transferencias ₡330M)</div></div>
+    <div class="bcard out"><div class="big">₡2.445,5 M</div><div class="lbl" data-en="Total spending">Egresos totales</div></div>
+    <div class="bcard eq"><div class="big">₡0</div><div class="lbl" data-en="Result — balanced by design">Resultado — equilibrado por diseño</div></div>
+  </div>
+
+  <h2 class="sec" data-en="Spending structure — contained administration, high investment">Estructura del gasto — administración contenida, inversión alta</h2>
+  <div class="gasto">
+    <div class="gcard g-adm"><div class="pct">26,6%</div><div class="name" data-en="Administration">Administración</div><div class="amt">₡651,4 M</div><div class="bar"><i style="width:26.6%"></i></div><div class="ref" data-en="Good-management goal: administration ≤30% of spending.">Meta de buena gestión: administración ≤30% del gasto.</div></div>
+    <div class="gcard g-prog"><div class="pct">25,6%</div><div class="name" data-en="Programs &amp; services">Programas y servicios</div><div class="amt">₡626,4 M</div><div class="bar"><i style="width:25.6%"></i></div><div class="ref" data-en="Community services and environment.">Servicios a la comunidad y ambiente.</div></div>
+    <div class="gcard g-inv"><div class="pct">47,7%</div><div class="name" data-en="Direct investment">Inversión directa</div><div class="amt">₡1.167,7 M</div><div class="bar"><i style="width:47.7%"></i></div><div class="ref" data-en="Goal: ≥45% of spending on public works. Here ~49%.">Meta: ≥45% del gasto en obra. Aquí ~49%.</div></div>
+  </div>
+
+  <h2 class="sec" data-en="Income">Ingresos</h2>
+  <div class="tbox">
+    <h3 data-en="A. District's own income (collected)">A. Ingresos propios del distrito (cobrados)</h3>
+    <table>
+      <tr><th data-en="Item">Rubro</th><th class="num">₡M</th></tr>
+      <tr><td data-en="Property tax (IBI, Law 7729)">Impuesto de Bienes Inmuebles (IBI, Ley 7729)<div class="src" data-en="Modernized cadastre +10% (capturing 1/12 of the 12.1× gap) and 80% local collection">Catastro modernizado +10% (capturar 1/12 de la brecha 12,1×) y cobro local 80%</div></td><td class="num">1.579,4</td></tr>
+      <tr><td data-en="Business licenses (new 2026 law)">Patentes / licencias (nueva ley 2026)<div class="src" data-en="New Nicoya 2026 license law (₡1.5→₡3.5 per thousand) + commercial growth">Nueva ley de patentes 2026 (tarifa ₡1,5→₡3,5 por mil) + crecimiento comercial</div></td><td class="num">337,5</td></tr>
+      <tr><td data-en="Construction permits">Permisos de construcción</td><td class="num">86,5</td></tr>
+      <tr><td data-en="Waste collection &amp; management (fee)">Recolección y gestión de residuos (tasa)</td><td class="num">72,0</td></tr>
+      <tr><td data-en="Other fees, prices and services">Otras tasas, precios y servicios</td><td class="num">40,0</td></tr>
+      <tr class="sub"><td data-en="Subtotal — own income">Subtotal ingresos propios</td><td class="num">2.115,5</td></tr>
+    </table>
+  </div>
+  <div class="tbox">
+    <h3 data-en="B. Central government transfers">B. Transferencias del Gobierno Central</h3>
+    <table>
+      <tr><th data-en="Concept">Concepto</th><th class="num">₡M</th></tr>
+      <tr><td data-en="Cantonal road network transfer (Law 8114/9329)">Transferencia red vial cantonal (Ley 8114/9329)<div class="src" data-en="Nosara road inventory 2019-2024: ₡272.7M/yr avg; Cóbano received ₡327M (2023)">Inventario vial Nosara 2019-2024: ₡272,7M/año prom.; Cóbano recibió ₡327M (2023)</div></td><td class="num">300,0</td></tr>
+      <tr><td data-en="Other central government transfers">Otras transferencias del Gobierno Central</td><td class="num">30,0</td></tr>
+      <tr class="sub"><td data-en="Subtotal — transfers">Subtotal transferencias</td><td class="num">330,0</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec" data-en="Spending">Egresos</h2>
+  <div class="tbox">
+    <h3 data-en="Administration · 26.6% (goal ≤30%)">Administración · 26,6% (meta ≤30%)</h3>
+    <table>
+      <tr><td data-en="Council stipends (5) + Intendente &amp; Viceintendente salaries">Dietas del Concejo (5) + salarios Intendente y Viceintendente</td><td class="num">185,0</td></tr>
+      <tr><td data-en="Administrative payroll (finance, collection, services desk, road engineering)">Planilla administrativa (finanzas, cobros, plataforma, gestión vial técnica)</td><td class="num">345,0</td></tr>
+      <tr><td data-en="Office operating costs (rent, utilities, technology, insurance)">Gastos de operación de oficina (alquiler, servicios, tecnología, seguros)</td><td class="num">121,4</td></tr>
+      <tr class="sub"><td data-en="Subtotal — administration">Subtotal administración</td><td class="num">651,4</td></tr>
+    </table>
+  </div>
+  <div class="tbox">
+    <h3 data-en="Programs &amp; services · 25.6%">Programas y servicios · 25,6%</h3>
+    <table>
+      <tr><td data-en="Solid waste collection &amp; management">Recolección y gestión de residuos sólidos</td><td class="num">200,0</td></tr>
+      <tr><td data-en="Environmental management &amp; water protection (aquifer / refuge)">Gestión ambiental y protección hídrica (acuífero / RNVSO)</td><td class="num">150,0</td></tr>
+      <tr><td data-en="Routine road-network maintenance">Mantenimiento rutinario de la red vial</td><td class="num">140,0</td></tr>
+      <tr><td data-en="Social, cultural and sports programs">Programas sociales, culturales y deportivos</td><td class="num">80,0</td></tr>
+      <tr><td data-en="Support to the Red Cross (ambulances) and Fire Dept. (emergencies)">Apoyo a Cruz Roja (ambulancias) y Bomberos (emergencias)</td><td class="num">40,0</td></tr>
+      <tr><td data-en="Security, community life and other services">Seguridad, convivencia y otros servicios</td><td class="num">16,4</td></tr>
+      <tr class="sub"><td data-en="Subtotal — programs &amp; services">Subtotal programas y servicios</td><td class="num">626,4</td></tr>
+    </table>
+  </div>
+  <div class="tbox">
+    <h3 data-en="Direct investment · 47.7% (goal ≥45%)">Inversión directa · 47,7% (meta ≥45%)</h3>
+    <table>
+      <tr><td data-en="Cantonal road-network improvement (new works, Law 8114 co-funding)">Mejoramiento de red vial cantonal (obras nuevas, cofinanc. Ley 8114)</td><td class="num">600,0</td></tr>
+      <tr><td data-en="Community infrastructure (public spaces, health/EBAIS support, water)">Infraestructura comunitaria (espacios públicos, apoyo salud/EBAIS, agua)</td><td class="num">320,0</td></tr>
+      <tr><td data-en="Equipment and machinery (road and waste management)">Equipamiento y maquinaria (gestión vial y residuos)</td><td class="num">140,0</td></tr>
+      <tr><td data-en="Planning, cadastre and zoning plan (closing the 12.1× cadastral gap)">Planificación, catastro y plan regulador (cerrar brecha catastral 12,1×)</td><td class="num">107,7</td></tr>
+      <tr class="sub"><td data-en="Subtotal — direct investment">Subtotal inversión directa</td><td class="num">1.167,7</td></tr>
+      <tr class="sub"><td data-en="TOTAL SPENDING">TOTAL EGRESOS</td><td class="num">2.445,5</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec" data-en="Key indicators">Indicadores clave</h2>
+  <div class="ind">
+    <div class="icard"><div class="big">₡280.573 <span style="font-size:13px;font-weight:600" data-en="/ resident / yr">/ residente / año</span></div><div class="lbl" data-en="Budget per habitual resident (base: 8,716 residents, 2024 Census)">Presupuesto por residente habitual (base: 8.716 residentes, Censo 2024)</div></div>
+    <div class="icard"><div class="big">₡205.836 <span style="font-size:13px;font-weight:600" data-en="/ resident / yr">/ residente / año</span></div><div class="lbl" data-en="Investment + programs per resident — to works and services">Inversión + programas por residente — a obra y servicios</div></div>
+  </div>
+  <div class="note" data-en="<b>For comparison:</b> between 2019 and 2024, Nosara received only ~3% of the total municipal budget back, according to Comptroller data and municipal financial reports."><b>Para comparar:</b> entre 2019 y 2024, Nosara recibió de vuelta solo ~3% del presupuesto municipal total, según datos de la Contraloría e informes financieros municipales.</div>
+
+  <h2 class="sec" data-en="Road investment received (historical base)">Inversión vial recibida (base histórica)</h2>
+  <div class="tbox">
+    <h3 data-en="Law 8114/9329 transfers executed in Nosara">Transferencias Ley 8114/9329 ejecutadas en Nosara</h3>
+    <table>
+      <tr><th data-en="Year">Año</th><th class="num">₡M</th><th data-en="Projects">Proyectos</th></tr>
+      <tr><td>2019</td><td class="num">427,0</td><td>30</td></tr>
+      <tr><td>2020</td><td class="num">70,0</td><td>18</td></tr>
+      <tr><td>2021</td><td class="num">187,4</td><td>18</td></tr>
+      <tr><td>2022</td><td class="num">218,3</td><td>18</td></tr>
+      <tr><td>2023</td><td class="num">367,3</td><td data-en="6 (incl. Sta. Marta–Nosara junction ₡299M)">6 (incl. cruce Sta. Marta–Nosara ₡299M)</td></tr>
+      <tr><td>2024</td><td class="num">366,1</td><td>7</td></tr>
+      <tr class="sub"><td data-en="Total 2019-2024">Total 2019-2024</td><td class="num">1.636,1</td><td>97</td></tr>
+      <tr class="sub"><td data-en="Annual average (basis for the ₡300M assumption)">Promedio anual (base del supuesto ₡300M)</td><td class="num">272,7</td><td></td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec" data-en="Key assumptions">Supuestos clave</h2>
+  <ul class="supuestos">
+    <li data-en="<b>Base population:</b> 8,716 habitual residents (2024 Nosara Census); peak concurrent population exceeds 35,000."><b>Población base:</b> 8.716 residentes habituales (Censo Nosara 2024); concurrente en alta supera 35.000.</li>
+    <li data-en="<b>Local collection (lever 1):</b> from ~60% (Nicoya 2025) to 80%. Reference: Tucurrique 90%, Cóbano 64.5%. Each collection point on the IBI is worth millions."><b>Cobro local (palanca 1):</b> de ~60% (Nicoya 2025) a 80%. Referencia: Tucurrique 90%, Cóbano 64,5%. Cada punto de cobro sobre el IBI son millones.</li>
+    <li data-en="<b>Cadastre / IBI (lever 2):</b> the cadastral gap is 12.1×. This raises billed IBI only +10% = capturing just 1/12 of the gap. The rest is upside potential not included."><b>Catastro / IBI (palanca 2):</b> la brecha catastral es 12,1×. Sube el facturado de IBI solo +10% = capturar apenas 1/12 de la brecha. El resto es potencial al alza no incluido.</li>
+    <li data-en="<b>Business licenses (lever 3):</b> new Nicoya 2026 law (rate ₡1.5→₡3.5 per thousand) + commercial growth (1,600→3,000 licenses 2019-2025): billed ₡227M→₡450M."><b>Patentes (palanca 3):</b> nueva ley Nicoya 2026 (tarifa ₡1,5→₡3,5 por mil) + crecimiento comercial (1.600→3.000 patentes 2019-2025): facturado ₡227M→₡450M.</li>
+    <li data-en="<b>AI under human control:</b> staff-controlled AI agents absorb repetitive administrative tasks, helping contain payroll and keep administration ≤30% of spending, freeing resources for investment and services."><b>IA bajo control humano:</b> agentes de IA controlados por personal absorben funciones administrativas repetitivas, ayudan a contener la planilla y a sostener la administración ≤30% del gasto, liberando recursos hacia inversión y servicios.</li>
+    <li data-en="<b>Balance:</b> balanced by design; no accumulated surplus assumed. Hypothetical figures for proof of concept; not an official budget."><b>Equilibrio:</b> equilibrado por diseño; no contempla superávit acumulado. Cifras hipotéticas para validación de concepto; no es presupuesto oficial.</li>
+  </ul>
+
+  <footer>
+    <span data-en="<b>Sources:</b> DF-0023-2026 (Nicoya Financial Directorate); La Voz de Guanacaste; CGR-SIPP; Nosara Territorial Fiscal Balance; 2024 Census; Laws 8173 (CMD), 7729 (IBI), 8114/9329 (road network)."><b>Fuentes:</b> Oficio DF-0023-2026 (Dirección Financiera de Nicoya); La Voz de Guanacaste; CGR-SIPP; Balance Fiscal Territorial de Nosara; Censo 2024; Leyes 8173 (CMD), 7729 (IBI), 8114/9329 (red vial).</span><br>
+    <span data-en="Hypothetical document (Draft v0). Not an official budget; requires technical study and approval by the competent bodies.">Documento hipotético (Borrador v0). No es presupuesto oficial; requiere estudio técnico y aprobación de los órganos competentes.</span>
+  </footer>
+  <nav class="cmd-nav" style="margin:24px 0 0">
+    <a class="back" href="../index.html" data-en="← Main page">← Página Principal</a>
+    <button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button>
+  </nav>
+</div>
+
+<script>
+"use strict";
+(function(){
+  var lang='es';try{lang=localStorage.getItem('cmd-lang')||'es';}catch(e){}
+  var btn=document.getElementById('lang-btn');
+  function apply(l){
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      if(el.dataset.es===undefined) el.dataset.es=el.innerHTML;
+      el.innerHTML=(l==='en')?el.dataset.en:el.dataset.es;
+    });
+    document.documentElement.lang=l;
+    if(btn) btn.textContent=(l==='en')?'ESPAÑOL':'ENGLISH';
+  }
+  apply(lang);
+  if(btn) btn.addEventListener('click',function(){
+    lang=(lang==='en')?'es':'en';apply(lang);
+    try{localStorage.setItem('cmd-lang',lang);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

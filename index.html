@@ -39,7 +39,7 @@
   #cdot{width:6px;height:6px;background:#fff;margin:-3px 0 0 -3px}
   #cring{width:34px;height:34px;border:1px solid rgba(255,255,255,.6);margin:-17px 0 0 -17px;transition:width .25s var(--ease),height .25s var(--ease),margin .25s var(--ease)}
   #cring.big{width:64px;height:64px;margin:-32px 0 0 -32px;background:rgba(255,255,255,.06)}
-  @media (hover:none){#cdot,#cring{display:none}}
+  @media (hover:none),(pointer:coarse),(max-width:760px){#cdot,#cring{display:none!important}}
   .progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--azul),var(--dorado),var(--rojo));z-index:40}
   #content{position:fixed;top:0;left:0;width:100%;z-index:5;will-change:transform}
   #spacer{width:1px}
@@ -217,11 +217,11 @@
           <p class="text-[14px] text-slate-600 mb-3" data-en="Where the district is headed: a vision and 4 pillars with measurable targets (economy, environment/water, social, governance).">Hacia dónde va el distrito: visión y 4 ejes con metas medibles (economía, ambiente/agua, social, gobernanza).</p>
           <span class="text-oceano font-semibold text-sm" data-en="View the plan →">Ver el plan →</span>
         </a>
-        <a href="propuesta/presupuesto_cmd_nosara.xlsx" download class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+        <a href="propuesta/presupuesto.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
           <div class="text-3xl mb-3">💰</div>
           <h3 class="font-bold text-azul text-lg mb-1" data-en="Hypothetical budget">Presupuesto hipotético</h3>
           <p class="text-[14px] text-slate-600 mb-3" data-en="How much the CMD could manage and on what: 26% admin / 49% investment (improving on what Nicoya does).">Cuánto podría administrar el CMD y en qué: 26% admin / 49% inversión (mejorar lo que hace Nicoya).</p>
-          <span class="text-oceano font-semibold text-sm" data-en="Download Excel →">Descargar Excel →</span>
+          <span class="text-oceano font-semibold text-sm" data-en="View budget →">Ver presupuesto →</span>
         </a>
         <a href="propuesta/organigrama.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
           <div class="text-3xl mb-3">🏛️</div>
