@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMD-Nosara · Nosara puede tener su propio Concejo Municipal</title>
+<meta name="description" content="Nosara puede tener su propio Concejo Municipal de Distrito. En 2018 ganamos con 5.687 SÍ, pero faltaron 461 votos. Este 2026 cerramos lo que empezamos.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Three.js r128 VENDOREADO localmente (no CDN) -->
+<script src="assets/three.min.js"></script>
+<!-- Tailwind + Supabase para la campaña -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  if (window.tailwind) tailwind.config = { theme: { extend: { colors: {
+    azul:'#0E6E7C', teal:'#0E6E7C', oceano:'#1AA3B0', celeste:'#5EC6D4',
+    rojo:'#B12028', dorado:'#E8A82C', crema:'#EDF7F9', bosque:'#2F6B4F'
+  }, fontFamily:{ sans:['Inter','system-ui','sans-serif'] } } } };
+</script>
+<style>
+  :root{--bg:#06070b;--ink:#eef1f6;--mut:#8c94a6;--line:rgba(255,255,255,.09);
+    --azul:#0E6E7C;--teal:#0E6E7C;--dorado:#E8A82C;--rojo:#B12028;--oceano:#1AA3B0;
+    --celeste:#5EC6D4;--crema:#EDF7F9;
+    --font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1)}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+  ::selection{background:var(--dorado);color:#111}
+  #gl{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .vign{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 240px rgba(0,0,0,.8)}
+  #loader{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:26px;transition:transform 1s var(--ease)}
+  #loader.done{transform:translateY(-101%)}
+  #loader .lb{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--mut)}
+  #loader .lc{font-size:clamp(54px,12vw,120px);font-weight:900;letter-spacing:-3px;font-variant-numeric:tabular-nums}
+  #loader .lbar{width:min(320px,60vw);height:2px;background:rgba(255,255,255,.12);overflow:hidden}
+  #loader .lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--azul),var(--dorado),var(--rojo))}
+  #cdot,#cring{position:fixed;top:0;left:0;z-index:70;pointer-events:none;border-radius:50%;mix-blend-mode:difference}
+  #cdot{width:6px;height:6px;background:#fff;margin:-3px 0 0 -3px}
+  #cring{width:34px;height:34px;border:1px solid rgba(255,255,255,.6);margin:-17px 0 0 -17px;transition:width .25s var(--ease),height .25s var(--ease),margin .25s var(--ease)}
+  #cring.big{width:64px;height:64px;margin:-32px 0 0 -32px;background:rgba(255,255,255,.06)}
+  @media (hover:none){#cdot,#cring{display:none}}
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--azul),var(--dorado),var(--rojo));z-index:40}
+  #content{position:fixed;top:0;left:0;width:100%;z-index:5;will-change:transform}
+  #spacer{width:1px}
+  nav{position:fixed;top:0;left:0;right:0;z-index:45;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;font-size:12.5px;mix-blend-mode:difference}
+  nav .b{font-weight:800;letter-spacing:.5px}nav .b small{font-weight:500;opacity:.65;margin-left:8px}
+  nav .lk a{text-decoration:none;margin-left:24px;font-weight:500;opacity:.85;color:#fff}
+  @media(max-width:760px){nav .lk{display:none}}
+  .darksec{position:relative;padding:0 28px}
+  .wrap{max-width:1200px;margin:0 auto;width:100%}
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+  .tag{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--dorado);margin-bottom:22px}
+  .hero h1{font-size:clamp(44px,9vw,128px);font-weight:900;line-height:.92;letter-spacing:-3px;margin:0 0 26px}
+  .hero .lead{font-size:clamp(16px,2.3vw,22px);color:#f3f6fb;text-shadow:0 1px 14px rgba(0,0,0,.55);max-width:32em;margin:0 0 28px}
+  .ancla{font-size:clamp(15px,2vw,19px);color:var(--crema);max-width:34em;border-left:3px solid var(--rojo);padding-left:18px;line-height:1.5}
+  .ancla b{color:#fff}
+  .chap{min-height:100vh;display:flex;flex-direction:column;justify-content:center;max-width:760px}
+  .chap.r{margin-left:auto;text-align:right}
+  .chap .n{font-size:clamp(70px,14vw,150px);font-weight:900;line-height:.8;letter-spacing:-4px;color:transparent;-webkit-text-stroke:1.3px rgba(255,255,255,.26);margin-bottom:14px}
+  .chap h2{font-size:clamp(28px,5vw,58px);font-weight:800;letter-spacing:-1px;line-height:1;margin:0 0 18px}
+  .chap p{font-size:clamp(15px,2.1vw,20px);color:#f3f6fb;text-shadow:0 1px 14px rgba(0,0,0,.6);max-width:30em;margin:0}
+  .chap.r p{margin-left:auto}
+  .rw .w{display:inline-block;overflow:hidden;vertical-align:top}
+  .rw .w .i{display:inline-block;transform:translateY(115%);transition:transform .8s var(--ease)}
+  .rw.in .w .i{transform:translateY(0)}
+  .fade{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+  .fade.in{opacity:1;transform:none}
+  #fallback{position:fixed;inset:0;z-index:2;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--mut);background:radial-gradient(circle at 50% 35%,#11202f,#06070b)}
+  /* ---- campaña (claro) ---- */
+  .light{background:var(--crema);color:#103038;position:relative;z-index:6}
+  .form-input{width:100%;padding:11px 14px;border:1.5px solid #cfe3e7;border-radius:10px;font-size:15px;font-family:var(--font);background:#fff}
+  .form-input:focus{outline:none;border-color:var(--oceano);box-shadow:0 0 0 3px rgba(26,163,176,.16)}
+  .btn-primary{background:var(--oceano);color:#fff;font-weight:700;padding:14px 22px;border:none;border-radius:999px;cursor:pointer;transition:transform .15s var(--ease),background .2s}
+  .btn-primary:hover{background:#13848f;transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.55;cursor:default}
+  #float-cta{position:fixed;right:18px;bottom:18px;z-index:46;display:inline-flex;align-items:center;gap:8px;background:var(--bosque);color:#fff;font-weight:800;font-size:15px;text-decoration:none;padding:14px 24px;border-radius:999px;box-shadow:0 10px 28px rgba(0,0,0,.30);opacity:0;transform:translateY(24px) scale(.96);pointer-events:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+  #float-cta.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+  #float-cta:hover{background:#27583f}
+  @media(max-width:760px){#float-cta{right:14px;bottom:14px;padding:13px 20px;font-size:14px}}
+  /* ===== Controles flotantes (tema / idioma) ===== */
+  #ui-controls{position:fixed;left:14px;bottom:14px;z-index:46;display:flex;gap:8px;align-items:center}
+  #ui-controls button{font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;border-radius:999px;border:1.5px solid rgba(255,255,255,.28);background:rgba(10,18,22,.7);color:#fff;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:9px 14px;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:filter .15s,background .2s,color .2s}
+  #ui-controls #theme-btn{padding:8px 11px;font-size:15px;line-height:1}
+  #ui-controls button:hover{filter:brightness(1.12)}
+  html.dark #ui-controls button{background:rgba(237,247,249,.94);color:#0c161b;border-color:rgba(0,0,0,.1)}
+  @media(max-width:760px){#ui-controls{left:10px;bottom:10px;gap:6px}#ui-controls button{padding:7px 11px;font-size:12px}#ui-controls #theme-btn{padding:7px 9px;font-size:14px}}
+  /* ===== MODO OSCURO ===== */
+  html.dark body{background:#0a1216}
+  html.dark .light{background:#0c161b!important;color:#d7e3e6}
+  html.dark .light .bg-white,html.dark .light [style*="background:#fff"]{background:#12212a!important}
+  html.dark .light .bg-crema,html.dark .light [style*="background:var(--crema)"]{background:#0f1b21!important}
+  html.dark .light .bg-slate-200{background:#27383f!important}
+  html.dark .light .text-azul{color:#74d6e2!important}
+  html.dark .light .text-oceano{color:#40bfcc!important}
+  html.dark .light .text-slate-800,html.dark .light .text-slate-700,html.dark .light .text-slate-600,html.dark .light .text-slate-500,html.dark .light .text-slate-400{color:#aebec3!important}
+  html.dark .light .text-rojo{color:#ff6b6b!important}
+  html.dark .light .text-bosque{color:#5fcf93!important}
+  html.dark .light .text-dorado{color:#f0bf52!important}
+  html.dark .light .border-slate-200,html.dark .light .border-slate-100,html.dark .light [class*="border-cyan-200"]{border-color:#27383f!important}
+  html.dark .light [class*="shadow"]{box-shadow:none!important}
+  html.dark .light .srcpill{color:#8aa0a6}
+  html.dark .light .ring-white{--tw-ring-color:#0c161b!important}
+  html.dark .faq-acc{border-color:#27383f}
+  html.dark .faq-acc .q{color:#e7f1f3}
+  html.dark .faq-acc .a p{color:#b9c8cd}
+  html.dark .form-input{background:#0f1b21;border-color:#2a3c43;color:#e7f1f3}
+  html.dark .form-input::placeholder{color:#6f868c}
+  html.dark .marco-details>summary{background:#12212a;border-color:#2f6470;color:#74d6e2}
+  html.dark .marco-details>summary:hover{background:#162932}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .badge-apoyo{background:#dcfce7;color:#166534}.badge-dudas{background:#fef9c3;color:#854d0e}
+  .badge-no{background:#fee2e2;color:#991b1b}.badge-info{background:#dbeafe;color:#1e40af}
+  .faq-acc{border-top:1px solid #d6e8eb}
+  .faq-acc:last-child{border-bottom:1px solid #d6e8eb}
+  .faq-acc .q{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:20px 0;cursor:pointer;font-size:clamp(16px,2.2vw,19px);font-weight:700;color:var(--teal)}
+  .faq-acc .ico{flex:0 0 auto;width:22px;height:22px;position:relative}
+  .faq-acc .ico::before,.faq-acc .ico::after{content:"";position:absolute;left:50%;top:50%;background:var(--oceano)}
+  .faq-acc .ico::before{width:14px;height:2px;transform:translate(-50%,-50%)}
+  .faq-acc .ico::after{width:2px;height:14px;transform:translate(-50%,-50%);transition:opacity .3s}
+  .faq-acc.open .ico::after{opacity:0}
+  .faq-acc .a{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+  .faq-acc .a p{color:#3f5a60;font-size:15.5px;line-height:1.62;margin:0 0 20px;max-width:48em}
+  .comentario-card{background:#fff;border:1px solid #d6e8eb;border-radius:12px;padding:16px 18px}
+  .srcpill{font-size:10.5px;letter-spacing:.3px;color:#5f7a80;border-top:1px solid #dbeaed;padding-top:10px;margin-top:auto}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="fallback" data-en="Your browser didn't start WebGL. The content works the same; try a current Chrome, Edge or Firefox.">Tu navegador no inició WebGL. El contenido funciona igual; probá en Chrome, Edge o Firefox actuales.</div>
+<div class="grain"></div><div class="vign"></div>
+<div class="progress" id="prog"></div>
+<div id="cdot"></div><div id="cring"></div>
+<div id="loader"><div class="lb">Nosara · Distrito en red</div><div class="lc"><span id="lnum">0</span></div><div class="lbar"><i id="lbar"></i></div></div>
+<a id="float-cta" href="#sumate">🙋 Sumate</a>
+<div id="ui-controls"><button id="theme-btn" aria-label="Cambiar tema claro/oscuro" title="Tema claro / oscuro">🌙</button><button id="lang-btn" aria-label="Switch language">ENGLISH</button></div>
+
+<div id="content">
+  <nav><div class="b">CMD<small>Nosara, Guanacaste</small></div>
+    <div class="lk"><a href="#cmd" data-en="The CMD">El CMD</a><a href="#como" data-en="Proposal">Propuesta</a><a href="#cifras" data-en="Figures">Cifras</a><a href="#ruta" data-en="Roadmap">Ruta</a><a href="#faq" data-en="FAQ">Preguntas</a><a href="#sumate" data-en="Join">Sumate</a></div></nav>
+
+  <!-- HÉROE -->
+  <section class="hero darksec"><div class="wrap">
+    <div class="tag fade" data-en="The District of Nosara · Municipal District Council (CMD Nosara)">El Distrito de Nosara · Concejo Municipal de Distrito (CMD Nosara)</div>
+    <h1 class="rw" data-en="Nosara can have its own Municipal Council">Nosara puede tener su propio Concejo Municipal</h1>
+    <p class="lead fade" data-en="Nosara is already a large community, with needs, projects and complex problems that aren't solved from 60 kilometers away. Take a look at what this would mean for Nosara and add your support.">Ya Nosara es una comunidad grande, con necesidades, proyectos y problemas complejos que no se resuelven a 60 kilómetros de distancia. Dale una mirada a lo que esto significaría para Nosara y sumá tu apoyo.</p>
+    <p class="ancla fade" data-en="The Municipal Council of Nosara has been <b>12 years</b> in the making. In 2018 we voted: <b>5,687 of us said YES</b> and we won, but we fell <b>461 votes</b> short. In 2026 we finish what we started.">El Concejo Municipal de Nosara lleva <b>12 años</b> construyéndose. En 2018 votamos: <b>5.687 dijimos SÍ</b> y ganamos, pero faltaron <b>461 votos</b>. Este 2026 cerramos lo que empezamos.</p>
+  </div></section>
+
+  <!-- NARRATIVA -->
+  <div id="narrative">
+    <section class="chap darksec"><div class="n">01</div><h2 class="rw" data-en="Nosara is bigger now">Nosara es más grande</h2><p class="fade" data-en="Farms and hectares are now neighborhoods and communities where people live and need municipal services. Nosara deserves timely, transparent attention to its people.">Fincas y hectáreas hoy son barrios y comunidades donde viven personas con necesidades de servicios municipales. Nosara merece atención oportuna y transparente hacia su gente.</p></section>
+    <section class="chap r darksec"><div class="n">02</div><h2 class="rw" data-en="Communities deserve opportunities">Las comunidades merecen oportunidades</h2><p class="fade" data-en="Delicias, Garza, Nosara center, San Carlos, San Pedro, La Esperanza, Arenales, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, Río Montaña upriver.">Delicias, Garza, Nosara centro, San Carlos, San Pedro, La Esperanza, Arenales, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, Río Montaña río arriba.</p></section>
+    <section class="chap darksec"><div class="n">03</div><h2 class="rw" data-en="Taxes that stay in Nosara">Impuestos que se quedan en Nosara</h2><p class="fade" data-en="Today the municipal taxes paid from Nosara don't turn into direct investment for the district. A Municipal Council of Nosara will invest in Nosara, for Nosara, from Nosara, with the option of agreements to support neighboring districts in solidarity (Ostional de Cuajiniquil, Belén de Nosarita, Sámara, among others).">Hoy los impuestos municipales que se pagan desde Nosara no se transforman en inversión directa para el distrito. Un Concejo Municipal de Nosara invertirá en Nosara, para Nosara desde Nosara, con posibilidad de tener acuerdos para apoyar a distritos en solidaridad (Ostional de Cuajiniquil, Belén de Nosarita, Sámara, entre otros).</p></section>
+    <section class="chap r darksec"><div class="n">04</div><h2 class="rw" data-en="The time is now">El momento es ahora</h2><p class="fade" data-en="For Nosara's CMD to start operating in May 2028, Nosara has to organize TODAY and file the petition with signatures before the Municipal Council of Nicoya. Join this effort NOW.">Para que el CMD de Nosara comience a funcionar en mayo de 2028, HOY Nosara tiene que organizarse y presentar la solicitud con firmas ante el Concejo Municipal de Nicoya. Sumate a este esfuerzo YA.</p></section>
+  </div>
+
+  <!-- ¿QUÉ ES? / ¿POR QUÉ IMPORTA? -->
+  <section id="cmd" class="light py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The figure">La figura</p>
+      <h2 class="text-3xl md:text-5xl font-extrabold text-azul mb-6 max-w-3xl" data-en="What is a Municipal District Council?">¿Qué es un Concejo Municipal de Distrito?</h2>
+      <div class="grid md:grid-cols-2 gap-8 text-[17px] leading-relaxed text-slate-700">
+        <p data-en="A body under <b>Law 8173</b> (<b>Art. 172 of the Constitution</b>) that gives the district its own decision-making bodies and a budget managed within the territory, inside its canton. It's not creating a new canton: it's having a municipal government of Nosara, for Nosara.">Una figura de la <b>Ley 8173</b> (<b>Art. 172 de la Constitución</b>) que le da al distrito órganos de decisión propios y un presupuesto administrado en el territorio, dentro de su cantón. No es crear un cantón nuevo: es tener un gobierno municipal de Nosara para Nosara.</p>
+        <p data-en="Nosara would be the country's <b>9th CMD</b>, alongside Cervantes, Tucurrique, Peñas Blancas, Colorado, Monteverde (now a canton), Cóbano, Lepanto and Paquera. The Municipal Council of Nosara will complement the work already done well in Nosara and invest resources in the urgent needs of the whole district.">Nosara sería el <b>9.º CMD del país</b>, junto a Cervantes, Tucurrique, Peñas Blancas, Colorado, Monteverde (hoy cantón), Cóbano, Lepanto y Paquera. El Concejo Municipal de Nosara complementará el trabajo que ya se realiza bien en Nosara e invertirá recursos para las necesidades urgentes que tiene todo el distrito.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-px bg-slate-200 rounded-2xl overflow-hidden mt-10 border border-slate-200">
+        <div class="bg-crema p-7"><div class="text-2xl mb-2">🗳️</div><h3 class="font-bold text-azul mb-1" data-en="Decisions close to home">Decisión cercana</h3><p class="text-[15px] text-slate-600" data-en="Intendente and councilors elected freely and democratically by the community. Anyone of legal age who belongs to Nosara can run.">Intendente y concejales electos de forma libre y democrática por la comunidad. Cualquier persona se puede postular si es mayor de edad y pertenece a Nosara.</p></div>
+        <div class="bg-crema p-7"><div class="text-2xl mb-2">💰</div><h3 class="font-bold text-azul mb-1" data-en="Local budget">Presupuesto local</h3><p class="text-[15px] text-slate-600" data-en="Collection of taxes for services managed within the territory: real estate, business licenses, construction, waste collection, ZMT.">Recolección de impuestos por servicios administrados en el territorio: bienes inmuebles, patentes, construcción, recolección de desechos, ZMT.</p></div>
+        <div class="bg-crema p-7"><div class="text-2xl mb-2">🌐</div><h3 class="font-bold text-azul mb-1" data-en="A network of neighborhoods and communities">Red de barrios y comunidades</h3><p class="text-[15px] text-slate-600" data-en="A Municipal Council of Nosara coordinates needs; neighborhoods bring projects and get open, transparent results for every community in Nosara.">Un Concejo Municipal de Nosara coordina las necesidades; los barrios comunican proyectos y se dan resultados abiertos y transparentes a cada comunidad de Nosara.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTITUCIÓN INTELIGENTE · diferenciador -->
+  <section id="inteligente" class="py-16 px-6" style="background:linear-gradient(135deg,#0E6E7C 0%,#0a4f5a 100%);position:relative;z-index:6">
+    <div class="max-w-4xl mx-auto text-white">
+      <p class="text-sm font-bold tracking-widest uppercase mb-3" style="color:#7fe0ea" data-en="A different kind of institution">Una institución distinta</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-4 leading-tight" data-en="The country's first <span style='color:#E8A82C'>smart</span> public institution">La primera institución pública <span style="color:#E8A82C">inteligente</span> del país</h2>
+      <p class="text-lg mb-9" style="color:#e7f6f8;max-width:44em" data-en="Nosara can launch a local government <b>native to the internet and artificial intelligence</b>: where bureaucracy stops being a barrier and becomes a <b>network</b> serving the community —a positive, transparent, open transformation connected to Costa Rica's laws.">Nosara puede estrenar un gobierno local <b>nativo de internet y de la inteligencia artificial</b>: donde la burocracia deja de ser una barrera y se convierte en una <b>red</b> al servicio de la comunidad —una transformación positiva, transparente, abierta y conectada con las leyes de Costa Rica.</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="rounded-2xl p-5" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)">
+          <div class="text-2xl mb-2">🌐</div>
+          <h3 class="font-bold mb-1" style="color:#fff" data-en="Native to the internet and AI">Nativa de internet y de la IA</h3>
+          <p class="text-[14px]" style="color:#cfeaee" data-en="Simple procedures, open data and online services from day one.">Trámites simples, datos abiertos y servicios en línea desde el primer día.</p>
+        </div>
+        <div class="rounded-2xl p-5" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)">
+          <div class="text-2xl mb-2">🔗</div>
+          <h3 class="font-bold mb-1" style="color:#fff" data-en="Bureaucracy becomes a network">La burocracia se vuelve red</h3>
+          <p class="text-[14px]" style="color:#cfeaee" data-en="Neighborhoods connect and repetitive processes are automated with AI under human control and verification.">Los barrios se conectan y los procesos repetitivos se automatizan con IA bajo control y verificación humana.</p>
+        </div>
+        <div class="rounded-2xl p-5" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)">
+          <div class="text-2xl mb-2">🔓</div>
+          <h3 class="font-bold mb-1" style="color:#fff" data-en="Transparent and open by design">Transparente y abierta por diseño</h3>
+          <p class="text-[14px]" style="color:#cfeaee" data-en="Information is public by default: what is decided and spent is published.">La información es pública por defecto: lo que se decide y se gasta, se publica.</p>
+        </div>
+        <div class="rounded-2xl p-5" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)">
+          <div class="text-2xl mb-2">⚖️</div>
+          <h3 class="font-bold mb-1" style="color:#fff" data-en="Connected to Costa Rica's laws">Conectada con las leyes de Costa Rica</h3>
+          <p class="text-[14px]" style="color:#cfeaee" data-en="Innovation within the existing legal framework, not outside it.">Innovación dentro del marco legal vigente, no por fuera de él.</p>
+        </div>
+      </div>
+      <p class="mt-8 text-sm" style="color:#bfe9ee" data-en="Technology works for people: AI always operates under human control and verification, and every decision remains accountable to the community.">La tecnología trabaja para las personas: la IA opera siempre bajo control y verificación humana, y cada decisión sigue rindiendo cuentas ante la comunidad.</p>
+    </div>
+  </section>
+
+  <!-- ¿CÓMO FUNCIONARÍA? · HUB DE LA PROPUESTA -->
+  <section id="como" class="light py-16 px-6">
+    <div class="max-w-5xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The proposal">La propuesta</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-2" data-en="How would it work?">¿Cómo funcionaría?</h2>
+      <p class="text-slate-600 mb-9 max-w-2xl" data-en="Hypothetical models to imagine and validate the CMD: how much it would cost, who governs it, and how decisions are made. To discuss with data, not promises.">Modelos hipotéticos para imaginar y validar el CMD: cuánto costaría, quién lo gobierna y cómo se decide. Para discutir con datos, no con promesas.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="propuesta/plan_desarrollo_humano.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">🌱</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="Nosara Human Development Plan">Plan de Desarrollo Humano de Nosara</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="Where the district is headed: a vision and 4 pillars with measurable targets (economy, environment/water, social, governance).">Hacia dónde va el distrito: visión y 4 ejes con metas medibles (economía, ambiente/agua, social, gobernanza).</p>
+          <span class="text-oceano font-semibold text-sm" data-en="View the plan →">Ver el plan →</span>
+        </a>
+        <a href="propuesta/presupuesto_cmd_nosara.xlsx" download class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">💰</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="Hypothetical budget">Presupuesto hipotético</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="How much the CMD could manage and on what: 26% admin / 49% investment (improving on what Nicoya does).">Cuánto podría administrar el CMD y en qué: 26% admin / 49% inversión (mejorar lo que hace Nicoya).</p>
+          <span class="text-oceano font-semibold text-sm" data-en="Download Excel →">Descargar Excel →</span>
+        </a>
+        <a href="propuesta/organigrama.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">🏛️</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="Org chart">Organigrama</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="Who is elected (Intendencia + Council) and what functions it covers, per the Comptroller's framework.">Quién se elige (Intendencia + Concejo) y qué funciones cubre, según el marco de la Contraloría.</p>
+          <span class="text-oceano font-semibold text-sm" data-en="View org chart →">Ver organigrama →</span>
+        </a>
+        <a href="propuesta/reglamento.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">⚖️</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="Transparency regulation">Reglamento de transparencia</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="The first for a smart CMD in the country: transparency, accountability and anti-corruption, to OECD standard.">El primero de un CMD inteligente en el país: transparencia, rendición de cuentas y anticorrupción, con estándar OCDE.</p>
+          <span class="text-oceano font-semibold text-sm" data-en="View draft →">Ver borrador →</span>
+        </a>
+        <a href="propuesta/simulador.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">🎮</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="«Be the Intendente» simulator">Simulador «Sé Intendente/a»</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="Pick a decision and see how it turns out: from the community to the Council, to the Intendencia, to the result.">Elegí una decisión y mirá cómo resulta: de la comunidad al Concejo, a la Intendencia y al resultado.</p>
+          <span class="text-oceano font-semibold text-sm" data-en="Play →">Jugar →</span>
+        </a>
+        <a href="propuesta/capacitacion.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-oceano transition shadow-sm">
+          <div class="text-3xl mb-3">🎓</div>
+          <h3 class="font-bold text-azul text-lg mb-1" data-en="Training">Capacitación</h3>
+          <p class="text-[14px] text-slate-600 mb-3" data-en="Nosara <b>does</b> have prepared people: you can start training NOW (UNED, UCR, IFAM, MIDEPLAN) for Nosara's CMD.">Nosara <b>SÍ</b> tiene gente preparada: desde YA podés capacitarte (UNED, UCR, IFAM, MIDEPLAN) para el CMD de Nosara.</p>
+          <span class="text-oceano font-semibold text-sm" data-en="Train now →">Formate ya →</span>
+        </a>
+      </div>
+      <p class="srcpill mt-6" style="border:none;padding:0" data-en="Hypothetical documents for proof of concept. They are not official; they require approval by the competent bodies once it begins operating.">Documentos hipotéticos para validación de concepto. No son oficiales; requieren aprobación de los órganos competentes cuando entre en operación.</p>
+    </div>
+  </section>
+
+  <!-- MARCO LEGAL · base jurídica del CMD -->
+  <section id="marco" class="light py-16 px-6">
+    <style>
+      .marco-details>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:9px;background:#fff;border:1.5px solid #5EC6D4;color:#0E6E7C;font-weight:700;font-size:15px;border-radius:999px;padding:11px 22px;transition:background .2s}
+      .marco-details>summary::-webkit-details-marker{display:none}
+      .marco-details>summary:hover{background:#EDF7F9}
+      .marco-details>summary .chev{font-size:12px;transition:transform .25s}
+      .marco-details[open]>summary{margin-bottom:20px}
+      .marco-details[open]>summary .chev{transform:rotate(180deg)}
+      .marco-details[open]>summary .lbl-show{display:none}
+      .marco-details:not([open])>summary .lbl-hide{display:none}
+    </style>
+    <div class="max-w-5xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="Legal framework">Marco legal</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-2" data-en="The CMD relies on laws that already exist and work">El CMD se apoya en leyes que ya existen y funcionan</h2>
+      <p class="text-slate-600 mb-7 max-w-3xl" data-en="A Municipal District Council <b>operates under more than 25 national laws in force</b> and issues its own regulations to apply them locally. They are the same rules any municipality in the country already runs on: the CMD <b>starts on firm, proven ground</b>, with lessons learned from other municipalities and district councils across the country.">Un Concejo Municipal de Distrito <b>opera bajo más de 25 leyes nacionales vigentes</b> y emite sus propios reglamentos para aplicarlas en el territorio. Son las mismas reglas con las que ya funciona cualquier municipalidad del país: el CMD <b>empieza con bases firmes y probadas</b>, con lecciones aprendidas por otras municipalidades y concejos municipales de distrito del país.</p>
+      <details class="marco-details">
+        <summary><span class="lbl-show" data-en="View the legal basis · 25+ laws">Ver la base legal · más de 25 leyes</span><span class="lbl-hide" data-en="Hide the legal basis">Ocultar la base legal</span><span class="chev">▾</span></summary>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="marco-grid"></div>
+        <p class="srcpill mt-6" style="border:none;padding:0" data-en="Regulatory basis per the framework of CMDs in Costa Rica. Nosara's CMD will issue and approve its regulations on these laws, with already-proven templates and documents.">Base normativa según el marco de CMDs en Costa Rica. El CMD-Nosara emitirá y aprobará sus reglamentos sobre estas leyes, con plantillas y documentos ya probadas.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- CIFRAS DEL CMD -->
+  <section id="cifras" class="light py-16 px-6" style="background:#fff">
+    <div class="max-w-6xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The plebiscite">El plebiscito</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-2" data-en="What Nosara has already built">Lo que Nosara ya construyó</h2>
+      <p class="text-slate-600 mb-10 max-w-2xl" data-en="Each figure carries its source label: <i>verified data</i>, <i>calculation</i> or <i>estimate</i>.">Cada cifra lleva su etiqueta de origen: <i>dato verificado</i>, <i>cálculo</i> o <i>estimación</i>.</p>
+      <div id="grid-cmd" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden"></div>
+    </div>
+  </section>
+
+  <!-- CIFRAS DEL TERRITORIO -->
+  <section class="light py-16 px-6">
+    <div class="max-w-6xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The territory">El territorio</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-2" data-en="Why deciding here matters">Por qué importa decidir aquí</h2>
+      <p class="text-slate-600 mb-10 max-w-2xl" data-en="The district already produces and pays taxes. The question is who decides how it's invested.">El distrito ya produce y tributa. La pregunta es quién decide cómo se invierte.</p>
+      <div id="grid-terr" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden"></div>
+      <p class="text-center text-2xl md:text-3xl font-extrabold text-azul mt-12 max-w-3xl mx-auto leading-snug" data-en="&quot;What a territory can measure, it can govern.&quot;">"Lo que un territorio puede medir, lo puede gobernar."</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="light py-16 px-6">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="Questions">Preguntas</p>
+      <h2 class="text-3xl font-extrabold text-azul mb-8" data-en="Worth clarifying">Lo que conviene aclarar</h2>
+      <div>
+        <div class="faq-acc"><div class="q" data-en="Does creating the CMD mean a separate canton from Nicoya?<span class='ico'></span>">¿Crear el CMD es crear un cantón separado de Nicoya?<span class="ico"></span></div>
+          <div class="a"><p data-en="No. Nosara remains part of the canton of Nicoya. A Municipal District Council (Law 8173) manages local affairs with its own bodies, while the canton keeps its powers. A relationship and agreements between Nosara and the Municipality of Nicoya will continue —for joint projects, budget and administrative procedures, and support to other districts.">No. Nosara sigue siendo parte del cantón de Nicoya. Un Concejo Municipal de Distrito (Ley 8173) administra los asuntos locales con órganos propios, mientras el cantón mantiene sus competencias. Seguirá existiendo una relación y convenios entre Nosara y la Municipalidad de Nicoya para proyectos conjuntos, trámites administrativos presupuestarios y apoyo a otros distritos.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="Does it raise taxes or create new charges?<span class='ico'></span>">¿Sube los impuestos o crea cobros nuevos?<span class="ico"></span></div>
+          <div class="a"><p data-en="It creates no new taxes. The CMD manages the fees and prices for services the district already generates, decided and carried out from Nosara. No tax is increased.">No crea impuestos nuevos. El CMD administra las tasas y los precios por servicios que el propio distrito ya genera, decididos y ejecutados desde Nosara. No se aumenta ningún impuesto.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="Who governs it?<span class='ico'></span>">¿Quién lo gobierna?<span class="ico"></span></div>
+          <div class="a"><p data-en="A Council of 5 sitting councilors and 5 alternates (including the sitting and alternate Síndico), plus an Intendente and a Viceintendente: all elected by the community and subject to removal if they fail to perform. It is open, public and transparent elected governance —not a post appointed from outside or by favor.">Un Concejo de 5 concejales propietarios y 5 suplentes (incluyendo Sindicatura propietaria y suplente), más una persona Intendente y otra persona Viceintendente: todos electos por la comunidad y sancionables si no cumplen. Es gobernanza electa abierta, pública y transparente, no un cargo designado desde afuera ni a dedo.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="Are there people prepared to run a Municipal Council in Nosara?<span class='ico'></span>">¿Hay gente capacitada para manejar un Concejo Municipal en Nosara?<span class="ico"></span></div>
+          <div class="a"><p data-en="Yes. Nosara already has around 60 social entities —ASADAs, ADIs, committees, associations, projects and volunteers— whose boards and teams add up to more than 300 social-action roles, today scattered. Add to them neighbors, youth, new leaders, professionals and older adults with much to contribute, who will be able to run for the Municipal Council. In practice, the community already works like a council: just fragmented and without resources. The CMD brings it together into a single institution and, in addition, lets it hire trained staff with job manuals for each function.">Sí. Nosara ya cuenta con alrededor de 60 entidades sociales —ASADAs, ADIs, comités, asociaciones, proyectos y voluntariado—, cuyas juntas directivas y equipos suman más de 300 puestos de acción social, hoy dispersos. A ellos se suman vecinas y vecinos, jóvenes, nuevos liderazgos, profesionales y personas adultas mayores con mucho para aportar, que podrán postularse al Concejo Municipal. En la práctica, la comunidad ya funciona como un concejo: solo que fragmentado y sin recursos. El CMD lo articula en una sola institución y, además, permite contratar personal capacitado, con manuales de puestos para cada función.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="Doesn't it fragment or weaken the canton of Nicoya?<span class='ico'></span>">¿No fragmenta o debilita al cantón de Nicoya?<span class="ico"></span></div>
+          <div class="a"><p data-en="On the contrary. If Nosara does well, so do Nicoya, Ostional, Belén de Nosarita, Sámara and other communities. The economic development of a well-managed Nosara will help the places that need it most and ease local growth, hand in hand with the environment and social wellbeing. Moreover, Nicoya will receive resources from the new business-license law and from the cadastral update, bringing funds that offset what Nosara contributes today. TODAY is a historic moment where Nicoya, Nosara and all communities win.">Al contrario. Si a Nosara le va bien, a Nicoya, Ostional, Belén de Nosarita, Sámara y otras comunidades también les va bien. El desarrollo económico de una Nosara bien gestionada ayudará a los lugares que más lo necesitan y facilitará el crecimiento local, de la mano con el ambiente y lo social. Además, Nicoya recibirá recursos de la nueva ley de patentes aprobada y de la actualización catastral, lo que traerá fondos que compensan lo que hoy Nosara le aporta. Es HOY un momento histórico donde Nicoya, Nosara y todas las comunidades ganan.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="Has this been tried before?<span class='ico'></span>">¿Esto ya se intentó antes?<span class="ico"></span></div>
+          <div class="a"><p data-en="Yes. In the plebiscite of June 3, 2018, 5,687 people voted YES (66% of the vote). It fell 461 votes short of the 6,148 threshold. The effort spans over a decade: 1,794 signatures and 30 organizations already backed it in 2014. It is time to finish what we started.">Sí. En el plebiscito del 3 de junio de 2018, 5.687 personas votaron SÍ (66% del voto). Faltaron 461 votos para alcanzar el umbral de 6.148. La organización lleva más de una década: 1.794 firmas y 30 organizaciones ya lo respaldaron en 2014. Es momento de que cerremos lo que empezamos.</p></div></div>
+        <div class="faq-acc"><div class="q" data-en="And if it doesn't work?<span class='ico'></span>">¿Y si no funciona?<span class="ico"></span></div>
+          <div class="a"><p data-en="Costa Rica already has 8 other Municipal District Councils, including Monteverde, which did so well over the years that it is now a canton. Nosara won't be the exception: district councils operate well and successfully, and we won't start from scratch —we already have resources, training, research and knowledge, and across the district there are people prepared and in training for this important step. The opportunity is for everyone in the community, and if it were not to work, by law the administration would return to Nicoya just as it works today.">En Costa Rica ya operan otros 8 Concejos Municipales de Distrito, incluyendo Monteverde que lo hizo tan bien durante años que hoy ya es cantón. Nosara no será la excepción a la norma: los concejos municipales operan bien y de forma exitosa, pero no lo haremos desde cero, ya tenemos recursos, capacitación, investigación, conocimientos y en todo el distrito hay gente preparada y en formación para este paso importante. La oportunidad es para toda persona en la comunidad y si no llegara a funcionar, según la ley, la administración volvería a Nicoya tal como funciona hoy.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRONOGRAMA / RUTA -->
+  <section id="ruta" class="light py-16 px-6" style="background:#fff">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The roadmap">La ruta</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-2" data-en="The path to Nosara's CMD">El camino hacia el CMD de Nosara</h2>
+      <p class="text-slate-600 mb-10 max-w-2xl" data-en="From today's signatures to Nosara's first Municipal Council up and running. Winning the plebiscite is the prior step; the goal is the CMD.">De las firmas de hoy al primer Concejo Municipal de Nosara funcionando. Ganar el plebiscito es el paso previo; la meta es el CMD.</p>
+      <ol class="relative border-l-2 border-cyan-200 ml-2 space-y-8">
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-oceano ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-oceano rounded-full px-2.5 py-0.5 mb-1">Jun–Jul 2026</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="Collecting signatures and building support">Recolección de firmas y suma de apoyos</h3>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-oceano ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-oceano rounded-full px-2.5 py-0.5 mb-1" data-en="August 2026">Agosto 2026</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="Filing the Municipal Petition before the Nicoya Council">Presentación de la Solicitud Municipal ante el Concejo de Nicoya</h3>
+          <p class="text-[14px] text-slate-600" data-en="The plebiscite date is then set.">Se espera la fijación de la fecha del plebiscito.</p>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-celeste ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-azul bg-celeste rounded-full px-2.5 py-0.5 mb-1">2026–2027</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="Plebiscite campaign">Campaña del plebiscito</h3>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[35px] w-5 h-5 rounded-full bg-dorado ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-[#3a2c05] bg-dorado rounded-full px-2.5 py-0.5 mb-1" data-en="2027 · key step">2027 · paso clave</span>
+          <h3 class="font-extrabold text-azul leading-snug" data-en="Plebiscite is held">Ejecución del plebiscito</h3>
+          <p class="text-[14px] text-slate-600" data-en="The community decides YES or NO to creating Nosara's Municipal Council.">La comunidad decide SÍ o NO a crear el Concejo Municipal de Nosara.</p>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-azul ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-azul rounded-full px-2.5 py-0.5 mb-1" data-en="February 2028">Febrero 2028</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="Elections for Nosara's municipal body">Elecciones del cuerpo municipal de Nosara</h3>
+          <p class="text-[14px] text-slate-600" data-en="<b>12 posts:</b> Intendencia, Viceintendencia, Sindicatura (sitting and alternate) and 4 sitting councilors with 4 alternates."><b>12 cargos:</b> Intendencia, Viceintendencia, Sindicatura (propietaria y suplente) y 4 concejales propietarios con 4 suplentes.</p>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-azul ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-azul rounded-full px-2.5 py-0.5 mb-1" data-en="Feb–Apr 2028">Feb–Abr 2028</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="Intensive training and transfer of municipal functions">Capacitaciones intensivas y transferencia de funciones municipales</h3>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[35px] w-5 h-5 rounded-full bg-bosque ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-bosque rounded-full px-2.5 py-0.5 mb-1" data-en="May 2028 · goal">Mayo 2028 · meta</span>
+          <h3 class="font-extrabold text-azul leading-snug" data-en="First month of operation of Nosara's Municipal Council">Primer mes de funcionamiento del Concejo Municipal de Nosara</h3>
+        </li>
+        <li class="relative ml-6">
+          <span class="absolute -left-[33px] w-4 h-4 rounded-full bg-bosque ring-4 ring-white"></span>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wide text-white bg-bosque rounded-full px-2.5 py-0.5 mb-1">2028–2032</span>
+          <h3 class="font-bold text-azul leading-snug" data-en="First 4 years of operation">Primeros 4 años de funcionamiento</h3>
+        </li>
+      </ol>
+      <p class="srcpill mt-8" style="border:none;padding:0" data-en="Reference timeline for the campaign. The official plebiscite dates are set by the Municipality of Nicoya and the TSE (electoral tribunal).">Cronograma de referencia de la campaña. Las fechas oficiales del plebiscito las fijan la Municipalidad de Nicoya y el TSE.</p>
+    </div>
+  </section>
+
+  <!-- ABIERTO · sin banderas, democrático -->
+  <section id="abierto" class="light py-16 px-6" style="background:var(--crema)">
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="No flags, no names">Sin banderas, sin nombres</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-azul mb-4 leading-tight" data-en="The community decides its own future">La comunidad decide su propio futuro</h2>
+      <p class="text-lg text-slate-600 mb-10 mx-auto" style="max-width:42em" data-en="The CMD <b>belongs to no political party</b> and has no pre-chosen candidates. It is Nosara's right to <b>determine its own future</b>: an open, democratic process, <b>by Nosara, for Nosara</b>.">El CMD <b>no pertenece a ningún partido</b> ni tiene candidatos elegidos de antemano. Es el derecho de Nosara a <b>autodeterminar su futuro</b>: un proceso abierto, democrático y <b>de Nosara para Nosara</b>.</p>
+      <div class="grid sm:grid-cols-3 gap-4 text-left">
+        <div class="bg-white rounded-2xl border border-cyan-200/60 p-5">
+          <div class="text-2xl mb-2">🗳️</div>
+          <h3 class="font-bold text-azul mb-1" data-en="Democracy and self-determination">Democracia y autodeterminación</h3>
+          <p class="text-[14px] text-slate-600" data-en="The community freely chooses who represents it and where it goes.">La comunidad elige libremente quién la representa y hacia dónde va.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-cyan-200/60 p-5">
+          <div class="text-2xl mb-2">🏳️</div>
+          <h3 class="font-bold text-azul mb-1" data-en="No political flag">Sin bandera política</h3>
+          <p class="text-[14px] text-slate-600" data-en="It belongs to no party or group: it belongs to the whole district.">No es de ningún partido ni de ningún grupo: es de todo el distrito.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-cyan-200/60 p-5">
+          <div class="text-2xl mb-2">👐</div>
+          <h3 class="font-bold text-azul mb-1" data-en="No pre-selected names">Sin nombres preseleccionados</h3>
+          <p class="text-[14px] text-slate-600" data-en="No one is chosen in advance; any Costa Rican from Nosara can run.">Nadie está elegido de antemano; cualquier persona costarricense de Nosara puede postularse.</p>
+        </div>
+      </div>
+      <p class="text-2xl md:text-3xl font-extrabold text-azul mt-12" data-en="By Nosara, for Nosara.">De Nosara, para Nosara.</p>
+    </div>
+  </section>
+
+  <!-- SUMATE -->
+  <section id="sumate" class="light py-16 px-6" style="background:#fff">
+    <div class="max-w-2xl mx-auto">
+      <div class="bg-azul text-white rounded-2xl p-6 md:p-8 mb-10 text-center">
+        <p class="text-sm tracking-widest uppercase opacity-80 mb-3" data-en="The question that matters most TODAY">La pregunta que HOY más importa</p>
+        <p class="text-xl md:text-2xl font-bold leading-snug" data-en="&quot;Do you agree with the creation of the Municipal Council of the District of Bocas de Nosara, Yes or No?&quot;">"¿Está de acuerdo con la creación del Concejo Municipal del Distrito de Bocas de Nosara, Sí o No?"</p>
+      </div>
+
+      <!-- dashboard (oculto hasta que haya adhesiones reales) -->
+      <div id="dashboard" class="bg-crema rounded-2xl p-6 mb-10 border border-cyan-200/60" style="display:none">
+        <div class="flex justify-between items-end mb-3">
+          <div><div class="text-4xl font-extrabold text-azul"><span id="contador-total">0</span></div><div class="text-sm text-slate-600">personas se han sumado</div></div>
+          <div class="text-right"><div class="text-2xl font-extrabold text-rojo"><span id="porcentaje">0</span>%</div><div class="text-xs text-slate-500">de la meta 2028</div></div>
+        </div>
+        <div class="w-full bg-white rounded-full h-3 overflow-hidden border border-cyan-200"><div id="progress-fill" class="bg-oceano h-full transition-all" style="width:0%"></div></div>
+        <div class="grid grid-cols-4 gap-2 mt-4 text-center text-xs">
+          <div><div class="font-bold text-lg text-bosque" id="stat-apoyo">0</div>apoyan</div>
+          <div><div class="font-bold text-lg text-dorado" id="stat-dudas">0</div>con dudas</div>
+          <div><div class="font-bold text-lg text-azul" id="stat-info">0</div>quieren saber</div>
+          <div><div class="font-bold text-lg text-slate-700" id="stat-militantes">0</div>se ofrecen</div>
+        </div>
+        <div class="mt-5"><h3 class="font-bold text-azul text-sm mb-3">Por barrio / lugar</h3><div id="lista-barrios" class="space-y-2"></div></div>
+      </div>
+
+      <h2 class="text-3xl font-extrabold text-azul mb-2 text-center" data-en="Join in">Sumate</h2>
+      <p class="text-center text-slate-600 mb-8" data-en="Add your voice to the register of support toward 2028. Your personal data is not published: only aggregate totals are shown.">Sumá tu voz al registro de apoyos rumbo al 2028. Tus datos personales no se publican: solo se muestran los totales agregados.</p>
+
+      <form id="form-adhesion" class="space-y-4 bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-100">
+        <div><label class="block text-sm font-semibold mb-1" data-en="Name <span class='text-rojo'>*</span>">Nombre <span class="text-rojo">*</span></label>
+          <input type="text" name="nombre" required class="form-input" placeholder="María Hernández"></div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-semibold mb-1" data-en="Phone (optional)">Teléfono (opcional)</label><input type="text" name="telefono" class="form-input" placeholder="8888-8888"></div>
+          <div><label class="block text-sm font-semibold mb-1" data-en="Email (optional)">Correo electrónico (opcional)</label><input type="email" name="correo" class="form-input" placeholder="vos@correo.com"></div>
+        </div>
+        <div><label class="block text-sm font-semibold mb-1" data-en="Where are you from? <span class='text-rojo'>*</span>">¿De dónde sos? <span class="text-rojo">*</span></label>
+          <select name="barrio" required class="form-input">
+            <option value="" data-en="Choose an option...">Elegí una opción...</option>
+            <option data-en="From Nosara (Nosareño/a)">Nosareño / Nosareña</option>
+            <option data-en="Costa Rican from elsewhere">Tico / a de otro lugar</option>
+            <option data-en="Foreigner living in Nosara">Extranjero que vive en Nosara</option>
+            <option data-en="Visitor">Visitante</option>
+            <option data-en="Organization that wants to support">Organización que quiere apoyar</option>
+          </select></div>
+        <div><label class="block text-sm font-semibold mb-2" data-en="What's your position on the CMD? <span class='text-rojo'>*</span>">¿Cuál es tu posición sobre el CMD? <span class="text-rojo">*</span></label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-azul"><input type="radio" name="posicion" value="apoyo" required class="mr-2"><span data-en="✅ I support it">✅ Apoyo</span></label>
+            <label class="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-azul"><input type="radio" name="posicion" value="dudas" class="mr-2"><span data-en="🤔 I have doubts">🤔 Tengo dudas</span></label>
+            <label class="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-azul"><input type="radio" name="posicion" value="mas_info" class="mr-2"><span data-en="📖 Learn more">📖 Saber más</span></label>
+            <label class="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-azul"><input type="radio" name="posicion" value="no" class="mr-2"><span data-en="❌ I disagree">❌ No de acuerdo</span></label>
+          </div></div>
+        <div><label class="block text-sm font-semibold mb-2" data-en="Want to help?">¿Querés ayudar?</label>
+          <div class="space-y-2 text-[15px]">
+            <label class="flex items-center"><input type="checkbox" name="ayudar_difundir" class="mr-2"><span data-en="Spread the word to my networks and neighbors">Difundir en mis redes y vecinos</span></label>
+            <label class="flex items-center"><input type="checkbox" name="ayudar_firmas" class="mr-2"><span data-en="Collect signatures">Recoger firmas</span></label>
+            <label class="flex items-center"><input type="checkbox" name="ayudar_comite" class="mr-2"><span data-en="Join a grassroots committee in my neighborhood">Formar parte de un comité de base en mi barrio</span></label>
+            <label class="flex items-center"><input type="checkbox" name="ayudar_donar" class="mr-2"><span data-en="Contribute financially to the process">Aportar económicamente al proceso</span></label>
+          </div></div>
+        <div><label class="block text-sm font-semibold mb-1" data-en="Your message (optional)">Tu mensaje (opcional)</label>
+          <textarea name="comentario" rows="3" class="form-input" placeholder="¿Por qué te sumás? ¿Qué te preocupa? ¿Qué proponés?" data-en-ph="Why are you joining? What worries you? What do you propose?"></textarea>
+          <label class="flex items-center mt-2 text-sm"><input type="checkbox" name="comentario_publico" class="mr-2"><span data-en="I allow my comment to appear publicly (first name + neighborhood only)">Permito que mi comentario aparezca públicamente (solo primer nombre + barrio)</span></label></div>
+        <button type="submit" class="btn-primary w-full text-lg" id="submit-btn" data-en="Join the campaign">Sumarme a la campaña</button>
+        <p class="text-xs text-slate-500 text-center" data-en="By submitting, you agree your data is used only for this campaign. We will never share it with third parties.">Al enviar, aceptás que tus datos se usen solo para esta campaña. Nunca los compartiremos con terceros.</p>
+      </form>
+
+      <div id="mensaje-exito" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-8 text-center">
+        <p class="text-5xl mb-4">🎉</p><h3 class="text-2xl font-bold text-green-800 mb-2" data-en="Thanks for adding your voice!">¡Gracias por sumar tu voz!</h3>
+        <p class="text-green-700 mb-5" data-en="Your response has been recorded. Every voice counts in deciding the district's future.">Tu respuesta quedó registrada. Cada voz cuenta para decidir el futuro del distrito.</p>
+        <button onclick="compartir()" class="btn-primary mb-4" data-en="📣 Share with a neighbor">📣 Compartí con un vecino</button><br>
+        <button onclick="resetForm()" class="text-azul font-semibold underline" data-en="Register someone else">Registrar a otra persona</button>
+      </div>
+
+      <!-- ORGANIZACIONES -->
+      <div class="mt-12 pt-10 border-t border-slate-200">
+        <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-2 text-center" data-en="Campaign to add organizational support">Campaña para sumar apoyo de organizaciones</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-azul mb-2 text-center" data-en="Add your organization">Sumá tu organización</h2>
+        <p class="text-center text-slate-600 mb-6" data-en="Does your association, ASADA, chamber or collective want to support? Add its name and logo to the network of organizations backing the CMD.">¿Tu asociación, ASADA, cámara o colectivo quiere apoyar? Sumá su nombre y logo a la red de organizaciones que respaldan el CMD.</p>
+        <form id="form-org" class="space-y-4 bg-crema p-6 md:p-8 rounded-xl border border-cyan-200/60">
+          <div><label class="block text-sm font-semibold mb-1" data-en="Organization name <span class='text-rojo'>*</span>">Nombre de la organización <span class="text-rojo">*</span></label>
+            <input type="text" name="org_nombre" required class="form-input" placeholder="Asociación de Desarrollo de..."></div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div><label class="block text-sm font-semibold mb-1" data-en="Person submitting the support <span class='text-rojo'>*</span>">Persona que envía el apoyo <span class="text-rojo">*</span></label>
+              <input type="text" name="org_persona" required class="form-input" placeholder="Nombre y apellido"></div>
+            <div><label class="block text-sm font-semibold mb-1" data-en="Phone <span class='text-rojo'>*</span>">Teléfono <span class="text-rojo">*</span></label>
+              <input type="text" name="org_telefono" required class="form-input" placeholder="8888-8888"></div>
+          </div>
+          <div><label class="block text-sm font-semibold mb-1" data-en="Logo (highest quality possible)">Logo (en la mejor calidad posible)</label>
+            <input type="file" name="org_logo" accept="image/*" class="form-input bg-white"></div>
+          <button type="submit" class="btn-primary w-full" id="submit-org" data-en="Add my organization">Sumar mi organización</button>
+          <p class="text-xs text-slate-500 text-center" data-en="By submitting, you agree the organization's logo is used only for this campaign, in the supporting-organizations section.">Al enviar, aceptás que el logo de la organización solo se use para esta campaña, en la sección de organizaciones que apoyan.</p>
+        </form>
+        <div id="mensaje-org" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center mt-4">
+          <p class="text-4xl mb-2">🤝</p><h3 class="text-xl font-bold text-green-800 mb-1" data-en="Thanks for adding your organization!">¡Gracias por sumar a tu organización!</h3>
+          <p class="text-green-700" data-en="We'll review the submission and add it to the network of organizations supporting the CMD.">Revisaremos el envío y la sumaremos a la red de organizaciones que apoyan el CMD.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOCES -->
+  <section class="light py-16 px-6">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-sm font-bold tracking-widest uppercase text-oceano mb-3" data-en="The community">La comunidad</p>
+      <h2 class="text-3xl font-extrabold text-azul mb-8" data-en="Voices of Nosara">Voces de Nosara</h2>
+      <div id="lista-comentarios" class="space-y-4"></div>
+    </div>
+  </section>
+
+  <footer class="light py-10 px-6 border-t border-cyan-200/50" style="background:var(--crema)">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between gap-4 text-xs text-slate-500">
+      <span data-en="District of Nosara · Municipal District Council">Distrito de Nosara · Concejo Municipal de Distrito</span>
+      <span data-en="District boundary: IGN 1:5,000 (SNIT). Public figures labeled by source. Personal data is never published.">Límite distrital: IGN 1:5.000 (SNIT). Cifras públicas con etiqueta de origen. Datos personales nunca se publican.</span>
+    </div>
+  </footer>
+</div>
+<div id="spacer"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   DATOS DE CIFRAS (con etiqueta de origen — verdad graduada)
+   ============================================================ */
+let LANG='es';try{LANG=localStorage.getItem('cmd-lang')||'es';}catch(e){}
+const CIFRAS_CMD = [
+  {v:"5.687", t:"Personas votaron SÍ · Plebiscito 3-jun-2018", s:"dato verificado · TSE · 2.923 votaron NO", c:"bosque", te:"People voted YES · Plebiscite Jun 3, 2018", se:"verified data · TSE · 2,923 voted NO"},
+  {v:"461", t:"Votos que faltaron para el umbral", s:"cálculo", c:"rojo", te:"Votes short of the threshold", se:"calculation"},
+  {v:"66%", t:"De cada 3 votos, 2 fueron SÍ", s:"cálculo", c:"bosque", te:"2 out of every 3 votes were YES", se:"calculation"},
+  {v:"1.794", t:"Firmas + 30 organizaciones (base histórica)", s:"dato verificado · Solicitud al Concejo Nicoya, ago 2014", c:"azul", te:"Signatures + 30 organizations (historical baseline)", se:"verified data · Petition to the Nicoya Council, Aug 2014"},
+  {v:"₡40 M", t:"Costo estimado de solo el proceso electoral. Diseño de CMD y campaña son recursos adicionales.", s:"estimación · ajuste por inflación sobre base de R. Orozco, regidor · La Voz, feb 2015", c:"dorado", te:"Estimated cost of the electoral process alone. CMD design and campaign are additional resources.", se:"estimate · inflation-adjusted from R. Orozco, councilman · La Voz, Feb 2015"},
+  {v:"7.000", t:"Votos necesarios hoy para ganar el plebiscito y hacer realidad el CMD de Nosara", s:"cálculo · solo en Nosara el padrón ya es de casi 5.000 personas (TSE)", c:"bosque", te:"Votes needed today to win the plebiscite and make Nosara's CMD a reality", se:"calculation · in Nosara alone the electoral roll is already nearly 5,000 people (TSE)"},
+];
+const CIFRAS_TERR = [
+  {v:"₡2.191 M", t:"En impuestos 2025: fondos que Nicoya puso al cobro en Nosara", s:"dato verificado · Hacienda municipal", c:"azul", te:"In taxes in 2025: funds Nicoya billed in Nosara", se:"verified data · Municipal Finance"},
+  {v:"Menos del 1%", t:"De lo que aporta, vuelve al distrito en inversión directa y programas municipales", s:"informes municipales", c:"rojo", ve:"Less than 1%", te:"Of what it contributes returns to the district as direct investment and municipal programs", se:"municipal reports"},
+  {v:"6 de cada 10", t:"Construcciones sin permiso municipal entre 2019 y 2024", s:"dato verificado · Informe municipal de permisos, CFIA, Balance Fiscal Territorial de Nosara", c:"dorado", ve:"6 out of 10", te:"Buildings without a municipal permit between 2019 and 2024", se:"verified data · Municipal permit report, CFIA, Nosara Territorial Fiscal Balance"},
+  {v:"+ Nuevos impuestos", t:"La nueva ley de patentes enviada por Nicoya y aprobada por la Asamblea Legislativa traerá más impuestos para Nosara, sin que aumente la inversión municipal en programas directos", s:"ley de patentes de Nicoya · 2026", c:"dorado", ve:"+ New taxes", te:"The new business-license law sent by Nicoya and passed by the Legislative Assembly will bring more taxes from Nosara, without increasing municipal investment in direct programs", se:"Nicoya business-license law · 2026"},
+  {v:"4,5/100", t:"La Municipalidad de Nicoya obtuvo la calificación más baja en rendición de cuentas entre 100 instituciones de Costa Rica evaluadas por la Defensoría y la UCR. Nosara revertirá esto.", s:"dato verificado · Defensoría–Universidad de Costa Rica", c:"rojo", te:"The Municipality of Nicoya scored the lowest in accountability among 100 Costa Rican institutions assessed by the Ombudsman's Office and UCR. Nosara will reverse this.", se:"verified data · Ombudsman's Office–University of Costa Rica"},
+  {v:"Nosara sin servicio social", t:"Único distrito de Nicoya que no recibe programas sociales de la Municipalidad, según evaluación de la Contraloría", s:"dato verificado · Contraloría General de la República", c:"rojo", ve:"Nosara left out of social programs", te:"The only district in Nicoya that receives no social programs from the Municipality, per the Comptroller's assessment", se:"verified data · Office of the Comptroller General"},
+];
+function renderCifras(){
+  const col={azul:'text-azul',rojo:'text-rojo',dorado:'text-dorado',bosque:'text-bosque'};
+  const en=LANG==='en';
+  const card=o=>`<div class="bg-white p-6 flex flex-col min-h-[170px]">
+    <div class="text-3xl md:text-[34px] font-extrabold ${col[o.c]} leading-none mb-3">${en?(o.ve||o.v):o.v}</div>
+    <div class="text-[15px] font-semibold text-slate-800 mb-1">${en?o.te:o.t}</div>
+    <div class="srcpill">${en?o.se:o.s}</div></div>`;
+  document.getElementById('grid-cmd').innerHTML=CIFRAS_CMD.map(card).join('');
+  document.getElementById('grid-terr').innerHTML=CIFRAS_TERR.map(card).join('');
+}
+renderCifras();
+/* ---- Marco legal (base jurídica del CMD) ---- */
+const MARCO_LEGAL=[
+ {g:"Gobierno local",ge:"Local government",leyes:["8173 · Concejos Municipales de Distrito","7794 · Código Municipal","6227 · Administración Pública","8801 y 9329 · transferencia de competencias"]},
+ {g:"Finanzas e ingresos",ge:"Finances & revenue",leyes:["7509 · Bienes Inmuebles (IBI)","Patentes de Nicoya · nueva ley 2026","9047 · bebidas con alcohol","8114 · simplificación tributaria / red vial"]},
+ {g:"Territorio y construcción",ge:"Land use & construction",leyes:["833 · Construcciones","4240 · Planificación Urbana","6043 · Zona Marítimo Terrestre","7933 · Condominios","9071 · uso agropecuario"]},
+ {g:"Servicios y ambiente",ge:"Services & environment",leyes:["8839 · Gestión Integral de Residuos","5060 · Caminos Públicos"]},
+ {g:"Integridad y control",ge:"Integrity & oversight",leyes:["8422 · contra la Corrupción","8292 · Control Interno","10554 · Acceso a la Información","7202 · Archivos","Convenciones anticorrupción 7670 (OEA) y 8557 (ONU)"]},
+ {g:"Contratación y derechos",ge:"Procurement & rights",leyes:["7494 · Contratación Administrativa","7600 · discapacidad","7476 · acoso","10359 · personas adultas mayores"]},
+ {g:"Participación electoral",ge:"Electoral participation",leyes:["8765 · Código Electoral","Reglamento de Consultas Populares, Plebiscito Nosara"]},
+];
+function renderMarco(){
+  const el=document.getElementById('marco-grid');if(!el)return;
+  const en=LANG==='en';
+  el.innerHTML=MARCO_LEGAL.map(b=>`<div class="bg-crema rounded-2xl p-5 border border-cyan-200/50">
+    <h3 class="font-bold text-azul text-[15px] mb-3">${en?b.ge:b.g}</h3>
+    <div class="flex flex-wrap gap-1.5">${b.leyes.map(l=>`<span class="inline-block text-[12px] font-semibold text-teal bg-white border border-cyan-200/70 rounded-full px-2.5 py-1">${/^\d/.test(l)?(en?'Law ':'Ley ')+l:l}</span>`).join('')}</div>
+  </div>`).join('');
+}
+renderMarco();
+// FAQ acordeón
+document.querySelectorAll('.faq-acc').forEach(a=>a.querySelector('.q').addEventListener('click',()=>{
+  const o=a.classList.toggle('open');const an=a.querySelector('.a');an.style.maxHeight=o?an.scrollHeight+'px':'0';
+}));
+
+/* ============================================================
+   ESCENA THREE.JS (shaders de ref_particulas_red_v2, sin tocar)
+   ============================================================ */
+const cv=document.getElementById('gl');
+let R,scn,cam,PTS,BOK,ROADS=[],HYDRO=[],CONN=[],ALLLINES=[];
+let DATA=null, OUTLINE=[], BB=null, HALF={x:244,y:320};
+const N=(innerWidth<760?9000:20000);
+const uMorph={value:0},uTime={value:0},uPix={value:1},uReveal={value:0},uHydro={value:0},uConn={value:0},uBok={value:1};
+
+const SNOISE=`
+vec3 m289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}vec4 m289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 perm(vec4 x){return m289(((x*34.0)+1.0)*x);}vec4 tis(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float sn(vec3 v){const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);
+ vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+ vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=m289(i);
+ vec4 p=perm(perm(perm(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+ float n_=0.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
+ vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+ vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));
+ vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+ vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+ vec4 nm=tis(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=nm.x;p1*=nm.y;p2*=nm.z;p3*=nm.w;
+ vec4 mm=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);mm=mm*mm;
+ return 42.0*dot(mm*mm,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`;
+const PV=SNOISE+`
+uniform float uMorph,uTime,uPix;attribute vec3 aTar,aCol,aRnd;attribute float aSz,aAn;varying vec3 vC;
+void main(){vC=aCol;float t=uTime*0.16;
+ vec3 drift=vec3(sn(position*0.008+vec3(t,0.0,aRnd.x*7.0)),sn(position*0.008+vec3(0.0,t,aRnd.y*7.0)),sn(position*0.008+vec3(aRnd.z*7.0,t*0.7,0.0)));
+ vec3 cloud=position+drift*(1.0-aAn)*26.0;
+ vec3 pos=mix(cloud,aTar,uMorph);
+ float pulse=1.0+0.12*aAn*sin(uTime*1.6)*smoothstep(0.85,1.0,uMorph);
+ float sz=aSz*mix(1.0,smoothstep(0.25,0.72,uMorph),aAn)*pulse;
+ vec4 mv=modelViewMatrix*vec4(pos,1.0);gl_PointSize=sz*uPix*(300.0/max(1.0,-mv.z));gl_Position=projectionMatrix*mv;}`;
+const PF=`varying vec3 vC;void main(){float d=length(gl_PointCoord-vec2(0.5));float a=smoothstep(0.5,0.22,d);if(a<=0.02)discard;gl_FragColor=vec4(vC,a);}`;
+const BV=`uniform float uPix;attribute float aSz;attribute vec3 aCol;varying vec3 vC;void main(){vC=aCol;vec4 mv=modelViewMatrix*vec4(position,1.0);gl_PointSize=aSz*uPix*(300.0/max(1.0,-mv.z));gl_Position=projectionMatrix*mv;}`;
+const BF=`uniform float uBok;varying vec3 vC;void main(){float d=length(gl_PointCoord-vec2(0.5));float a=smoothstep(0.5,0.0,d);gl_FragColor=vec4(vC,a*a*0.18*uBok);}`;
+const LV=`uniform float uProg;attribute float aRev;varying float vA;void main(){vA=clamp((uProg-aRev)/0.06,0.0,1.0);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+const LF=`uniform vec3 uCol;uniform float uAlpha;varying float vA;void main(){if(vA<=0.0)discard;gl_FragColor=vec4(uCol,vA*uAlpha);}`;
+const tri=h=>{const c=parseInt(h.slice(1),16);return[((c>>16)&255)/255,((c>>8)&255)/255,(c&255)/255];};
+
+/* ---- geometría 2D ---- */
+function pip(x,y){let c=false;for(let i=0,j=OUTLINE.length-1;i<OUTLINE.length;j=i++){const xi=OUTLINE[i][0],yi=OUTLINE[i][1],xj=OUTLINE[j][0],yj=OUTLINE[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
+function gss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v);}
+function sampleInside(n){const o=[];let g=0;const span=Math.max(BB.maxx-BB.minx,BB.maxy-BB.miny);while(o.length<n&&g<n*60){g++;const x=BB.minx+Math.random()*(BB.maxx-BB.minx),y=BB.miny+Math.random()*(BB.maxy-BB.miny);if(pip(x,y))o.push([x,y]);}return o;}
+
+/* ---- partículas: rellenan la silueta + anclas de localidad + CMD ---- */
+function buildPts(){
+  const locs=DATA.localities, NL=locs.length;
+  const T=N+NL+1;
+  const po=new Float32Array(T*3),ta=new Float32Array(T*3),co=new Float32Array(T*3),rn=new Float32Array(T*3),sz=new Float32Array(T),an=new Float32Array(T);
+  const wmax=Math.max(...locs.map(l=>l.w));
+  const warm=tri('#a87d36'),warm2=tri('#d4a85a');  // relleno cálido legible (resolución real)
+  // 45% agrupadas cerca de localidades (densidad real), 55% relleno uniforme
+  const clustered=Math.floor(N*0.45);
+  const fill=sampleInside(N-clustered);
+  let fi=0;
+  for(let i=0;i<N;i++){
+    // nube inicial (esfera)
+    const u=Math.random()*6.2832,v=Math.acos(2*Math.random()-1),r=250*Math.cbrt(Math.random());
+    po[i*3]=Math.sin(v)*Math.cos(u)*r;po[i*3+1]=Math.sin(v)*Math.sin(u)*r*0.85;po[i*3+2]=Math.cos(v)*r*0.5;
+    let tx,ty;
+    if(i<clustered){
+      const l=locs[(Math.random()*NL)|0];let gx,gy,gg=0;
+      do{gx=l.x+gss()*16;gy=l.y+gss()*16;gg++;}while(!pip(gx,gy)&&gg<8);
+      tx=gx;ty=gy;
+    }else{const p=fill[fi++]||[0,0];tx=p[0];ty=p[1];}
+    ta[i*3]=tx;ta[i*3+1]=ty;ta[i*3+2]=gss()*5;
+    const c=(Math.random()<0.22?warm2:warm);
+    co[i*3]=c[0];co[i*3+1]=c[1];co[i*3+2]=c[2];
+    rn[i*3]=Math.random()*2-1;rn[i*3+1]=Math.random()*2-1;rn[i*3+2]=Math.random()*2-1;
+    sz[i]=2.6+Math.random()*1.5;an[i]=0;
+  }
+  // anclas de localidad
+  locs.forEach((l,k)=>{const i=N+k;po[i*3]=l.x;po[i*3+1]=l.y;po[i*3+2]=0;ta[i*3]=l.x;ta[i*3+1]=l.y;ta[i*3+2]=0;
+    const c=l.is_barrio?tri('#ffd56a'):tri('#E8A82C');co[i*3]=c[0];co[i*3+1]=c[1];co[i*3+2]=c[2];
+    rn[i*3]=0.02;rn[i*3+1]=0.02;rn[i*3+2]=0.02;
+    const base=6+(l.w/wmax)*12;sz[i]=l.is_barrio?base*1.8:base;an[i]=1;});
+  // CMD (Bocas de Nosara)
+  const ic=N+NL,cmd=DATA.cmd;po[ic*3]=cmd[0];po[ic*3+1]=cmd[1];po[ic*3+2]=0;ta[ic*3]=cmd[0];ta[ic*3+1]=cmd[1];ta[ic*3+2]=0;
+  const cc=tri('#ff5a5f');co[ic*3]=cc[0];co[ic*3+1]=cc[1];co[ic*3+2]=cc[2];rn[ic*3]=0.02;rn[ic*3+1]=0.02;rn[ic*3+2]=0.02;sz[ic]=34;an[ic]=1;
+
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(po,3));g.setAttribute('aTar',new THREE.BufferAttribute(ta,3));
+  g.setAttribute('aCol',new THREE.BufferAttribute(co,3));g.setAttribute('aRnd',new THREE.BufferAttribute(rn,3));
+  g.setAttribute('aSz',new THREE.BufferAttribute(sz,1));g.setAttribute('aAn',new THREE.BufferAttribute(an,1));
+  PTS=new THREE.Points(g,new THREE.ShaderMaterial({uniforms:{uMorph,uTime,uPix},vertexShader:PV,fragmentShader:PF,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false}));
+  scn.add(PTS);
+}
+
+/* ---- líneas (vías / costa / ríos) con reveal shader ---- */
+function linesFrom(polys,color,alpha,prog,revFn){
+  const pos=[],rev=[];
+  polys.forEach((pts,idx)=>{
+    const rv=revFn?revFn(pts,idx):Math.random()*0.9;
+    for(let i=0;i<pts.length-1;i++){pos.push(pts[i][0],pts[i][1],0,pts[i+1][0],pts[i+1][1],0);rev.push(rv,rv);}
+  });
+  if(!pos.length)return null;
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));
+  g.setAttribute('aRev',new THREE.BufferAttribute(new Float32Array(rev),1));
+  const m=new THREE.LineSegments(g,new THREE.ShaderMaterial({uniforms:{uProg:prog,uCol:{value:new THREE.Color(color)},uAlpha:{value:alpha}},vertexShader:LV,fragmentShader:LF,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false}));
+  scn.add(m);return m;
+}
+// reveal por cercanía al CMD: la red "crece" desde Bocas de Nosara hacia afuera
+function revByCMD(){const cmd=DATA.cmd;const maxd=Math.hypot(BB.maxx-BB.minx,BB.maxy-BB.miny);
+  return pts=>{const m=pts[(pts.length/2)|0];return Math.min(0.88,Math.hypot(m[0]-cmd[0],m[1]-cmd[1])/maxd*1.3);};}
+function buildLines(){
+  const rc=revByCMD();
+  ROADS=[];
+  // vías: capa vectorial limpia (vias_siri) — tejido en amarillo brillante
+  ROADS.push(linesFrom(DATA.roads_vias||DATA.roads_lastre||[],'#ffe11a',0.8,uReveal,rc));
+  ROADS.push(linesFrom(DATA.roads_pavimentadas||[],'#ff4d52',1.0,uReveal,()=>0.0)); // pavimentadas SIEMPRE
+  ROADS=ROADS.filter(Boolean);
+  HYDRO=[];
+  // límite distrital completo en gris claro (sin ríos ni costa de color)
+  const ring=DATA.outline.concat([DATA.outline[0]]);
+  const ol=linesFrom([ring],'#c2c8d2',0.6,uHydro,()=>0.0);
+  if(ol)HYDRO.push(ol);
+}
+// línea orgánica (con leve curvatura) entre dos puntos [x,y]
+function jit(a,b,steps,amp){const p=[[a[0],a[1]]];for(let i=1;i<steps;i++){const t=i/steps;p.push([a[0]+(b[0]-a[0])*t+gss()*amp*(1-t),a[1]+(b[1]-a[1])*t+gss()*amp*(1-t)]);}p.push([b[0],b[1]]);return p;}
+// capa de INTERCONEXIONES explícitas sobre el tejido de vías reales:
+//   CMD -> cada barrio  (coordinación)  +  barrio <-> barrio vecino (red de pares)
+function buildConnections(){
+  CONN=[];
+  const cmd=DATA.cmd;
+  const barrios=DATA.localities.filter(l=>l.is_barrio);
+  const rc=revByCMD();
+  // CMD -> barrios
+  const cmdLines=barrios.map(b=>jit(cmd,[b.x,b.y],5,7));
+  const c1=linesFrom(cmdLines,'#ff7a5a',1.0,uConn,rc);if(c1)CONN.push(c1);
+  // barrio <-> 2 barrios más cercanos (sin duplicar pares)
+  const seen={},pairLines=[];
+  barrios.forEach((b,i)=>{
+    const d=barrios.map((o,j)=>({j,d:Math.hypot(o.x-b.x,o.y-b.y)})).filter(o=>o.j!==i).sort((p,q)=>p.d-q.d).slice(0,2);
+    d.forEach(o=>{const k=i<o.j?i+'-'+o.j:o.j+'-'+i;if(seen[k])return;seen[k]=1;const o2=barrios[o.j];pairLines.push(jit([b.x,b.y],[o2.x,o2.y],5,6));});
+  });
+  const c2=linesFrom(pairLines,'#ffe49a',0.9,uConn,rc);if(c2)CONN.push(c2);
+  // localidades menores -> su barrio más cercano (tejen al resto en la red)
+  const minors=DATA.localities.filter(l=>!l.is_barrio);
+  const minorLines=minors.map(m=>{
+    let bb=barrios[0],bd=1e18;barrios.forEach(b=>{const d=Math.hypot(b.x-m.x,b.y-m.y);if(d<bd){bd=d;bb=b;}});
+    return jit([m.x,m.y],[bb.x,bb.y],4,5);
+  });
+  const c3=linesFrom(minorLines,'#e9c878',0.55,uConn,rc);if(c3)CONN.push(c3);
+}
+function buildBokeh(){
+  const M=120;const po=new Float32Array(M*3),sz=new Float32Array(M),co=new Float32Array(M*3);
+  for(let i=0;i<M;i++){po[i*3]=(Math.random()*2-1)*460;po[i*3+1]=(Math.random()*2-1)*460;po[i*3+2]=120+Math.random()*260;const c=Math.random()<0.3?tri('#caa15a'):tri('#3f6e9e');co[i*3]=c[0];co[i*3+1]=c[1];co[i*3+2]=c[2];sz[i]=60+Math.random()*120;}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(po,3));g.setAttribute('aSz',new THREE.BufferAttribute(sz,1));g.setAttribute('aCol',new THREE.BufferAttribute(co,3));
+  BOK=new THREE.Points(g,new THREE.ShaderMaterial({uniforms:{uPix,uBok},vertexShader:BV,fragmentShader:BF,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false}));
+  scn.add(BOK);
+}
+
+let zFit=900;
+function fit(){const a=innerWidth/innerHeight,ht=Math.tan(22.5*Math.PI/180);zFit=Math.max((HALF.y+34)/ht,(HALF.x+34)/(ht*a));}
+function rsz(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;fit();cam.updateProjectionMatrix();uPix.value=R.getPixelRatio();}
+let webgl=true;
+function initGL(){
+  if(!window.THREE){webgl=false;document.getElementById('fallback').style.display='flex';return;}
+  try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true});}catch(e){webgl=false;document.getElementById('fallback').style.display='flex';return;}
+  R.setPixelRatio(Math.min(devicePixelRatio||1,2.5));R.setClearColor(0x06070b,1);
+  // robustez: si el navegador pierde el contexto WebGL (p.ej. tras varias
+  // recargas), detener el render sin romper el resto de la página.
+  cv.addEventListener('webglcontextlost',e=>{e.preventDefault();webgl=false;},false);
+  cv.addEventListener('webglcontextrestored',()=>{webgl=true;},false);
+  scn=new THREE.Scene();cam=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,1,9000);
+  buildBokeh();buildLines();buildConnections();buildPts();
+  ALLLINES=[...ROADS,...HYDRO,...CONN].filter(Boolean);  // precomputado (no spread por frame)
+  addEventListener('resize',rsz);rsz();
+}
+
+/* ============================================================
+   SCROLL + LOOP (modelo de red_v2)
+   ============================================================ */
+const content=document.getElementById('content'),spacer=document.getElementById('spacer');
+let target=0,cur=0,contentH=0;
+function setH(){contentH=content.getBoundingClientRect().height;spacer.style.height=contentH+'px';}
+const floatCta=document.getElementById('float-cta');
+addEventListener('scroll',()=>{target=scrollY;if(floatCta)floatCta.classList.toggle('show',scrollY>innerHeight*0.65);});addEventListener('resize',setH);
+if(floatCta)floatCta.addEventListener('click',e=>{e.preventDefault();const el=document.getElementById('sumate');if(el)scrollTo({top:el.getBoundingClientRect().top+cur,behavior:'auto'});});
+// ===== Tema claro / oscuro =====
+const themeBtn=document.getElementById('theme-btn');
+function applyTheme(t){document.documentElement.classList.toggle('dark',t==='dark');if(themeBtn)themeBtn.textContent=(t==='dark')?'☀️':'🌙';}
+let _theme='light';try{_theme=localStorage.getItem('cmd-theme')||'light';}catch(e){}
+applyTheme(_theme);
+if(themeBtn)themeBtn.addEventListener('click',()=>{const t=document.documentElement.classList.contains('dark')?'light':'dark';applyTheme(t);try{localStorage.setItem('cmd-theme',t);}catch(e){}});
+// ===== Idioma ES / EN =====
+const langBtn=document.getElementById('lang-btn');
+function setLang(lang){
+  LANG=lang;
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    if(el.dataset.es===undefined) el.dataset.es=el.innerHTML;
+    el.innerHTML=(lang==='en')?el.dataset.en:el.dataset.es;
+  });
+  document.querySelectorAll('[data-en-ph]').forEach(el=>{
+    if(el.dataset.esPh===undefined) el.dataset.esPh=el.getAttribute('placeholder')||'';
+    el.setAttribute('placeholder',(lang==='en')?el.dataset.enPh:el.dataset.esPh);
+  });
+  document.documentElement.lang=lang;
+  if(langBtn)langBtn.textContent=(lang==='en')?'ESPAÑOL':'ENGLISH';
+  renderCifras();renderMarco();
+  try{localStorage.setItem('cmd-lang',lang);}catch(e){}
+}
+if(langBtn)langBtn.addEventListener('click',()=>setLang(LANG==='en'?'es':'en'));
+if(LANG==='en')setLang('en');
+if(window.ResizeObserver)new ResizeObserver(setH).observe(content);
+document.querySelectorAll('nav a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const el=document.querySelector(a.getAttribute('href'));if(el){scrollTo({top:el.getBoundingClientRect().top+cur,behavior:'auto'});}}));
+function splitWords(el){const t=el.textContent.trim().split(/\s+/);el.innerHTML='';t.forEach((w,i)=>{const o=document.createElement('span');o.className='w';const inn=document.createElement('span');inn.className='i';inn.textContent=w;inn.style.transitionDelay=(i*0.05)+'s';o.appendChild(inn);el.appendChild(o);el.appendChild(document.createTextNode(' '));});}
+document.querySelectorAll('.rw').forEach(splitWords);
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)en.target.classList.add('in');}),{threshold:0.18});
+document.querySelectorAll('.rw,.fade').forEach(el=>io.observe(el));
+const cdot=document.getElementById('cdot'),cring=document.getElementById('cring');
+let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my,nmx=0,nmy=0;
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;nmx=mx/innerWidth-0.5;nmy=my/innerHeight-0.5;});
+document.querySelectorAll('a,button,.q').forEach(el=>{el.addEventListener('mouseenter',()=>cring.classList.add('big'));el.addEventListener('mouseleave',()=>cring.classList.remove('big'));});
+const loader=document.getElementById('loader'),lnum=document.getElementById('lnum'),lbar=document.getElementById('lbar');
+let lp2=0,dataReady=false;
+function loadTick(){lp2+=Math.random()*7+2.5;if(lp2>(dataReady?100:92))lp2=dataReady?100:92;lnum.textContent=Math.floor(lp2);lbar.style.width=lp2+'%';if(lp2<100)setTimeout(loadTick,55);else setTimeout(()=>{loader.classList.add('done');document.querySelectorAll('.hero .rw,.hero .fade').forEach(el=>el.classList.add('in'));},250);}
+const prog=document.getElementById('prog');
+function ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);}
+const lerp=(a,b,t)=>a+(b-a)*t;
+let narr,narrH=1;function measure(){narr=document.getElementById('narrative');narrH=Math.max(1,(narr.offsetTop+narr.offsetHeight)-innerHeight);}
+let lastT=performance.now(),pmx=0,pmy=0,spin=0;
+function loop(now){
+  const dt=Math.min(0.05,(now-lastT)/1000);lastT=now;
+  // suavizado de scroll INDEPENDIENTE DE FPS (antes era por-frame -> se volvía
+  // brusco si bajaban los FPS). Mismo feel a 60fps, consistente a cualquier tasa.
+  cur+=(target-cur)*(1-Math.exp(-dt/0.21));content.style.transform=`translate3d(0,${-cur}px,0)`;
+  const docH=contentH-innerHeight;prog.style.width=(docH>0?cur/docH*100:0)+'%';  // altura cacheada (sin reflow por frame)
+  rx+=(mx-rx)*0.18;ry+=(my-ry)*0.18;cdot.style.transform=`translate(${mx}px,${my}px)`;cring.style.transform=`translate(${rx}px,${ry}px)`;
+  pmx+=(nmx-pmx)*0.05;pmy+=(nmy-pmy)*0.05;
+  if(webgl&&R){
+    uTime.value+=dt;
+    const f=cur/narrH;const m=ss(0.0,0.60,f),ce=ss(0.0,0.70,f);  // morph y cámara LENTOS (no bruscos)
+    uMorph.value=m;
+    uHydro.value=Math.min(1,Math.max(0,(f-0.14)/0.42));    // límite aparece gradual con la forma
+    uReveal.value=Math.min(1,Math.max(0,(f-0.25)/0.66));   // vías se revelan gradualmente hasta ~cap 04
+    uConn.value=Math.min(1,Math.max(0,(f-0.42)/0.55));     // interconexiones cierran cerca de cap 04
+    uBok.value=1-ce*0.7;
+    // giro continuo (el lindo del inicio) ACOTADO: envuelve en 2π, así NUNCA crece
+    // con el tiempo (sin torbellino). Se desvanece a 0 al asentarse => distrito derecho.
+    spin=(spin+dt*0.12)%6.2832;
+    const rotY=(spin+pmx*0.5)*(1-ce);
+    const rotX=(0.25+pmy*0.32)*(1-ce);
+    PTS.rotation.set(rotX,rotY,0);
+    for(let i=0;i<ALLLINES.length;i++)ALLLINES[i].rotation.copy(PTS.rotation);
+    BOK.position.set(pmx*60,-pmy*60,0);BOK.rotation.y=now*0.00004;
+    cam.position.set(lerp(150,Math.sin(now*0.0004)*6*ce,ce),lerp(-300,0,ce),lerp(zFit*0.82,zFit,ce));cam.lookAt(0,0,0);
+    // no renderar el WebGL cuando el héroe ya está tapado por las secciones claras
+    // (ahorra GPU -> evita el throttling que volvía brusco el scroll con el tiempo)
+    if(cur < narrH+innerHeight*1.15) R.render(scn,cam);
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---- arranque: cargar datos -> init ---- */
+fetch('data/cmd_red_data.json').then(r=>r.json()).then(d=>{
+  DATA=d;OUTLINE=d.outline;
+  HALF=(d.meta&&d.meta.half_extent)||HALF;
+  let a=1e9,b=1e9,c=-1e9,e=-1e9;for(const p of OUTLINE){a=Math.min(a,p[0]);c=Math.max(c,p[0]);b=Math.min(b,p[1]);e=Math.max(e,p[1]);}
+  BB={minx:a,miny:b,maxx:c,maxy:e};
+  dataReady=true;
+  initGL();setH();measure();setTimeout(()=>{setH();measure();},400);
+}).catch(err=>{console.error('No se pudo cargar cmd_red_data.json',err);dataReady=true;document.getElementById('fallback').style.display='flex';});
+
+addEventListener('load',()=>{loadTick();requestAnimationFrame(loop);setH();
+  if(location.hash){const el=document.querySelector(location.hash);if(el)setTimeout(()=>{const y=el.getBoundingClientRect().top+cur;target=y;scrollTo({top:y,behavior:'auto'});if(floatCta&&y>innerHeight*0.65)floatCta.classList.add('show');},350);}});
+addEventListener('resize',()=>{setH();measure();});
+
+/* ============================================================
+   CAMPAÑA — SUPABASE (pluggable; si falta config, no rompe)
+   ============================================================ */
+const SUPABASE_URL='TU_PROJECT_URL_AQUI';
+const SUPABASE_ANON_KEY='TU_ANON_KEY_AQUI';
+const OBJETIVO_2028=7000;
+let supa=null;
+const supaOK=!(SUPABASE_URL==='TU_PROJECT_URL_AQUI'||SUPABASE_ANON_KEY==='TU_ANON_KEY_AQUI');
+if(supaOK&&window.supabase){supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}
+
+function escapeHTML(s){return s?s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])):'';}
+function easeOut(t){return 1-Math.pow(1-t,3);}
+function animarContador(id,target){const el=document.getElementById(id);const cur=parseInt((el.textContent||'0').replace(/\D/g,''))||0;const start=performance.now();
+  function step(now){const p=Math.min(1,(now-start)/800);el.textContent=Math.floor(cur+(target-cur)*easeOut(p)).toLocaleString('es-CR');if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+function badgeFor(p){return({apoyo:'<span class="badge badge-apoyo">Apoyo</span>',dudas:'<span class="badge badge-dudas">Con dudas</span>',no:'<span class="badge badge-no">No apoya</span>',mas_info:'<span class="badge badge-info">Quiere saber más</span>'})[p]||'';}
+function actualizarUI(s){const apoyo=s.apoyo||0;
+  const dash=document.getElementById('dashboard');if(dash&&(s.total||0)>0)dash.style.display='';  // mostrar solo con datos reales
+  animarContador('contador-total',s.total||0);
+  document.getElementById('stat-apoyo').textContent=apoyo;document.getElementById('stat-dudas').textContent=s.dudas||0;
+  document.getElementById('stat-info').textContent=s.mas_info||0;document.getElementById('stat-militantes').textContent=(s.militantes_comite||0)+(s.difusores||0);
+  const pct=Math.min(100,Math.round((apoyo/OBJETIVO_2028)*100));document.getElementById('porcentaje').textContent=pct;document.getElementById('progress-fill').style.width=pct+'%';}
+function actualizarBarrios(bs){const l=document.getElementById('lista-barrios');if(!bs||!bs.length){l.innerHTML='<p class="text-slate-400 text-sm">Aún no hay datos por barrio.</p>';return;}
+  const max=Math.max(...bs.map(b=>b.total));l.innerHTML=bs.map(b=>`<div class="flex items-center gap-3"><span class="w-28 text-sm font-semibold flex-shrink-0">${escapeHTML(b.barrio)}</span><div class="flex-1 bg-white rounded-full h-5 overflow-hidden border border-cyan-200"><div class="bg-oceano h-full" style="width:${max?b.total/max*100:0}%"></div></div><span class="w-8 text-right text-sm font-semibold">${b.total}</span></div>`).join('');}
+function actualizarComentarios(cs){cs=(cs||[]).filter(c=>c.posicion!=='no');  // no amplificar oposición en la vitrina
+  const l=document.getElementById('lista-comentarios');if(!cs.length){l.innerHTML='<p class="text-slate-500 text-center py-6">'+(LANG==='en'?'Be the first to leave your voice above by filling out the Join form.':'Sé la primera persona en dejar tu voz arriba al llenar el formulario de Sumate.')+'</p>';return;}
+  l.innerHTML=cs.map(c=>{const f=new Date(c.created_at).toLocaleDateString('es-CR',{day:'numeric',month:'short'});return `<div class="comentario-card"><p class="text-slate-800 mb-2">"${escapeHTML(c.comentario)}"</p><p class="text-xs text-slate-500">— ${escapeHTML(c.primer_nombre)}, ${escapeHTML(c.barrio)} · ${f} · ${badgeFor(c.posicion)}</p></div>`;}).join('');}
+async function cargarStats(){
+  if(!supa){actualizarBarrios([]);actualizarComentarios([]);return;}
+  try{
+    const {data:r}=await supa.from('stats_resumen').select('*').single();if(r)actualizarUI(r);
+    const {data:bs}=await supa.from('stats_barrio').select('*');actualizarBarrios(bs);
+    const {data:cs}=await supa.from('comentarios_publicos').select('*');actualizarComentarios(cs);
+  }catch(e){console.error('Supabase stats',e);}
+}
+const form=document.getElementById('form-adhesion'),submitBtn=document.getElementById('submit-btn'),mensajeExito=document.getElementById('mensaje-exito');
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!supa){form.style.display='none';mensajeExito.classList.remove('hidden');return;}  // demo: agradecer sin filtrar detalles técnicos
+  submitBtn.disabled=true;submitBtn.textContent='Enviando...';
+  const fd=new FormData(form);const data={nombre:fd.get('nombre'),telefono:fd.get('telefono')||null,correo:fd.get('correo')||null,barrio:fd.get('barrio'),posicion:fd.get('posicion'),ayudar_difundir:fd.get('ayudar_difundir')==='on',ayudar_firmas:fd.get('ayudar_firmas')==='on',ayudar_comite:fd.get('ayudar_comite')==='on',ayudar_donar:fd.get('ayudar_donar')==='on',comentario:fd.get('comentario')||null,comentario_publico:fd.get('comentario_publico')==='on'};
+  const {error}=await supa.from('adhesiones').insert([data]);
+  if(error){alert('Hubo un error al enviar. Probá de nuevo. ('+error.message+')');submitBtn.disabled=false;submitBtn.textContent='Sumarme a la campaña';return;}
+  form.style.display='none';mensajeExito.classList.remove('hidden');setTimeout(cargarStats,500);
+});
+function resetForm(){form.reset();form.style.display='block';mensajeExito.classList.add('hidden');submitBtn.disabled=false;submitBtn.textContent='Sumarme a la campaña';document.getElementById('sumate').scrollIntoView({behavior:'smooth'});}
+window.resetForm=resetForm;
+// Formulario de organizaciones (logo: subir a Supabase Storage cuando se conecte; en demo solo agradece)
+const formOrg=document.getElementById('form-org');
+if(formOrg){formOrg.addEventListener('submit',async e=>{
+  e.preventDefault();const btnOrg=document.getElementById('submit-org'),okOrg=document.getElementById('mensaje-org');
+  if(!supa){formOrg.style.display='none';okOrg.classList.remove('hidden');return;}
+  btnOrg.disabled=true;btnOrg.textContent='Enviando...';
+  const fd=new FormData(formOrg);const data={org_nombre:fd.get('org_nombre'),org_persona:fd.get('org_persona'),org_telefono:fd.get('org_telefono')||null};
+  const {error}=await supa.from('organizaciones').insert([data]);
+  if(error){alert('Hubo un error al enviar. Probá de nuevo. ('+error.message+')');btnOrg.disabled=false;btnOrg.textContent='Sumar mi organización';return;}
+  formOrg.style.display='none';okOrg.classList.remove('hidden');
+});}
+function compartir(){const t='Sumate al CMD-Nosara: en 2028 cerramos lo que empezamos en 2018.';const u=location.href;
+  if(navigator.share){navigator.share({title:'CMD-Nosara',text:t,url:u}).catch(()=>{});}
+  else{window.open('https://wa.me/?text='+encodeURIComponent(t+' '+u),'_blank','noopener');}}
+window.compartir=compartir;
+if(supa){supa.channel('adh-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'adhesiones'},cargarStats).subscribe();}
+cargarStats();
+if(supa)setInterval(cargarStats,30000);
+</script>
+</body>
+</html>

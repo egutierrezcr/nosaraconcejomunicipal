@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMD-Nosara · Organigramas hipotéticos</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0E6E7C; --ocean:#1AA3B0; --celeste:#5EC6D4; --crema:#EDF7F9;
+    --gold:#E8A82C; --bosque:#2F6B4F; --ink:#103038; --mut:#5f7a80;
+    --line:#bcd6da; --font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:#f4fafb;line-height:1.45}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 22px 60px}
+  header h1{font-size:clamp(24px,4vw,38px);font-weight:800;color:var(--teal);margin:0 0 6px;letter-spacing:-.5px}
+  header .tag{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ocean);font-weight:700}
+  .hip{display:inline-block;background:var(--gold);color:#3a2c05;font-size:11px;font-weight:700;
+       padding:3px 10px;border-radius:999px;margin-left:8px;vertical-align:middle;letter-spacing:.3px}
+  .lead{color:var(--mut);max-width:60em;margin:10px 0 0;font-size:15px}
+  section{margin-top:46px}
+  h2{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--ocean);font-weight:700;margin:0 0 4px}
+  h2 + .st{font-size:clamp(20px,3vw,28px);font-weight:800;color:var(--teal);margin:0 0 22px;letter-spacing:-.4px}
+
+  /* ---- nodos ---- */
+  .node{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 18px;
+        box-shadow:0 4px 14px rgba(14,110,124,.06);display:inline-block;text-align:center;min-width:200px}
+  .node .role{font-weight:800;color:var(--teal);font-size:15px}
+  .node .meta{font-size:12.5px;color:var(--mut);margin-top:3px}
+  .node.exec{border-color:var(--ocean);background:linear-gradient(180deg,#fff,#f3fcfd)}
+  .node.cole{border-color:var(--gold);background:linear-gradient(180deg,#fff,#fffaf0)}
+  .node.root{border-color:var(--bosque);background:linear-gradient(180deg,#fff,#f1f8f3)}
+  .node.root .role{color:var(--bosque)}
+  .node.exec .role{color:var(--ocean)}
+
+  /* ---- árbol político (flex + conectores) ---- */
+  .tree{display:flex;flex-direction:column;align-items:center}
+  .tier{display:flex;justify-content:center;gap:48px;position:relative}
+  .vline{width:2px;height:26px;background:var(--line);margin:0 auto}
+  .branchwrap{display:flex;justify-content:center;gap:90px;width:100%;position:relative}
+  .branchwrap::before{content:"";position:absolute;top:-26px;left:25%;right:25%;height:2px;background:var(--line)}
+  .branch{display:flex;flex-direction:column;align-items:center}
+  .branch .vline{height:26px}
+  .members{display:flex;flex-direction:column;gap:10px;margin-top:6px;align-items:stretch}
+  .members .node{min-width:240px;text-align:left;padding:11px 16px}
+  .members .node .role{font-size:14px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--crema);color:var(--teal);margin-left:6px}
+  .pill.pre{background:var(--gold);color:#3a2c05}
+
+  /* ---- organigrama funcional ---- */
+  .fgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:6px}
+  @media(max-width:900px){.fgrid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.fgrid{grid-template-columns:1fr}}
+  .fcol{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .fcol h3{margin:0;background:var(--teal);color:#fff;font-size:13px;font-weight:700;padding:11px 14px;letter-spacing:.2px}
+  .fcol ul{list-style:none;margin:0;padding:10px 14px 14px}
+  .fcol li{font-size:13.5px;padding:6px 0 6px 18px;position:relative;border-bottom:1px dashed #e3eef0}
+  .fcol li:last-child{border-bottom:none}
+  .fcol li::before{content:"";position:absolute;left:2px;top:12px;width:7px;height:7px;border-radius:2px;background:var(--ocean)}
+  .fcol li b{color:var(--teal)}
+  .aside{margin-top:14px;background:#fff;border:1.5px dashed var(--gold);border-radius:14px;padding:12px 16px;font-size:13.5px;color:var(--ink)}
+  .aside b{color:var(--teal)}
+  .note{margin-top:16px;background:var(--crema);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--ink)}
+  .note b{color:var(--teal)}
+  .coord{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:6px;box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .coord h3{margin:0 0 4px;color:var(--teal);font-size:15px;font-weight:800}
+  .coord p{margin:0 0 10px;font-size:13.5px;color:#3f5a60}
+  .ichips{display:flex;flex-wrap:wrap;gap:6px}
+  .ichip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--teal);background:var(--crema);border:1px solid #d3e7ea;border-radius:999px;padding:4px 11px}
+  footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--mut)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:4px;border:1.5px solid}
+  .d-exec{border-color:var(--ocean);background:#f3fcfd}.d-cole{border-color:var(--gold);background:#fffaf0}.d-root{border-color:var(--bosque);background:#f1f8f3}
+  @media print{body{background:#fff}.node,.fcol{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <style>.cmd-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button.pdf{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 18px;cursor:pointer;font-family:inherit;line-height:1}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.pdf{border:none;background:#1AA3B0;color:#fff}.cmd-nav button.pdf:hover{background:#13848f}@media print{.cmd-nav{display:none!important}}</style>
+  <nav class="cmd-nav"><a class="back" href="../index.html">← Página Principal</a></nav>
+  <header>
+    <div class="tag">Nosara, Guanacaste · Distrito en red</div>
+    <h1>Organigramas del CMD-Nosara <span class="hip">HIPOTÉTICO</span></h1>
+    <p class="lead">Estructura propuesta para el Concejo Municipal de Distrito de Nosara (figura de la Ley 8173).
+    Se muestran dos vistas: la <b>estructura política electa</b> y la <b>estructura por funciones</b> (sin nombres
+    de personas ni departamentos: solo las funciones que el CMD debe cubrir).</p>
+    <div class="legend">
+      <span><i class="dot d-root"></i> Soberanía / electorado</span>
+      <span><i class="dot d-exec"></i> Órgano ejecutivo (Intendencia)</span>
+      <span><i class="dot d-cole"></i> Órgano colegiado (Concejo)</span>
+    </div>
+  </header>
+
+  <!-- ====================== 1 · POLÍTICO ====================== -->
+  <section>
+    <h2>Vista 1 · Estructura política</h2>
+    <div class="st">Quién se elige (Ley 8173)</div>
+    <div class="tree">
+      <div class="node root"><div class="role">Electorado del distrito de Nosara</div>
+        <div class="meta">Elige por voto popular · elecciones municipales · período de 4 años</div></div>
+      <div class="vline"></div>
+      <div class="branchwrap">
+        <!-- ejecutivo -->
+        <div class="branch">
+          <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta">Órgano ejecutivo, equivalente a la alcaldía del distrito</div></div>
+          <div class="vline"></div>
+          <div class="members">
+            <div class="node exec"><div class="role">Intendente/a</div><div class="meta">Dirige la administración y ejecuta el presupuesto</div></div>
+            <div class="node exec"><div class="role">Viceintendente/a</div><div class="meta">Sustituye al intendente; funciones que se le asignen</div></div>
+          </div>
+        </div>
+        <!-- colegiado -->
+        <div class="branch">
+          <div class="node cole"><div class="role">CONCEJO MUNICIPAL DE DISTRITO</div><div class="meta">Órgano colegiado: delibera, aprueba presupuesto y fiscaliza</div></div>
+          <div class="vline"></div>
+          <div class="members">
+            <div class="node cole"><div class="role">Sindicatura <span class="pill pre">PRESIDE</span></div><div class="meta">Síndico/a propietario/a más su suplente. Preside el Concejo.</div></div>
+            <div class="node cole"><div class="role">4 concejales propietarios/as</div><div class="meta">Voz y voto</div></div>
+            <div class="node cole"><div class="role">4 concejales suplentes</div><div class="meta">Sustituyen a los propietarios</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <b>Base legal (Ley 8173, art. 6 y 7):</b> el Concejo es un órgano colegiado de <b>5 propietarios y sus suplentes</b>;
+      <b>uno de esos miembros es el síndico/a propietario/a, que preside</b> (lo sustituye el síndico suplente). Por eso, en la
+      práctica —como en el CMD de Cóbano— se eligen <b>4 concejales propietarios + 4 suplentes</b> y la <b>Sindicatura preside</b>.
+      El órgano ejecutivo es la <b>Intendencia</b> (Intendente/a, equivalente al alcalde; el Viceintendente/a fue incorporado por
+      reforma y hoy se elige). Todos por <b>voto popular</b>, período de 4 años, con paridad de género.
+    </div>
+  </section>
+
+  <!-- ====================== 2 · FUNCIONAL ====================== -->
+  <section>
+    <h2>Vista 2 · Estructura por funciones</h2>
+    <div class="st">Qué tiene que hacer el CMD (funciones, no personas)</div>
+    <div class="tree" style="margin-bottom:8px">
+      <div class="node exec"><div class="role">INTENDENCIA</div><div class="meta">Dirección ejecutiva · coordina todas las funciones</div></div>
+      <div class="vline"></div>
+    </div>
+    <p style="font-size:13px;color:var(--mut);margin:0 0 14px">A · Funciones de gestión interna — cómo se administra el CMD</p>
+    <div class="fgrid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="fcol"><h3>Hacienda y Finanzas</h3>
+        <ul>
+          <li><b>Cobro</b></li>
+          <li><b>Tesorería</b></li>
+          <li>Presupuesto y Contabilidad</li>
+          <li><b>Catastro y Valoración</b></li>
+          <li>Patentes y licencias</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Planificación y Territorio</h3>
+        <ul>
+          <li>Planificación institucional</li>
+          <li>Plan Regulador</li>
+          <li><b>Control Constructivo</b></li>
+          <li>Topografía</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Atención a la persona</h3>
+        <ul>
+          <li>Plataforma de Servicios</li>
+          <li>Secretaría del Concejo</li>
+          <li>Archivo y gestión documental</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Apoyo institucional</h3>
+        <ul>
+          <li>Asesoría Legal</li>
+          <li>Tecnología y Datos</li>
+          <li>Recursos Humanos y Proveeduría</li>
+          <li>Comunicación y participación</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px">B · Servicios y programas a la comunidad — marco IGSM de la Contraloría</p>
+    <div class="fgrid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="fcol"><h3>Residuos y aseo</h3>
+        <ul>
+          <li>Recolección, depósito y tratamiento de residuos</li>
+          <li>Aseo de vías y sitios públicos</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Infraestructura</h3>
+        <ul>
+          <li>Mantenimiento de la red vial cantonal</li>
+          <li>Alcantarillado pluvial</li>
+          <li>Urbanismo</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Ambiente y agua</h3>
+        <ul>
+          <li>Gestión ambiental</li>
+          <li>Protección del recurso hídrico</li>
+          <li>Gestión del riesgo</li>
+        </ul>
+      </div>
+      <div class="fcol"><h3>Servicios a las personas</h3>
+        <ul>
+          <li>Servicios sociales y complementarios</li>
+          <li>Servicios educativos, culturales y deportivos</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--mut);margin:22px 0 14px">C · Coordinación institucional y municipal — el CMD no trabaja solo</p>
+    <div class="coord">
+      <h3>Coordinación institucional y municipal</h3>
+      <p>Una función transversal del CMD: articular con otros niveles de gobierno e instituciones para gestionar el distrito, gestionar convenios y canalizar recursos y servicios hacia Nosara.</p>
+      <div class="ichips">
+        <span class="ichip">Municipalidad de Nicoya</span>
+        <span class="ichip">Municipalidad de Santa Cruz (Ostional)</span>
+        <span class="ichip">Contraloría General de la República</span>
+        <span class="ichip">Procuraduría General de la República</span>
+        <span class="ichip">MOPT</span>
+        <span class="ichip">MEP</span>
+        <span class="ichip">CCSS</span>
+        <span class="ichip">Ministerio de Seguridad Pública</span>
+        <span class="ichip">Poder Judicial</span>
+        <span class="ichip">Comisión Nacional de Emergencias (CNE)</span>
+        <span class="ichip">Fuerzas policiales</span>
+        <span class="ichip">IFAM, INDER y otras instituciones</span>
+      </div>
+    </div>
+
+    <div class="aside">
+      <b>Auditoría Interna</b> — función de control que <b>NO depende de la Intendencia</b>: responde al Concejo Municipal de Distrito.
+      Independencia exigida por la Contraloría General de la República. Línea punteada hacia el Concejo, no hacia la Intendencia.
+    </div>
+    <div class="note" style="border-left:4px solid var(--ocean)">
+      <b>Optimización con IA:</b> agentes de inteligencia artificial <b>controlados por personal</b> pueden absorber las
+      funciones repetitivas —cobro y recordatorios, recepción de trámites, respuestas frecuentes, ordenamiento de datos y
+      reportes— para <b>reducir el costo administrativo</b> y liberar recursos hacia la inversión y los servicios. La persona
+      decide y responde; la IA ejecuta lo repetitivo bajo su control.
+    </div>
+  </section>
+
+  <!-- ====================== 3 · ÓRGANOS CONSULTIVOS ====================== -->
+  <section>
+    <h2>Vista 3 · Órganos consultivos de la comunidad</h2>
+    <div class="st">La comunidad opina (voz, no voto)</div>
+    <p style="font-size:14px;color:var(--mut);margin:0 0 14px;max-width:62em">El CMD abre espacios para que distintos sectores asesoren al Concejo y a la Intendencia con opinión y propuestas. Son consultivos: aportan voz y conocimiento, sin sustituir la decisión de los órganos electos.</p>
+    <div class="fgrid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="fcol"><h3>Personas Adultas Mayores</h3><ul><li>La voz de las personas mayores del distrito en las decisiones.</li></ul></div>
+      <div class="fcol"><h3>Consejo Juvenil</h3><ul><li>Voz y propuestas de la juventud de Nosara.</li></ul></div>
+      <div class="fcol"><h3>Consejo Jurídico</h3><ul><li>Abogados y abogadas de la comunidad que dan opinión jurídica: un lugar para que hablen y opinen.</li></ul></div>
+      <div class="fcol"><h3>Inversión, Empleo y Economía</h3><ul><li>Cámaras, emprendedores y negocios. Pro inversión, empleo y economía, de la mano con la comunidad.</li></ul></div>
+      <div class="fcol"><h3>Consejo Social</h3><ul><li>Programas comunitarios, áreas públicas, buen vivir y entidades que ayudan con programas sociales.</li></ul></div>
+      <div class="fcol"><h3>Consejo Ambiental</h3><ul><li>Conservación, zonas verdes, restauración y resiliencia ambiental.</li></ul></div>
+    </div>
+    <div class="aside">Estos consejos se vinculan por <b>línea punteada</b> con el Concejo y la Intendencia: <b>asesoran, no deciden</b>. Su valor es sentar a la mesa a quienes saben de cada tema y a quienes lo viven.</div>
+  </section>
+
+  <footer>
+    Documento <b>hipotético</b> para validación de concepto del CMD-Nosara.
+    Base: Ley 8173 (Ley General de Concejos Municipales de Distrito), arts. 6 y 7; práctica del CMD de Cóbano; FECOMUDI;
+    servicios según el Índice de Gestión de Servicios Municipales (IGSM) de la Contraloría General de la República.
+    No es estructura oficial; requiere estudio técnico y aprobación de los órganos competentes.
+    <b>Borrador v0</b> — ¿ideas o mejoras? Participá por el formulario de la página del CMD-Nosara.
+  </footer>
+  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html">← Página Principal</a><button class="pdf" onclick="window.print()">⬇️ Descargar PDF</button></nav>
+</div>
+</body>
+</html>

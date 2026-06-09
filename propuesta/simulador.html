@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sé Intendente/a de Nosara · Simulador del CMD (hipotético)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--teal:#0E6E7C;--ocean:#1AA3B0;--celeste:#5EC6D4;--crema:#EDF7F9;--gold:#E8A82C;--bosque:#2F6B4F;
+    --rojo:#B12028;--ink:#103038;--mut:#5f7a80;--line:#bcd6da;--font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:#f4fafb;line-height:1.5}
+  .wrap{max-width:880px;margin:0 auto;padding:30px 22px 64px}
+  header .tag{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ocean);font-weight:700}
+  header h1{font-size:clamp(22px,3.6vw,34px);font-weight:800;color:var(--teal);margin:6px 0 4px;letter-spacing:-.4px}
+  .hip{display:inline-block;background:var(--gold);color:#3a2c05;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-left:8px;vertical-align:middle}
+  .sub{color:var(--mut);font-size:14px;margin:8px 0 0;max-width:58em}
+  h2.sec{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--ocean);font-weight:700;margin:28px 0 10px}
+  /* tarjetas de decisión */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fff;border:1.5px solid var(--line);
+    border-radius:14px;padding:15px 16px;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,transform .12s,box-shadow .15s;box-shadow:0 3px 10px rgba(14,110,124,.05)}
+  .opt:hover{border-color:var(--ocean);transform:translateY(-2px);box-shadow:0 8px 20px rgba(14,110,124,.1)}
+  .opt .ico{font-size:26px;line-height:1}
+  .opt .ti{display:block;font-weight:700;color:var(--teal);font-size:15px}
+  .opt .ej{display:block;font-size:11.5px;color:var(--mut);margin-top:3px}
+  /* flujo */
+  #flow{display:none;margin-top:8px}
+  .decihead{background:linear-gradient(180deg,#fff,#f3fcfd);border:1.5px solid var(--ocean);border-radius:14px;padding:14px 18px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .decihead .d{font-weight:800;color:var(--teal);font-size:17px}
+  .decihead .e{font-size:12px;color:var(--mut)}
+  .prog{display:flex;gap:6px;margin:14px 0}
+  .prog .p{flex:1;height:6px;border-radius:99px;background:#dceaec}
+  .prog .p.on{background:var(--ocean)}
+  .stage{border-radius:14px;padding:16px 18px;margin:10px 0;border:1px solid var(--line);background:#fff;
+    opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .5s var(--ease);box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .stage.in{opacity:1;transform:none}
+  .stage .lab{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:6px}
+  .stage .lab .dot{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff}
+  .stage .lab .s{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+  .stage p{margin:6px 0 0;font-size:14.5px}
+  .stage .meta{font-size:12.5px;color:var(--mut);margin-top:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{font-size:12px;font-weight:600;color:var(--teal);background:var(--crema);border:1px solid #d3e7ea;border-radius:999px;padding:3px 10px}
+  .s1 .dot{background:var(--celeste)} .s1 .lab .s{color:#2a8aa0}
+  .s2 .dot{background:var(--gold)} .s2 .lab .s{color:#9a7410}
+  .s3 .dot{background:var(--ocean)} .s3 .lab .s{color:var(--ocean)}
+  .s4 .dot{background:var(--bosque)} .s4 .lab .s{color:var(--bosque)}
+  .s4{border-color:var(--bosque);background:linear-gradient(180deg,#fff,#f1f8f3)}
+  .res{font-weight:700;color:var(--bosque)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{font:inherit;font-weight:700;font-size:14px;border:none;border-radius:999px;padding:11px 20px;cursor:pointer}
+  .btn.p{background:var(--ocean);color:#fff} .btn.p:hover{background:#13848f}
+  .btn.g{background:#fff;color:var(--teal);border:1.5px solid var(--line)}
+  /* deliberación: argumentos + recomendación */
+  .args{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  @media(max-width:600px){.args{grid-template-columns:1fr}}
+  .argcol{border-radius:12px;padding:12px 14px;font-size:13.5px}
+  .argcol h4{margin:0 0 7px;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase}
+  .argcol.fav{background:#f1f8f3;border:1px solid #bfe0cb} .argcol.fav h4{color:var(--bosque)}
+  .argcol.con{background:#fff5f3;border:1px solid #f0cbc6} .argcol.con h4{color:#b1502a}
+  .argcol ul{margin:0;padding-left:16px} .argcol li{margin:4px 0}
+  .recq{font-weight:800;color:var(--teal);margin:15px 0 8px;font-size:14.5px}
+  .recs{display:flex;flex-direction:column;gap:8px}
+  .rec{text-align:left;font:inherit;font-weight:600;font-size:14px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+  .rec:hover{border-color:var(--ocean);background:var(--crema)}
+  .youchose{font-size:13px;color:var(--mut);margin-bottom:10px}
+  .youchose b{color:var(--teal)}
+  .proc{display:flex;flex-direction:column;gap:7px;margin:6px 0 0}
+  .proc .row{display:flex;gap:9px;align-items:flex-start;font-size:13.5px}
+  .proc .row .ic{flex:0 0 auto;font-size:17px;line-height:1.2}
+  .cta{margin-top:15px;background:linear-gradient(180deg,#fff,#f1f8f3);border:1.5px solid var(--bosque);border-radius:14px;padding:16px 18px;text-align:center}
+  .cta p{margin:0 0 11px;font-weight:700;color:var(--teal)}
+  .cta a{display:inline-block;text-decoration:none;background:var(--bosque);color:#fff;font-weight:800;border-radius:999px;padding:12px 24px}
+  .cta a:hover{background:#27583f}
+  footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <style>.cmd-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button.pdf{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 18px;cursor:pointer;font-family:inherit;line-height:1}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.pdf{border:none;background:#1AA3B0;color:#fff}.cmd-nav button.pdf:hover{background:#13848f}@media print{.cmd-nav{display:none!important}}</style>
+  <nav class="cmd-nav"><a class="back" href="../index.html">← Página Principal</a></nav>
+  <header>
+    <div class="tag">Nosara, Guanacaste · Distrito en red</div>
+    <h1>Sé Intendente/a de Nosara <span class="hip">SIMULADOR HIPOTÉTICO</span></h1>
+    <p class="sub">Ponete en los zapatos de quien gobierna: conocé el tema, <b>sopesá los argumentos a favor y en contra</b> y recomendá qué debería hacer el CMD. Al final ves cómo se decidiría cerca de la gente. Inspirado en las simulaciones de política pública de <i>Voice of the People / Program for Public Consultation</i>.</p>
+  </header>
+
+  <div id="picker">
+    <h2 class="sec">Elegí una decisión</h2>
+    <div class="grid" id="opts"></div>
+  </div>
+
+  <div id="flow">
+    <div class="decihead"><div><div class="d" id="f-title"></div><div class="e" id="f-eje"></div></div><div style="font-size:30px" id="f-ico"></div></div>
+    <div class="prog" id="prog"></div>
+    <div id="stages"></div>
+    <div class="btns">
+      <button class="btn p" id="next">Siguiente paso →</button>
+      <button class="btn g" id="restart">↺ Probar otra decisión</button>
+    </div>
+  </div>
+
+  <footer>
+    Simulador <b>hipotético</b> con fines educativos sobre cómo funcionaría el CMD-Nosara. El recorrido tema →
+    argumentos → recomendación → resultado se inspira en las simulaciones de política pública de Voice of the People /
+    Program for Public Consultation, y refleja la Ley 8173 (Concejo que aprueba + Intendencia que ejecuta) y el
+    organigrama funcional propuesto. Datos del Censo Nosara 2024 y del balance fiscal del distrito. Argumentos y
+    recomendaciones ilustrativos; no es una votación oficial ni gestión real.
+  </footer>
+  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html">← Página Principal</a><button class="pdf" onclick="window.print()">⬇️ Descargar PDF</button></nav>
+</div>
+
+<script>
+"use strict";
+const STAGES=[
+  {s:"1 · El tema", ico:"📋", cls:"s1"},
+  {s:"2 · Sopesá los argumentos", ico:"⚖️", cls:"s2"},
+  {s:"3 · Resultado y tu voz", ico:"✅", cls:"s4"},
+];
+const D=[
+ {ico:"🛣️", title:"Arreglar un camino en mal estado", eje:"Eje 02 · Ambiente, agua y territorio",
+  briefing:"Vecinas y vecinos de un barrio reportan un camino intransitable en invierno: aísla casas, comercio y dificulta el paso de la ambulancia.",
+  dato:"El 77% de la red vial del distrito está en estado regular o malo.",
+  fav:["Un camino transitable todo el año conecta barrios, comercio y emergencias.","Existe una transferencia específica para red vial (Ley 8114), no sale solo de fondos propios."],
+  con:["La inversión vial compite con otras urgencias como el agua o las becas.","No basta la obra: requiere mantenimiento continuo después."],
+  options:[{label:"Priorizarlo este año con inversión directa + Ley 8114"},{label:"Hacerlo por etapas, con vecinos y cofinanciamiento"}],
+  concejo:"lo prioriza y lo incluye en el plan y el presupuesto del año.",
+  funciones:["Gestión Vial (UTGV)","Contratación","Tesorería","Planificación y Territorio"],
+  ejecuta:"contrata la obra, la supervisa y la financia con inversión propia y la transferencia de la Ley 8114.",
+  fin:"Inversión directa + transferencia Ley 8114/9329",
+  resultado:"El camino queda transitable todo el año; el contrato y el avance se publican.",
+  indicador:"Vías en mal estado: de 77% → menos cada año"},
+ {ico:"🎓", title:"Becas para que estudiantes no dejen el colegio", eje:"Eje 03 · Desarrollo humano y social",
+  briefing:"El colegio y varias familias piden apoyo: jóvenes en riesgo están dejando los estudios por el costo de vida y la presión por trabajar.",
+  dato:"El costo de vida en Nosara es de los más altos del país, lo que empuja a familias y jóvenes a abandonar el colegio.",
+  fav:["Reduce la deserción y abre futuro a la juventud local.","Cuesta poco frente al impacto social que genera."],
+  con:["Hay que definir criterios de asignación justos y transparentes.","Debe sostenerse en el tiempo, no ser de un solo año."],
+  options:[{label:"Crear el programa distrital ya (≥200 becas/año)"},{label:"Empezar con un piloto y escalar según resultados"}],
+  concejo:"aprueba crear un programa distrital de becas con reglas claras de asignación.",
+  funciones:["Programas sociales","Tesorería","Plataforma de Servicios"],
+  ejecuta:"selecciona con criterios transparentes, gira las becas y da seguimiento a la permanencia escolar.",
+  fin:"Programas y servicios",
+  resultado:"Becas entregadas cada año; menos deserción y más jóvenes terminando el colegio.",
+  indicador:"Tasa de deserción escolar a la baja"},
+ {ico:"🗣️", title:"Capacitación gratuita en inglés y oficios", eje:"Eje 01 · Economía local y empleo digno",
+  briefing:"Jóvenes y trabajadores del turismo piden aprender inglés y oficios gratis para acceder a los empleos mejor pagados del distrito.",
+  dato:"El turismo es la economía principal, pero muchos de sus empleos mejor remunerados exigen inglés que la gente local no pudo estudiar.",
+  fav:["Mejores empleos en el propio turismo del distrito, sin tener que migrar.","Aprovecha alianzas existentes con INA y universidades públicas."],
+  con:["Requiere constancia y seguimiento de quienes se inscriben.","Compite por recursos con otros programas sociales."],
+  options:[{label:"Programa amplio (≥600 personas/año)"},{label:"Arrancar con cupos y alianzas, y luego ampliar"}],
+  concejo:"aprueba el programa y habilita alianzas (INA, universidades, sector turismo).",
+  funciones:["Programas y servicios","Comunicación","Alianzas interinstitucionales"],
+  ejecuta:"organiza los cursos, convoca y certifica a las personas participantes.",
+  fin:"Programas y servicios + alianzas",
+  resultado:"Cientos de personas capacitadas por año; mejores empleos y mejor servicio al visitante.",
+  indicador:"Personas capacitadas / empleabilidad local"},
+ {ico:"🛍️", title:"Campaña de comercio y turismo local", eje:"Eje 01 · Economía local y empleo digno",
+  briefing:"Sodas, hoteles pequeños y comercio local piden ayuda para atraer más turismo nacional costarricense, sobre todo en temporada baja.",
+  dato:"En temporada baja caen las ventas del comercio local, que compite con una oferta orientada al turismo extranjero.",
+  fav:["Más ventas para sodas y comercio del distrito en temporada baja.","Pone en valor el turismo nacional costarricense, más estable."],
+  con:["El impacto depende de una difusión sostenida, no de una sola campaña.","No sustituye mejoras de fondo como el agua o las vías."],
+  options:[{label:"Campaña anual + directorio del comercio local"},{label:"Empezar con un directorio digital de bajo costo"}],
+  concejo:"aprueba una campaña anual y un directorio del comercio local.",
+  funciones:["Comunicación","Hacienda (patentes)","Alianzas interinstitucionales"],
+  ejecuta:"lanza la campaña «consumí local», arma el directorio y mide su impacto.",
+  fin:"Programas y servicios",
+  resultado:"Campaña activa + directorio publicado; más ventas para el comercio del distrito.",
+  indicador:"Comercios participantes y ventas en temporada baja"},
+ {ico:"🎉", title:"25 de julio + programas sociales (vivienda, salud, empleo)", eje:"Eje 03 · Desarrollo humano y social",
+  briefing:"La comunidad pide celebrar la Anexión de Guanacaste y, a la vez, reforzar apoyos en vivienda, salud y empleo para las familias.",
+  dato:"En Nosara conviven gran riqueza turística y familias locales que no acceden a vivienda digna ni a los mismos servicios.",
+  fav:["Fortalece la identidad guanacasteca y atiende necesidades sociales reales.","Articula instituciones nacionales (IMAS, CCSS, MIVAH) que ya existen."],
+  con:["Lo cultural no debe opacar lo social estructural.","Depende de coordinar con varias instituciones a la vez."],
+  options:[{label:"Agenda cultural + programas sociales juntos"},{label:"Concentrar primero el esfuerzo en programas sociales"}],
+  concejo:"aprueba la agenda cultural y articula los programas sociales con instituciones nacionales.",
+  funciones:["Programas sociales","Cultura y deporte","Alianzas (IMAS, CCSS, MIVAH)","Comunicación"],
+  ejecuta:"organiza la fiesta del 25 de julio y coordina vivienda, salud y empleo con las instituciones.",
+  fin:"Programas y servicios + alianzas interinstitucionales",
+  resultado:"Celebración de la Anexión y familias atendidas en vivienda, salud y empleo.",
+  indicador:"Familias atendidas + agenda cultural anual"},
+ {ico:"🚑", title:"Reforzar la ambulancia (Cruz Roja) y los bomberos", eje:"Eje 03 · Desarrollo humano y social",
+  briefing:"La comunidad pide que la ambulancia y los bomberos respondan más rápido: Nosara está a unos 60 km de Nicoya y las emergencias no esperan.",
+  dato:"La tasa de homicidios es 7 veces el promedio nacional y crecen las emergencias médicas; retener personal es difícil por el costo de vida.",
+  fav:["Una respuesta más rápida salva vidas en un distrito alejado.","Un convenio claro con aporte anual ordena y da continuidad al apoyo."],
+  con:["El aporte debe rendirse y auditarse para que llegue a destino.","No reemplaza la responsabilidad de la CCSS y el Estado."],
+  options:[{label:"Convenio + aporte ₡40M/año"},{label:"Aporte inicial menor + gestión de donaciones y equipo"}],
+  concejo:"aprueba un convenio y un aporte anual a la Cruz Roja de Nosara y al Cuerpo de Bomberos.",
+  funciones:["Programas y servicios","Tesorería","Asesoría Legal (convenio)"],
+  ejecuta:"formaliza el convenio, gira el aporte y coordina la atención de emergencias con Cruz Roja y Bomberos.",
+  fin:"Programas y servicios (aporte ₡40M/año en el presupuesto)",
+  resultado:"Ambulancia y bomberos con más recursos y mejor respuesta; el aporte y su uso se publican.",
+  indicador:"Tiempo de respuesta en emergencias · aporte anual ejecutado"},
+];
+
+const opts=document.getElementById('opts');
+D.forEach((d,i)=>{
+  const b=document.createElement('button');b.className='opt';
+  b.innerHTML=`<span class="ico">${d.ico}</span><span><span class="ti">${d.title}</span><span class="ej">${d.eje}</span></span>`;
+  b.onclick=()=>start(i);
+  opts.appendChild(b);
+});
+
+const picker=document.getElementById('picker'),flow=document.getElementById('flow'),stagesEl=document.getElementById('stages'),progEl=document.getElementById('prog'),nextBtn=document.getElementById('next');
+let cur=-1,step=0,chosen=null;
+
+function start(i){
+  cur=i;step=0;chosen=null;
+  const d=D[i];
+  document.getElementById('f-title').textContent=d.title;
+  document.getElementById('f-eje').textContent=d.eje;
+  document.getElementById('f-ico').textContent=d.ico;
+  stagesEl.innerHTML='';
+  progEl.innerHTML=STAGES.map((_,k)=>`<span class="p" data-k="${k}"></span>`).join('');
+  picker.style.display='none';flow.style.display='block';
+  addStage();
+  flow.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function addStage(){
+  const d=D[cur],st=STAGES[step];
+  let inner='';
+  if(step===0){
+    inner=`<p>${d.briefing}</p><div class="meta">📊 ${d.dato}</div>`;
+  } else if(step===1){
+    inner=`<div class="args">`
+      +`<div class="argcol fav"><h4>✔ A favor</h4><ul>${d.fav.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
+      +`<div class="argcol con"><h4>⚠ A considerar</h4><ul>${d.con.map(x=>`<li>${x}</li>`).join('')}</ul></div>`
+      +`</div><p class="recq">¿Qué le recomendás al CMD?</p>`
+      +`<div class="recs">${d.options.map((o,k)=>`<button class="rec" data-o="${k}">${o.label}</button>`).join('')}</div>`;
+  } else {
+    inner=`<div class="youchose">Tu recomendación: <b>${chosen}</b></div>`
+      +`<p style="margin:0 0 8px">Así lo decidiría un Concejo Municipal cercano a la gente:</p>`
+      +`<div class="proc">`
+      +`<div class="row"><span class="ic">🧑‍🤝‍🧑</span><span><b>La comunidad</b> lo plantea y lo respalda.</span></div>`
+      +`<div class="row"><span class="ic">🏛️</span><span><b>El Concejo</b> (Sindicatura preside + concejales) ${d.concejo}</span></div>`
+      +`<div class="row"><span class="ic">⚙️</span><span><b>La Intendencia</b> ${d.ejecuta}</span></div>`
+      +`<div class="row"><span class="ic">✅</span><span class="res">${d.resultado}</span></div>`
+      +`</div><div class="chips">${d.funciones.map(f=>`<span class="chip">${f}</span>`).join('')}</div>`
+      +`<div class="meta">Financiamiento: ${d.fin} · Indicador: ${d.indicador} · se publica en el portal de transparencia.</div>`
+      +`<div class="cta"><p>Esto es exactamente lo que decidiría Nosara con su propio Concejo. ¿Querés que pueda hacerlo?</p><a href="../index.html#sumate">🙋 Sumate a que Nosara decida →</a></div>`;
+  }
+  const el=document.createElement('div');el.className='stage '+st.cls;
+  el.innerHTML=`<div class="lab"><span class="dot">${st.ico}</span><span class="s">${st.s}</span></div>${inner}`;
+  stagesEl.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));
+  progEl.querySelector(`[data-k="${step}"]`).classList.add('on');
+  if(step===1){
+    el.querySelectorAll('.rec').forEach(btn=>btn.onclick=()=>{chosen=d.options[+btn.dataset.o].label;step=2;nextBtn.style.display='none';addStage();});
+  }
+  nextBtn.style.display=(step===0)?'':'none';
+}
+nextBtn.onclick=()=>{ if(step===0){ step=1; addStage(); } };
+document.getElementById('restart').onclick=()=>{ flow.style.display='none';picker.style.display='block';chosen=null;window.scrollTo({top:0,behavior:'smooth'}); };
+</script>
+</body>
+</html>
