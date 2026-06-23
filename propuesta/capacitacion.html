@@ -30,8 +30,36 @@
   .note b{color:var(--teal)}
   .funcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
   .chip{font-size:12px;font-weight:600;color:var(--teal);background:#fff;border:1px solid #d3e7ea;border-radius:999px;padding:3px 10px}
+
+  /* Videoteca */
+  .channels{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 18px}
+  .ch-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;font-weight:700;color:#fff;background:var(--teal);border-radius:999px;padding:7px 14px;transition:background .2s}
+  .ch-link:hover{background:#0a555f}
+  .ch-link svg{flex-shrink:0}
+  .embed-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 0 22px}
+  @media(max-width:760px){.embed-row{grid-template-columns:1fr}}
+  .embed-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(14,110,124,.06)}
+  .embed-box iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+  .embed-box .eb-label{padding:8px 14px;font-size:13px;font-weight:700;color:var(--teal);display:flex;align-items:center;justify-content:space-between}
+  .embed-box .eb-label a{font-size:12px;font-weight:600;color:var(--ocean);text-decoration:none}
+  .embed-box .eb-label a:hover{text-decoration:underline}
+  .topics{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+  .topic-btn{font-size:12.5px;font-weight:600;color:var(--teal);background:#fff;border:1.5px solid #d3e7ea;border-radius:999px;padding:5px 13px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .topic-btn:hover{background:var(--crema)}
+  .topic-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 3px 10px rgba(14,110,124,.05);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;text-decoration:none;color:inherit}
+  .pcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(14,110,124,.12)}
+  .pcard .ptitle{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3;margin:0 0 6px}
+  .pcard .pmeta{display:flex;align-items:center;gap:6px;margin-top:auto;flex-wrap:wrap}
+  .pcard .pvids{font-size:11.5px;font-weight:700;color:var(--ocean);background:#e8f6f8;border-radius:999px;padding:2px 9px}
+  .pcard .psrc{font-size:11px;font-weight:600;color:var(--mut)}
+  .topic-group{margin-bottom:14px}
+  .topic-group h3{font-size:14px;font-weight:800;color:var(--teal);margin:0 0 10px;padding-left:2px}
+  .topic-group[hidden]{display:none}
+
   footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
-  @media print{body{background:#fff}.card,.lead{box-shadow:none}}
+  @media print{body{background:#fff}.card,.lead,.vcard{box-shadow:none}}
 </style>
 </head>
 <body>
@@ -85,7 +113,349 @@
       <a href="https://www.youtube.com/@ProDUS-UCR/videos" target="_blank" rel="noopener" data-en="View videos →">Ver videos →</a>
     </div>
   </div>
-  <p style="font-size:12.5px;color:var(--mut);margin:10px 0 0" data-en="More learning and research resources will be added.">Más recursos de aprendizaje e investigación se irán sumando.</p>
+  <!-- ── Videoteca Municipal ── -->
+  <h2 class="sec" data-en="Municipal Video Library · ~400+ training videos">Videoteca Municipal · ~400+ videos de capacitación</h2>
+
+  <div class="channels">
+    <a class="ch-link" href="https://www.youtube.com/@IDEARIO1/videos" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.4-1.9.5-5.8.5-5.8s0-3.9-.5-5.8Z"/><path fill="#fff" d="m9.6 15.6 6.3-3.6-6.3-3.6v7.2Z"/></svg>
+      <span data-en="IFCMDL · UNED (~120 videos)">IFCMDL · UNED (~120 videos)</span>
+    </a>
+    <a class="ch-link" href="https://www.youtube.com/@CICAPUCR/videos" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.4-1.9.5-5.8.5-5.8s0-3.9-.5-5.8Z"/><path fill="#fff" d="m9.6 15.6 6.3-3.6-6.3-3.6v7.2Z"/></svg>
+      <span data-en="CICAP · UCR (~130 videos)">CICAP · UCR (~130 videos)</span>
+    </a>
+    <a class="ch-link" href="https://www.youtube.com/@ICAP_/videos" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.4-1.9.5-5.8.5-5.8s0-3.9-.5-5.8Z"/><path fill="#fff" d="m9.6 15.6 6.3-3.6-6.3-3.6v7.2Z"/></svg>
+      <span data-en="ICAP (~160 videos)">ICAP (~160 videos)</span>
+    </a>
+    <a class="ch-link" href="https://www.youtube.com/@ProDUS-UCR/videos" target="_blank" rel="noopener" style="background:var(--bosque)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.4-1.9.5-5.8.5-5.8s0-3.9-.5-5.8Z"/><path fill="#fff" d="m9.6 15.6 6.3-3.6-6.3-3.6v7.2Z"/></svg>
+      <span>ProDUS · UCR</span>
+    </a>
+  </div>
+
+  <!-- ── Reproductores embebidos: todo el contenido de cada canal ── -->
+  <p style="font-size:13px;color:var(--mut);margin:0 0 10px" data-en="Browse all videos from each channel directly. Use the ☰ menu in the player to navigate the playlist.">Navegá todos los videos de cada canal directamente. Usá el menú ☰ del reproductor para recorrer la lista.</p>
+  <div class="embed-row">
+    <div class="embed-box">
+      <iframe src="https://www.youtube.com/embed/videoseries?list=UUsBF290wlL7mxXsbCZ0sJ6Q" title="IFCMDL · UNED" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="eb-label"><span>IFCMDL · UNED</span><a href="https://www.youtube.com/@IDEARIO1/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
+    </div>
+    <div class="embed-box">
+      <iframe src="https://www.youtube.com/embed/videoseries?list=UUqhvYkH2sNqMc481w4tMa0w" title="CICAP · UCR" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="eb-label"><span>CICAP · UCR</span><a href="https://www.youtube.com/@CICAPUCR/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
+    </div>
+    <div class="embed-box">
+      <iframe src="https://www.youtube.com/embed/videoseries?list=UUeic026JSIC4suWe_tQKpZQ" title="ICAP" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="eb-label"><span>ICAP</span><a href="https://www.youtube.com/@ICAP_/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
+    </div>
+  </div>
+
+  <!-- ── Catálogo de playlists por tema ── -->
+  <h2 class="sec" data-en="Playlists by topic (52 series · 400+ videos)">Playlists por tema (52 series · 400+ videos)</h2>
+
+  <div class="topics" id="topic-filter">
+    <button class="topic-btn active" data-topic="all" data-en="All (52)">Todos (52)</button>
+    <button class="topic-btn" data-topic="charlas" data-en="Talks &amp; Webinars">Charlas y Webinarios</button>
+    <button class="topic-btn" data-topic="foros" data-en="Forums &amp; Conferences">Foros y Conferencias</button>
+    <button class="topic-btn" data-topic="gobernanza" data-en="Governance">Gobernanza y Buen Gobierno</button>
+    <button class="topic-btn" data-topic="contratacion" data-en="Procurement">Contratación Pública</button>
+    <button class="topic-btn" data-topic="social" data-en="Social Protection">Protección Social</button>
+    <button class="topic-btn" data-topic="derecho" data-en="Law &amp; Integration">Derecho e Integración</button>
+    <button class="topic-btn" data-topic="formacion" data-en="Continuing Education">Formación Continua</button>
+    <button class="topic-btn" data-topic="investigacion" data-en="Research &amp; OECD">Investigación y OCDE</button>
+    <button class="topic-btn" data-topic="ciudadania" data-en="Citizenship &amp; Territory">Ciudadanía y Territorio</button>
+    <button class="topic-btn" data-topic="institucional" data-en="Institutional">Institucional</button>
+  </div>
+
+  <div id="videoteca">
+
+    <!-- ── Charlas y Webinarios ── -->
+    <div class="topic-group" data-group="charlas">
+      <h3 data-en="🎤 Talks &amp; Webinars">🎤 Charlas y Webinarios</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F2oNzYALX4FXprUhSTPoiSo" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Discussions and Webinars">Conversatorios y Webinars</div>
+          <div class="pmeta"><span class="pvids" data-en="26 videos">26 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F2AlIUGo8Czw1o5AMqYQGse" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="CICAP Talks">Charlas CICAP</div>
+          <div class="pmeta"><span class="pvids" data-en="22 videos">22 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F1ozqmvsihPVbAJNQ3Eq7m5" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="#Conectados Talks">#Conectados Charlas</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLcbYSlauAea_iOA8zDbCzKaEes6jpIb4B" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Virtual Talks">Charlas Virtuales</div>
+          <div class="pmeta"><span class="pvids" data-en="8 videos">8 videos</span><span class="psrc">IFCMDL · UNED</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypwYoCOxe6mK26L-GE-2JpE" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="ICAP Webinars">Webinarios ICAP</div>
+          <div class="pmeta"><span class="pvids" data-en="8 videos">8 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyolQOjVzjsPpVFzCdWoRL1M" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Recent Discussions">Últimos conversatorios</div>
+          <div class="pmeta"><span class="pvids" data-en="22 videos">22 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Foros y Conferencias ── -->
+    <div class="topic-group" data-group="foros">
+      <h3 data-en="🏛️ Forums &amp; Conferences">🏛️ Foros y Conferencias</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyrqBUXHJYPsAqC9O2_JTZ5o" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="19th Public Function Forum">XIX Foro de la Función Pública</div>
+          <div class="pmeta"><span class="pvids" data-en="11 videos">11 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypIR2S_mHmA59IDJhwnyMga" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Public Function Forum 2020">Foro de la Función Pública 2020</div>
+          <div class="pmeta"><span class="pvids" data-en="5 videos">5 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyrvLqmaKU09v2uqkEjt6jmD" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="21st Public Function Forum">XXI Foro de la Función Pública</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F2r21NB0KUqfAb-g3QAMiOU" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="18th INPAE Conference 2024">XVIII Conferencia INPAE 2024</div>
+          <div class="pmeta"><span class="pvids" data-en="11 videos">11 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F1rfy2gEmWg_mS0MCm6xZKG" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="CICAP Research Day 2024">Jornada de Investigación CICAP 2024</div>
+          <div class="pmeta"><span class="pvids" data-en="10 videos">10 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F3tGcUWP_AK5d2mv-1lz9vq" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Evaluation Week 2023 #glocal">Semana de la Evaluación 2023 #glocal</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Gobernanza y Buen Gobierno ── -->
+    <div class="topic-group" data-group="gobernanza">
+      <h3 data-en="⚖️ Governance &amp; Good Government">⚖️ Gobernanza y Buen Gobierno</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypzC-fCxunP0qh7z4nXIa49" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Reflection sessions: &quot;Towards good government&quot;">Jornadas de Reflexión: «Hacia el buen gobierno»</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqFJ1Dl9rSFnCVZXdxFJ3XF" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="ICAP-INCENTIVA (innovation &amp; governance)">ICAP-INCENTIVA (innovación y gobernanza)</div>
+          <div class="pmeta"><span class="pvids" data-en="20 videos">20 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypt2JoSJUOjkna_nmc_DEO7" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Scenarios in a transformed world">Escenarios en un mundo transformado</div>
+          <div class="pmeta"><span class="pvids" data-en="6 videos">6 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypsJi2KojnOuXmy9UFLuCMA" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Employment &amp; Public Management">Empleo y Gestión Pública</div>
+          <div class="pmeta"><span class="pvids" data-en="2 videos">2 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Contratación Pública ── -->
+    <div class="topic-group" data-group="contratacion">
+      <h3 data-en="📋 Public Procurement &amp; Sustainability">📋 Contratación Pública y Sostenibilidad</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypFnklR99EICxI8LGeuXegG" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Eco-labeling &amp; Sustainable Public Procurement Forums">Foros: Ecoetiquetado y Compras Públicas Sostenibles</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F1QfQvriMmiBSxvVceXC1DV" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="International Public Sector Accounting (NICSP)">Normas Internacionales Contabilidad Sector Público (NICSP)</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Protección Social ── -->
+    <div class="topic-group" data-group="social">
+      <h3 data-en="🤝 Social Protection &amp; Social Security">🤝 Protección Social y Seguridad Social</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F0AIky_jjo_DuRg-ph7XUMV" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Dialogues on Social Protection">Diálogos sobre Protección Social</div>
+          <div class="pmeta"><span class="pvids" data-en="15 videos">15 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqMYdfPRuCHqteIYqVnIQTE" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Discussion: Health &amp; Social Security">Conversatorio: Salud y Seguridad Social</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyq5KlfO3qreUCl6WX-Q09Ji" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Social Security Challenges">Desafíos de la Seguridad Social</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Derecho e Integración ── -->
+    <div class="topic-group" data-group="derecho">
+      <h3 data-en="📜 Law &amp; Central American Integration">📜 Derecho e Integración Centroamericana</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyoOhrQaAfixsd8SaUiqX6_4" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Diploma: Central American Community Law (ICAP-SICA)">Diplomado: Derecho Comunitario Centroamericano (ICAP-SICA)</div>
+          <div class="pmeta"><span class="pvids" data-en="9 videos">9 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLcbYSlauAea-KqxcmSl4N9bkrf_dofB-p" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Political Dialogues from the Territories (Elections 2022)">Diálogos Políticos desde los Territorios (Elecciones 2022)</div>
+          <div class="pmeta"><span class="pvids" data-en="7 videos">7 videos</span><span class="psrc">IFCMDL · UNED</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLUHbMjude2dWOeKZR77zwdFmB5kALAhiF" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Local Law Module">Bloque Derecho Local</div>
+          <div class="pmeta"><span class="pvids" data-en="Serie">Serie</span><span class="psrc">IFCMDL · UNED</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Formación Continua ── -->
+    <div class="topic-group" data-group="formacion">
+      <h3 data-en="🎓 Continuing Education &amp; Postgraduate Programs">🎓 Formación Continua y Posgrados</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F01Xk3cbbi57SwkgkAPk1U5" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Continuing Education Training">Capacitaciones Educación Continua</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F0j9t9Tomzfl689E6gibBon" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="ECA-41 Program">Programa ECA-41</div>
+          <div class="pmeta"><span class="pvids" data-en="15 videos">15 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F1VjeQSlK0ew3lShuJqy7Tc" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="TCA-38 Program">Programa TCA-38</div>
+          <div class="pmeta"><span class="pvids" data-en="5 videos">5 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypFEM_-34qZmQqoVKRPzDG9" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Continuing Education Courses">Cursos de Formación Continua</div>
+          <div class="pmeta"><span class="pvids" data-en="6 videos">6 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypZfyxzhGcTmZMHf8cCIrIT" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Open House 2025 — Master's Programs">OpenHouse 2025 — Maestrías</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqTY3ncKhSC2a_TDEZMx8FH" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Open House 2025 — Doctoral Program">OpenHouse 2025 — Doctorado</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqZ_n6LUZCUBGY6TF_fYkUB" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Postgraduate Graduations">Graduaciones de Posgrados</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Investigación y OCDE ── -->
+    <div class="topic-group" data-group="investigacion">
+      <h3 data-en="🔬 Research &amp; OECD">🔬 Investigación y OCDE</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F0J-TL1XFp0TLcEYNvfc1cU" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Vodcast: OECD Liaison Chair">Vodcast: Cátedra de Enlace OCDE</div>
+          <div class="pmeta"><span class="pvids" data-en="9 videos">9 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyogon-IQ4d-HjuKgqIlg0ew" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Neuroscience &amp; Public Management">Neurociencia y Gestión Pública</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypP_swXlhuJkA91UG2OFGqD" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Investment Project Preparation">La Preparación de Proyectos de Inversión</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Ciudadanía y Territorio ── -->
+    <div class="topic-group" data-group="ciudadania">
+      <h3 data-en="🌎 Citizenship, Territory &amp; Innovation">🌎 Ciudadanía, Territorio e Innovación</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLcbYSlauAea9lk5P83A-P5ri5IElr5PKT" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Bicentennial Stories">Historias del Bicentenario</div>
+          <div class="pmeta"><span class="pvids" data-en="8 videos">8 videos</span><span class="psrc">IFCMDL · UNED</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyp6X4K2gcemCuRO_vj1OKVQ" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Building Digital Citizenship">Construcción de ciudadanía digital</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyr0aWnC6X1-yir4YzEBJ_vV" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Smart Cities — experiences &amp; trends">Ciudades Inteligentes — experiencias y tendencias</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyrDWdqw4nPZPl2er6fZEs0f" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Women at ICAP">Mujeres ICAP</div>
+          <div class="pmeta"><span class="pvids" data-en="7 videos">7 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Institucional ── -->
+    <div class="topic-group" data-group="institucional">
+      <h3 data-en="🏢 Institutional">🏢 Institucional</h3>
+      <div class="pgrid">
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F3lwVz_bSP9XP_agbzS2zkb" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Promotional videos">Promocionales</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F1SEYFd7JEn2WLbgmD58pD6" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="We are UCR">Somos UCR</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PLSwyDaUpI1F0WjY9PLcmM5slY3kowpQUX" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Technical Programs">Programas técnicos</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">CICAP · UCR</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPypU1I0dVoBsA5PieiS1k5HY" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="ICAP Promotion">Promoción ICAP</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqiE7H8jfHx0CsAvNQ8i906" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Who are we?">¿Quiénes somos?</div>
+          <div class="pmeta"><span class="pvids" data-en="9 videos">9 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqhh7NKUonH90OJR8s5R7cS" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Institutional Dossier">Dossier Institucional</div>
+          <div class="pmeta"><span class="pvids" data-en="7 videos">7 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyovt8rc1_raIzCJAh06oofB" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="ICAP News">ICAP News</div>
+          <div class="pmeta"><span class="pvids" data-en="4 videos">4 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyrphYUy41JVCVGKRB6KhHCU" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Our Teaching Staff">Nuestro Equipo Docente</div>
+          <div class="pmeta"><span class="pvids" data-en="7 videos">7 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyplqYTZ8pbqXW1pepqVRuto" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Our Students' Opinions">Nuestros Estudiantes Opinan</div>
+          <div class="pmeta"><span class="pvids" data-en="9 videos">9 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyow7t6v1X-Xvm4M7QRFyZ2T" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Open Lectures">Cátedras abiertas</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyoG9K1ypFyazQOkn0mrVcS9" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="2025 Graduates">Graduados 2025</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyo97ZE-vKPh3iaMc_3W5Dsa" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Closing Ceremonies">Clausuras</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyo12FlX-vNvjSA1MtS_GnTH" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="COVID Center">Centro COVID</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyqNLhIJquszbi9ZGpsavVom" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Panama">Panamá</div>
+          <div class="pmeta"><span class="pvids" data-en="1 video">1 video</span><span class="psrc">ICAP</span></div>
+        </a>
+        <a class="pcard" href="https://www.youtube.com/playlist?list=PL-oAkBvRlPyriQtcCWo66RCzg8cJ9bk5p" target="_blank" rel="noopener">
+          <div class="ptitle" data-en="Video Tutorials">Videotutoriales</div>
+          <div class="pmeta"><span class="pvids" data-en="3 videos">3 videos</span><span class="psrc">ICAP</span></div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="font-size:12.5px;color:var(--mut);margin:10px 0 0" data-en="52 playlists indexed from 3 institutional YouTube channels. Each playlist links directly to YouTube where all videos play in order. Channels are updated by each institution — new content appears automatically in the embedded players above.">52 playlists indexadas de 3 canales institucionales de YouTube. Cada playlist enlaza directo a YouTube donde todos los videos se reproducen en orden. Los canales se actualizan por cada institución — contenido nuevo aparece automáticamente en los reproductores embebidos de arriba.</p>
 
   <div class="note" data-en="<b>For any of the CMD's functions.</b> These institutions cover what the district needs:<div class='funcs'><span class='chip'>Treasury &amp; collection</span><span class='chip'>Internal control &amp; audit</span><span class='chip'>Planning &amp; land use</span><span class='chip'>Procurement</span><span class='chip'>Road &amp; environmental management</span><span class='chip'>Public service</span><span class='chip'>Council: deliberate &amp; oversee</span></div>">
     <b>Para cualquiera de las funciones del CMD.</b> Estas instituciones cubren lo que el distrito necesita:
@@ -102,10 +472,11 @@
     gobernar mañana.
   </div>
 
-  <footer data-en="Links to Costa Rican public institutions (UNED, UCR-CICAP, UCR-ProDUS, IFAM, MIDEPLAN). Each institution sets its own offering and requirements; check dates and availability on their sites. The Municipal District Council of Nosara is a proposal subject to the plebiscite; training, however, is available today.">
-    Enlaces a instituciones públicas de Costa Rica (UNED, UCR-CICAP, UCR-ProDUS, IFAM, MIDEPLAN). La oferta y los requisitos los
-    define cada institución; verificá fechas y cupos en sus sitios. El Concejo Municipal de Distrito de Nosara es una
-    propuesta sujeta al plebiscito; la capacitación, en cambio, está disponible desde hoy.
+  <footer data-en="Links and videos from Costa Rican public institutions (UNED-IFCMDL, UCR-CICAP, ICAP, UCR-ProDUS, IFAM, MIDEPLAN). 52 playlists indexed with 400+ training videos. Each institution sets its own offering and requirements; check dates and availability on their sites. The Municipal District Council of Nosara is a proposal subject to the plebiscite; training, however, is available today.">
+    Enlaces y videos de instituciones públicas de Costa Rica (UNED-IFCMDL, UCR-CICAP, ICAP, UCR-ProDUS, IFAM, MIDEPLAN).
+    52 playlists indexadas con 400+ videos de capacitación. La oferta y los requisitos los define cada institución; verificá
+    fechas y cupos en sus sitios. El Concejo Municipal de Distrito de Nosara es una propuesta sujeta al plebiscito; la
+    capacitación, en cambio, está disponible desde hoy.
   </footer>
   <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button></nav>
 </div>
@@ -126,6 +497,21 @@
   if(btn) btn.addEventListener('click',function(){
     lang=(lang==='en')?'es':'en';apply(lang);
     try{localStorage.setItem('cmd-lang',lang);}catch(e){}
+  });
+
+  /* Topic filter */
+  var filterBtns=document.querySelectorAll('#topic-filter .topic-btn');
+  var groups=document.querySelectorAll('.topic-group');
+  filterBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      filterBtns.forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      var t=b.dataset.topic;
+      groups.forEach(function(g){
+        if(t==='all'||g.dataset.group===t){g.hidden=false}
+        else{g.hidden=true}
+      });
+    });
   });
 })();
 </script>
