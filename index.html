@@ -849,8 +849,8 @@ addEventListener('resize',()=>{setH();measure();});
 /* ============================================================
    CAMPAÑA — SUPABASE (pluggable; si falta config, no rompe)
    ============================================================ */
-const SUPABASE_URL='TU_PROJECT_URL_AQUI';
-const SUPABASE_ANON_KEY='TU_ANON_KEY_AQUI';
+const SUPABASE_URL='https://zaedzlvazlqpszberaeb.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_ncie5h7MlEbmj_mzkw_z_A_PqSVFINF';
 const OBJETIVO_2028=7000;
 let supa=null;
 const supaOK=!(SUPABASE_URL==='TU_PROJECT_URL_AQUI'||SUPABASE_ANON_KEY==='TU_ANON_KEY_AQUI');
@@ -892,13 +892,19 @@ form.addEventListener('submit',async e=>{
 });
 function resetForm(){form.reset();form.style.display='block';mensajeExito.classList.add('hidden');submitBtn.disabled=false;submitBtn.textContent='Sumarme a la campaña';document.getElementById('sumate').scrollIntoView({behavior:'smooth'});}
 window.resetForm=resetForm;
-// Formulario de organizaciones (logo: subir a Supabase Storage cuando se conecte; en demo solo agradece)
 const formOrg=document.getElementById('form-org');
 if(formOrg){formOrg.addEventListener('submit',async e=>{
   e.preventDefault();const btnOrg=document.getElementById('submit-org'),okOrg=document.getElementById('mensaje-org');
   if(!supa){formOrg.style.display='none';okOrg.classList.remove('hidden');return;}
   btnOrg.disabled=true;btnOrg.textContent='Enviando...';
   const fd=new FormData(formOrg);const data={org_nombre:fd.get('org_nombre'),org_persona:fd.get('org_persona'),org_telefono:fd.get('org_telefono')||null};
+  const logoFile=fd.get('org_logo');
+  if(logoFile&&logoFile.size>0){
+    const ext=logoFile.name.split('.').pop().toLowerCase();
+    const path=crypto.randomUUID()+'.'+ext;
+    const {error:upErr}=await supa.storage.from('logos').upload(path,logoFile,{contentType:logoFile.type,cacheControl:'31536000'});
+    if(!upErr){const {data:u}=supa.storage.from('logos').getPublicUrl(path);data.logo_url=u.publicUrl;}
+  }
   const {error}=await supa.from('organizaciones').insert([data]);
   if(error){alert('Hubo un error al enviar. Probá de nuevo. ('+error.message+')');btnOrg.disabled=false;btnOrg.textContent='Sumar mi organización';return;}
   formOrg.style.display='none';okOrg.classList.remove('hidden');

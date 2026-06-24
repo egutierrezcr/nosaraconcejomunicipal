@@ -70,7 +70,43 @@
   .supuestos li b{color:var(--teal)}
   .fuentes{font-size:12.5px;color:var(--mut);margin-top:10px;line-height:1.7}
   footer{margin-top:38px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
-  @media print{body{background:#fff}.bcard,.gcard,.tbox,.icard{box-shadow:none}}
+  /* simulator */
+  .sim{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:22px 20px;box-shadow:0 6px 20px rgba(14,110,124,.08);margin-bottom:24px}
+  .sim-intro{font-size:15px;color:var(--ink);margin:0 0 16px;font-weight:500}
+  .sim-bar{display:flex;height:36px;border-radius:10px;overflow:hidden;margin:0 0 20px;border:1px solid #dce8ea}
+  .sim-bar div{transition:width .15s ease;display:flex;align-items:center;justify-content:center;min-width:0}
+  .sim-bar .b-adm{background:var(--mut)}
+  .sim-bar .b-prog{background:var(--ocean)}
+  .sim-bar .b-inv{background:var(--bosque)}
+  .sim-bar div span{color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden}
+  .sim-row{margin-bottom:14px}
+  .sim-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;gap:8px}
+  .sim-lbl span:first-child{font-size:13.5px;font-weight:700;color:var(--teal)}
+  .sim-lbl .vals{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap}
+  .sim-row input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:99px;background:#e3eef0;outline:none;cursor:pointer;margin:0}
+  .sim-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+  .r-adm input::-webkit-slider-thumb{background:var(--mut)}
+  .r-prog input::-webkit-slider-thumb{background:var(--ocean)}
+  .r-inv input::-webkit-slider-thumb{background:var(--bosque)}
+  .sim-row input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+  .r-adm input::-moz-range-thumb{background:var(--mut)}
+  .r-prog input::-moz-range-thumb{background:var(--ocean)}
+  .r-inv input::-moz-range-thumb{background:var(--bosque)}
+  .sim-goals{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px}
+  .sim-goals .g{font-size:13px;font-weight:600;padding:5px 12px;border-radius:8px;transition:all .15s}
+  .sim-goals .g.ok{background:#e6f5ea;color:#1a7a3a}
+  .sim-goals .g.no{background:#fde8e8;color:#b12028}
+  .sim-per{font-size:14px;color:var(--ink);margin:0 0 10px}
+  .sim-per b{color:var(--teal);font-size:17px}
+  .sim-verdict{padding:11px 15px;border-radius:10px;font-size:13.5px;font-weight:600;margin:0 0 14px;transition:all .15s}
+  .v-good{background:#e6f5ea;color:#1a7a3a;border:1px solid #b8e2c4}
+  .v-warn{background:#fef3cd;color:#664d03;border:1px solid #eed890}
+  .v-bad{background:#fde8e8;color:#b12028;border:1px solid #f5c6c6}
+  .sim-foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid #eef4f5}
+  .sim-foot .ref{font-size:12px;color:var(--mut)}
+  .sim-foot button{font-family:inherit;font-size:13px;font-weight:700;color:var(--ocean);background:none;border:1.5px solid var(--ocean);border-radius:999px;padding:7px 16px;cursor:pointer;transition:background .15s}
+  .sim-foot button:hover{background:var(--crema)}
+  @media print{body{background:#fff}.bcard,.gcard,.tbox,.icard,.sim{box-shadow:none}}
 </style>
 </head>
 <body>
@@ -86,6 +122,39 @@
     <p class="lead" data-en="What the Municipal Council could manage and on what — &quot;active management&quot; scenario, with the CMD already operating. Figures in millions of colones (₡M) per year.">Cuánto podría administrar el Concejo Municipal y en qué — escenario «gestión activa», con el CMD ya en régimen. Cifras en millones de colones (₡M) por año.</p>
     <div class="banner" data-en="<b>DRAFT v0 · HYPOTHETICAL DOCUMENT.</b> Built for proof of concept and discussion; not an official budget. Improvements welcome via the form on the CMD-Nosara page."><b>BORRADOR v0 · DOCUMENTO HIPOTÉTICO.</b> Hecho para validación de concepto y discusión; no es un presupuesto oficial. Sugerencias vía el formulario de la página del CMD-Nosara.</div>
   </header>
+
+  <h2 class="sec" data-en="Simulator — build your own budget">Simulador — armá tu presupuesto</h2>
+  <div class="sim">
+    <p class="sim-intro" data-en="The Nosara CMD would manage ₡2,445.5 M per year. How to distribute it across the three areas? Move the sliders.">El CMD-Nosara administraría ₡2.445,5 M al año. ¿Cómo distribuir entre las tres áreas? Mové los deslizadores.</p>
+
+    <div class="sim-bar" aria-hidden="true">
+      <div class="b-adm" id="bar-adm" style="width:27%"><span>27%</span></div>
+      <div class="b-prog" id="bar-prog" style="width:26%"><span>26%</span></div>
+      <div class="b-inv" id="bar-inv" style="width:47%"><span>47%</span></div>
+    </div>
+
+    <div class="sim-row r-adm">
+      <div class="sim-lbl"><span data-en="Administration &amp; salaries">Administración y salarios</span><span class="vals" id="v-adm">27% · ₡660 M</span></div>
+      <input type="range" id="sl-adm" min="5" max="80" value="27">
+    </div>
+    <div class="sim-row r-prog">
+      <div class="sim-lbl"><span data-en="Programs &amp; services">Programas y servicios</span><span class="vals" id="v-prog">26% · ₡636 M</span></div>
+      <input type="range" id="sl-prog" min="5" max="80" value="26">
+    </div>
+    <div class="sim-row r-inv">
+      <div class="sim-lbl"><span data-en="Direct investment">Inversión directa</span><span class="vals" id="v-inv">47% · ₡1.149 M</span></div>
+      <input type="range" id="sl-inv" min="5" max="80" value="47">
+    </div>
+
+    <div class="sim-goals" id="sim-goals"></div>
+    <div class="sim-per"><b id="per-res"></b> <span data-en="per resident in works &amp; services">por residente en obra y servicios</span></div>
+    <div class="sim-verdict" id="sim-verdict"></div>
+
+    <div class="sim-foot">
+      <span class="ref" data-en="CMD proposal: 27 · 26 · 47">Propuesta CMD: 27 · 26 · 47</span>
+      <button id="sim-reset" data-en="Reset">Restablecer</button>
+    </div>
+  </div>
 
   <h2 class="sec" data-en="General balance">Balance general</h2>
   <div class="bal">
@@ -219,6 +288,77 @@
     lang=(lang==='en')?'es':'en';apply(lang);
     try{localStorage.setItem('cmd-lang',lang);}catch(e){}
   });
+})();
+</script>
+<script>
+(function(){
+  var T=2445.5,R=8716,MIN=5;
+  var vals=[27,26,47],DEF=[27,26,47];
+  var sls=[document.getElementById('sl-adm'),document.getElementById('sl-prog'),document.getElementById('sl-inv')];
+  var vs=[document.getElementById('v-adm'),document.getElementById('v-prog'),document.getElementById('v-inv')];
+  var bars=[document.getElementById('bar-adm'),document.getElementById('bar-prog'),document.getElementById('bar-inv')];
+  var goalsEl=document.getElementById('sim-goals');
+  var perEl=document.getElementById('per-res');
+  var verdEl=document.getElementById('sim-verdict');
+
+  function fM(n){var r=Math.round(n);return '₡'+r.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' M';}
+  function fP(n){var r=Math.round(n);return '₡'+r.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+
+  function update(){
+    var en=document.documentElement.lang==='en';
+    for(var i=0;i<3;i++){
+      sls[i].value=vals[i];
+      vs[i].textContent=vals[i]+'% · '+fM(T*vals[i]/100);
+      bars[i].style.width=vals[i]+'%';
+      bars[i].querySelector('span').textContent=vals[i]>=12?vals[i]+'%':'';
+    }
+    var aOk=vals[0]<=30,iOk=vals[2]>=45;
+    goalsEl.innerHTML=
+      '<div class="g '+(aOk?'ok':'no')+'">'+(aOk?'✓':'✗')+' '+(en?'Administration ≤30%':'Administración ≤30%')+'</div>'+
+      '<div class="g '+(iOk?'ok':'no')+'">'+(iOk?'✓':'✗')+' '+(en?'Investment ≥45%':'Inversión ≥45%')+'</div>';
+    var ip=T*(vals[1]+vals[2])/100;
+    perEl.textContent=fP(ip*1000000/R);
+    if(vals[0]===DEF[0]&&vals[1]===DEF[1]&&vals[2]===DEF[2]){
+      verdEl.className='sim-verdict v-good';
+      verdEl.textContent=en?'Matches the CMD proposal exactly!':'¡Coincide con la propuesta del CMD!';
+    } else if(aOk&&iOk){
+      verdEl.className='sim-verdict v-good';
+      verdEl.textContent=en?'Strategic balance — contained administration, high investment.':'Equilibrio estratégico — administración contenida, alta inversión.';
+    } else if(vals[0]>40){
+      verdEl.className='sim-verdict v-bad';
+      verdEl.textContent=en?'Bureaucratic budget — most spending goes to administration.':'Presupuesto burocrático — la mayor parte se destina a administración.';
+    } else if(vals[0]>30){
+      verdEl.className='sim-verdict v-warn';
+      verdEl.textContent=en?'Administration exceeds the 30% target. Less available for works.':'Administración supera la meta de 30%. Queda menos para obra.';
+    } else if(vals[2]<30){
+      verdEl.className='sim-verdict v-bad';
+      verdEl.textContent=en?'Low investment — hard to improve roads and infrastructure.':'Inversión baja — difícil mejorar caminos e infraestructura.';
+    } else {
+      verdEl.className='sim-verdict v-warn';
+      verdEl.textContent=en?'Moderate investment — more could go to public works.':'Inversión moderada — se podría destinar más a obra pública.';
+    }
+  }
+
+  function onSlide(idx){
+    var nv=parseInt(sls[idx].value),ov=vals[idx],d=nv-ov;
+    if(!d)return;
+    var oi=[0,1,2].filter(function(i){return i!==idx;});
+    var s=vals[oi[0]]+vals[oi[1]];
+    if(s<=0)return;
+    var n0=Math.max(MIN,Math.round(vals[oi[0]]-d*vals[oi[0]]/s));
+    var n1=Math.max(MIN,Math.round(vals[oi[1]]-d*vals[oi[1]]/s));
+    var sum=nv+n0+n1,adj=100-sum;
+    if(adj){if(n0+adj>=MIN)n0+=adj;else if(n1+adj>=MIN)n1+=adj;else nv=100-n0-n1;}
+    sum=nv+n0+n1;if(sum!==100)nv=100-n0-n1;
+    vals[idx]=nv;vals[oi[0]]=n0;vals[oi[1]]=n1;
+    update();
+  }
+
+  sls.forEach(function(sl,i){sl.addEventListener('input',function(){onSlide(i);});});
+  document.getElementById('sim-reset').addEventListener('click',function(){vals=DEF.slice();update();});
+  var lb=document.getElementById('lang-btn');
+  if(lb)lb.addEventListener('click',function(){setTimeout(update,60);});
+  update();
 })();
 </script>
 </body>
