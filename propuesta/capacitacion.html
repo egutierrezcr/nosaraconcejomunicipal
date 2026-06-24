@@ -79,6 +79,30 @@
   .key-group h3{font-size:13.5px;font-weight:800;color:var(--bosque);margin:0 0 10px;padding-left:2px}
   .key-group[hidden]{display:none}
 
+  /* Reading cards */
+  .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 3px 10px rgba(14,110,124,.05);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s}
+  .rcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(47,107,79,.12)}
+  .rcard .rtype{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;border-radius:999px;padding:2px 9px;align-self:flex-start;margin:0 0 8px}
+  .rcard .rtype.tesis{background:#8B5CF6}
+  .rcard .rtype.articulo{background:var(--ocean)}
+  .rcard .rtype.manual{background:var(--bosque)}
+  .rcard .rtype.guia{background:var(--gold);color:var(--ink)}
+  .rcard .rtype.informe{background:#E05252}
+  .rcard .rtype.investigacion{background:#3B82F6}
+  .rcard .rtype.libro{background:#7C3AED}
+  .rcard .rtitle{font-size:13px;font-weight:700;color:var(--ink);line-height:1.35;margin:0 0 6px;flex:1}
+  .rcard .rmeta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:auto}
+  .rcard .rsrc{font-size:10.5px;font-weight:600;color:var(--mut)}
+  .rcard .ryear{font-size:10px;font-weight:700;color:var(--bosque);background:#edf8f1;border-radius:999px;padding:1px 7px}
+  .read-topics{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+  .read-btn{font-size:12px;font-weight:600;color:#6B21A8;background:#fff;border:1.5px solid #d8b4fe;border-radius:999px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .read-btn:hover{background:#faf5ff}
+  .read-btn.active{background:#7C3AED;color:#fff;border-color:#7C3AED}
+  .read-group{margin-bottom:12px}
+  .read-group h3{font-size:13.5px;font-weight:800;color:#6B21A8;margin:0 0 10px;padding-left:2px}
+  .read-group[hidden]{display:none}
+
   footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
   @media print{body{background:#fff}.card,.lead,.vcard,.pcard{box-shadow:none}}
 </style>
@@ -273,6 +297,107 @@
         <div class="vcard"><a class="thumb" href="https://www.youtube.com/watch?v=nKYBry7ggdA" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/nKYBry7ggdA/mqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg></span></a><div class="vinfo"><div class="vtitle" data-en="Deconcentration in municipal law">Desconcentración en el derecho municipal</div><span class="vsrc">Derecho Municipal CR</span></div></div>
         <div class="vcard"><a class="thumb" href="https://www.youtube.com/watch?v=V6OwLZe09Oo" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/V6OwLZe09Oo/mqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg></span></a><div class="vinfo"><div class="vtitle" data-en="Overview of Costa Rica's Public Administration Law">Generalidades de la Ley de Administración Pública de CR</div><span class="vsrc">EAP · UCR</span></div></div>
         <div class="vcard"><a class="thumb" href="https://www.youtube.com/watch?v=bFOgH-CInWA" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/bFOgH-CInWA/mqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg></span></a><div class="vinfo"><div class="vtitle" data-en="What are the functions of the mayor?">¿Cuáles son las funciones del alcalde o alcaldesa?</div><span class="vsrc">Educativo</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Biblioteca: lecturas, investigaciones, tesis ── -->
+  <h2 class="sec" style="color:#6B21A8" data-en="Library · readings, research &amp; theses for the CMD">Biblioteca · lecturas, investigaciones y tesis para el CMD</h2>
+  <p style="font-size:13px;color:var(--mut);margin:0 0 12px" data-en="Free publications from CGR, UNED, UCR, BID, MIDEPLAN and more. Each opens in a new tab.">Publicaciones gratuitas de CGR, UNED, UCR, BID, MIDEPLAN y más. Cada una abre en nueva pestaña.</p>
+
+  <div class="read-topics" id="read-filter">
+    <button class="read-btn active" data-rkey="all" data-en="All">Todos</button>
+    <button class="read-btn" data-rkey="r-concejos" data-en="District Councils">Concejos de Distrito</button>
+    <button class="read-btn" data-rkey="r-finanzas" data-en="Public Finance">Finanzas Públicas</button>
+    <button class="read-btn" data-rkey="r-control" data-en="Oversight">Control y Fiscalización</button>
+    <button class="read-btn" data-rkey="r-decisiones" data-en="Planning &amp; Policy">Planificación y Políticas</button>
+    <button class="read-btn" data-rkey="r-participacion" data-en="Participation">Participación Ciudadana</button>
+    <button class="read-btn" data-rkey="r-derecho" data-en="Municipal Law">Derecho Municipal</button>
+  </div>
+
+  <div id="read-items">
+
+    <!-- ── Concejos de Distrito y Gobierno Local ── -->
+    <div class="read-group" data-rgroup="r-concejos">
+      <h3 data-en="🏛️ District Councils &amp; Local Government">🏛️ Concejos de Distrito y Gobierno Local</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://www.tse.go.cr/pdf/ifed/fasciculo-bolsillo.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Municipal Functioning &amp; Role of Elected Authorities (58-page illustrated booklet)">Funcionamiento Municipal y Rol de las Autoridades Electas (fascículo ilustrado, 58 pp.)</div><div class="rmeta"><span class="rsrc">TSE · IFED</span><span class="ryear">2019</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2018/10/01_02_estructura_organia-municipalidad.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Organic structure of the municipality">Estructura orgánica de la municipalidad</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2018</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2018/10/01_01_naturaleza_municipio.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Legal nature of the municipality">Naturaleza jurídica del municipio</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2018</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2023/02/Tomo-N%C2%B05-Los-primeros-100-dias-como-autoridad-local1.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="The first 100 days as a local authority">Los primeros 100 días como autoridad local</div><div class="rmeta"><span class="rsrc">IFCMDL · UNED</span><span class="ryear">2023</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2020/03/Del-di%C3%A1logo-a-la-acci%C3%B3n-alcald%C3%ADas-vicealcald%C3%ADas-intendencias-viceintendencias-1.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="From dialogue to action: mayors, deputy mayors, intendants">Del diálogo a la acción: alcaldías, vicealcaldías, intendencias</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2020</span></div></a>
+        <a class="rcard" href="https://opendata.heredia.go.cr/sites/default/files/funciones_del_concejo.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Functions of the Municipal Council">Funciones del Concejo Municipal</div><div class="rmeta"><span class="rsrc">Muni Heredia · Datos abiertos</span></div></a>
+        <a class="rcard" href="https://www.fecomudi.go.cr/index.php/conozcanos/fecomudi/informacion-de-que-es-un-cmd-y-como-se-elige-funciones-y-competencias" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="What is a CMD, how it's elected, functions &amp; powers">Qué es un CMD, cómo se elige, funciones y competencias</div><div class="rmeta"><span class="rsrc">FECOMUDI</span></div></a>
+        <a class="rcard" href="https://www.researchgate.net/publication/351102760" target="_blank" rel="noopener"><span class="rtype investigacion">Investigación</span><div class="rtitle" data-en="The municipal regime in Costa Rica: an economic and political analysis">El régimen municipal en Costa Rica: análisis económico y político</div><div class="rmeta"><span class="rsrc">IICE · UCR</span><span class="ryear">2021</span></div></a>
+      </div>
+    </div>
+
+    <!-- ── Finanzas Públicas Municipales ── -->
+    <div class="read-group" data-rgroup="r-finanzas">
+      <h3 data-en="💰 Municipal Public Finance">💰 Finanzas Públicas Municipales</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://publications.iadb.org/publications/spanish/document/Las-municipalidades-en-Costa-Rica-Evaluaci%C3%B3n-del-sistema-tributario-y-la-administraci%C3%B3n-presupuestaria-y-financiera-de-los-gobiernos-locales-Alternativas-para-su-fortalecimiento.pdf" target="_blank" rel="noopener"><span class="rtype investigacion">Investigación</span><div class="rtitle" data-en="Municipalities in CR: Tax system evaluation &amp; alternatives for strengthening">Las Municipalidades en CR: Evaluación del sistema tributario y alternativas de fortalecimiento</div><div class="rmeta"><span class="rsrc">BID</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2020/06/Marco-jur%C3%ADdico-sobre-ingresos-y-gastos-municipales.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Legal framework on municipal income and expenditures">Marco jurídico sobre ingresos y gastos municipales</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2020</span></div></a>
+        <a class="rcard" href="https://cgrfiles.cgr.go.cr/publico/docsweb/documentos/publicaciones-cgr/desafios-gobiernos-locales/sistema-tributario-municipal.pdf" target="_blank" rel="noopener"><span class="rtype informe">Informe</span><div class="rtitle" data-en="Overview of the Municipal Tax System">Visión general del Sistema Tributario Municipal</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span></div></a>
+        <a class="rcard" href="https://cgrfiles.cgr.go.cr/publico/docsweb/documentos/sipp/normas-tecnicas-presup-publico-12-2022-n.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Technical Standards on Public Budget">Normas Técnicas sobre Presupuesto Público</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span><span class="ryear">2022</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2019/05/Recurso-educativo-Rendici%C3%B3n-de-Cuentas.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Accountability for municipal authorities">Rendición de cuentas para autoridades municipales</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2019</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2019/05/01_03_rendic_cuentas.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Accountability — supplementary reading">Rendición de cuentas — lectura complementaria</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span></div></a>
+        <a class="rcard" href="https://cgrfiles.cgr.go.cr/publico/docsweb/documentos/publicaciones-cgr/aspectos-funcion-publica/aportes-ejercicio-funcion-publica.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Contributions for exercising public office">Aportes para el ejercicio de la función pública</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span></div></a>
+      </div>
+    </div>
+
+    <!-- ── Control Interno y Fiscalización ── -->
+    <div class="read-group" data-rgroup="r-control">
+      <h3 data-en="🔍 Internal Control &amp; Oversight">🔍 Control Interno y Fiscalización</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://cgrfiles.cgr.go.cr/publico/docsweb/documentos/control-interno/nci-publico-2-2009-co-dfoe-11-2025.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Internal Control Standards for the Public Sector (updated 2025)">Normas de Control Interno para el Sector Público (actualizado 2025)</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span><span class="ryear">2025</span></div></a>
+        <a class="rcard" href="https://d1qqtien6gys07.cloudfront.net/wp-content/uploads/2023/09/SIGYD_D_2023014896.pdf" target="_blank" rel="noopener"><span class="rtype informe">Informe</span><div class="rtitle" data-en="Municipal Services Management Index 2023">Índice de Gestión de Servicios Municipales 2023</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span><span class="ryear">2023</span></div></a>
+        <a class="rcard" href="https://www.asamblea.go.cr/sd/Documents/BIBLIOTECADIGITAL/DOCUMENTOS/LEYES/LEY%208292-LEY%20GENERAL%20DE%20CONTROL%20INTERNO.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="General Law on Internal Control (Law 8292)">Ley General de Control Interno (Ley 8292)</div><div class="rmeta"><span class="rsrc">Asamblea Legislativa</span></div></a>
+        <a class="rcard" href="https://inec.cr/wwwisis/documentos/PEN/Informes_PEN/Auditoria%20Ciudadana/Tomo%20II/Captulo%208.pdf" target="_blank" rel="noopener"><span class="rtype investigacion">Investigación</span><div class="rtitle" data-en="Citizen Audit on Democracy Quality: Local Governments">Auditoría ciudadana sobre calidad de la democracia: Gobiernos locales</div><div class="rmeta"><span class="rsrc">Estado de la Nación</span></div></a>
+        <a class="rcard" href="https://gredos.usal.es/bitstream/handle/10366/139478/DDAFP_AriasRam%C3%ADrezH_LaVigilanciaSuperior.pdf?sequence=1&amp;isAllowed=y" target="_blank" rel="noopener"><span class="rtype tesis">Tesis</span><div class="rtitle" data-en="Doctoral thesis: Superior oversight of public treasury in Costa Rica">Tesis doctoral: La vigilancia superior de la hacienda pública en Costa Rica</div><div class="rmeta"><span class="rsrc">H. Arias · U. Salamanca</span><span class="ryear">2018</span></div></a>
+        <a class="rcard" href="https://www.redalyc.org/pdf/7382/738280809009.pdf" target="_blank" rel="noopener"><span class="rtype articulo">Artículo</span><div class="rtitle" data-en="Link between the CGR and local governments">La vinculación entre la CGR y los gobiernos locales</div><div class="rmeta"><span class="rsrc">RCAP · Redalyc</span></div></a>
+      </div>
+    </div>
+
+    <!-- ── Planificación y Políticas Públicas ── -->
+    <div class="read-group" data-rgroup="r-decisiones">
+      <h3 data-en="📊 Planning &amp; Public Policy">📊 Planificación y Políticas Públicas</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2020/10/Guia-para-elaborar-PDM.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Guide for preparing the Municipal Development Plan">Guía para elaborar el Plan de Desarrollo Municipal (PDM)</div><div class="rmeta"><span class="rsrc">IFCMDL · UNED</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2023/02/Libro-6-v2-PUOT-Digital.pdf" target="_blank" rel="noopener"><span class="rtype libro">Libro</span><div class="rtitle" data-en="Urban Planning &amp; Territorial Management">Planificación Urbana y Ordenamiento Territorial</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2023</span></div></a>
+        <a class="rcard" href="https://www.cepal.org/sites/default/files/guia_herramientas_municipales_demuca.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Municipal Tools for Local Economic Development (188 pp.)">Herramientas Municipales para Desarrollo Económico Local (188 pp.)</div><div class="rmeta"><span class="rsrc">DEMUCA · CEPAL</span><span class="ryear">2009</span></div></a>
+        <a class="rcard" href="https://www.ungl.or.cr/wp-content/uploads/2025/08/agendamunicipalcostarricense_2022_2025.pdf" target="_blank" rel="noopener"><span class="rtype informe">Informe</span><div class="rtitle" data-en="Costa Rican Municipal Agenda 2021-2025">Agenda Municipal Costarricense 2021-2025</div><div class="rmeta"><span class="rsrc">UNGL</span><span class="ryear">2022</span></div></a>
+        <a class="rcard" href="https://juntas.mep.go.cr/wp-content/uploads/2020/07/Buenas-pr%C3%A1cticas-municipales-desde-la-UNGL.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Municipal best practices from the UNGL">Buenas prácticas municipales desde la UNGL</div><div class="rmeta"><span class="rsrc">UNGL · MEP</span><span class="ryear">2020</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2023/02/Sistematizacion-de-Experiencias-de-Desarrollo-Territorial.pdf" target="_blank" rel="noopener"><span class="rtype investigacion">Investigación</span><div class="rtitle" data-en="Systematization of Territorial Development Experiences">Sistematización de Experiencias de Desarrollo Territorial</div><div class="rmeta"><span class="rsrc">IFCMDL · UNED</span></div></a>
+        <a class="rcard" href="https://erc.undp.org/evaluation/documents/download/5840" target="_blank" rel="noopener"><span class="rtype informe">Informe</span><div class="rtitle" data-en="Strengthening municipal capacities for local human development planning">Fortalecimiento de capacidades municipales para planificación del desarrollo humano local</div><div class="rmeta"><span class="rsrc">PNUD · FOMUDE</span></div></a>
+      </div>
+    </div>
+
+    <!-- ── Participación Ciudadana ── -->
+    <div class="read-group" data-rgroup="r-participacion">
+      <h3 data-en="🗳️ Citizen Participation &amp; Open Government">🗳️ Participación Ciudadana y Gobierno Abierto</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2019/05/Mecanismos-de-Participaci%C3%B3n-Ciudadana.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Citizen Participation Mechanisms">Mecanismos de Participación Ciudadana</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2019</span></div></a>
+        <a class="rcard" href="https://www.tse.go.cr/pdf/fasciculos_capacitacion/participacion-ciudadana-en-democracia-espacios-y-mecanismos.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Citizen participation in democracy: spaces &amp; mechanisms">Participación ciudadana en democracia: espacios y mecanismos</div><div class="rmeta"><span class="rsrc">TSE · IFED</span><span class="ryear">2016</span></div></a>
+        <a class="rcard" href="https://eurosocial.eu/wp-content/uploads/2020/08/11943-CICAP-Guia-de-Gobierno-Abierto-2.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Open Local Government: A roadmap for implementation in Costa Rica">Gobierno Local Abierto: Ruta para su implementación en Costa Rica</div><div class="rmeta"><span class="rsrc">CICAP · UCR</span></div></a>
+        <a class="rcard" href="https://biblioteca.clacso.edu.ar/Costa_Rica/flacso-cr/20170704040350/pdf_188.pdf" target="_blank" rel="noopener"><span class="rtype libro">Libro</span><div class="rtitle" data-en="The challenge of citizen participation in the democratic State">El desafío de la participación ciudadana en el Estado democrático de derecho</div><div class="rmeta"><span class="rsrc">FLACSO Costa Rica</span></div></a>
+        <a class="rcard" href="https://conamaj.poder-judicial.go.cr/images/Descargas/herramientas_participacion.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Citizen Participation Tools">Herramientas de Participación Ciudadana</div><div class="rmeta"><span class="rsrc">CONAMAJ · Poder Judicial</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2019/05/Participaci%C3%B3n-Ciudadana.pdf" target="_blank" rel="noopener"><span class="rtype investigacion">Investigación</span><div class="rtitle" data-en="Systematization of citizen participation mechanisms &amp; instances">Sistematización de instancias y mecanismos de participación ciudadana</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span></div></a>
+      </div>
+    </div>
+
+    <!-- ── Derecho Municipal ── -->
+    <div class="read-group" data-rgroup="r-derecho">
+      <h3 data-en="⚖️ Municipal Law">⚖️ Derecho Municipal</h3>
+      <div class="rgrid">
+        <a class="rcard" href="https://www.munisc.go.cr/documentos/Secciones/5/C%C3%B3digo%20Municipal.pdf" target="_blank" rel="noopener"><span class="rtype manual">Manual</span><div class="rtitle" data-en="Municipal Code with Comments &amp; Analytical Index">Código Municipal con Comentarios e Índice Analítico</div><div class="rmeta"><span class="rsrc">IFAM</span><span class="ryear">2024</span></div></a>
+        <a class="rcard" href="https://academiamunicipal.uned.ac.cr/wp-content/uploads/2023/03/Libro-Codigo-Municipal-2022.pdf" target="_blank" rel="noopener"><span class="rtype libro">Libro</span><div class="rtitle" data-en="Municipal Code — educational edition (Law 7794)">Código Municipal — edición educativa (Ley 7794)</div><div class="rmeta"><span class="rsrc">Academia Municipal · UNED</span><span class="ryear">2022</span></div></a>
+        <a class="rcard" href="https://ifam.go.cr/wp-content/uploads/2021/01/IFAM-C%C3%B3digo-Municipal-de-Costa-Rica.pdf" target="_blank" rel="noopener"><span class="rtype guia">Guía</span><div class="rtitle" data-en="Municipal Code of Costa Rica — full text (IFAM)">Código Municipal de Costa Rica — texto integral (IFAM)</div><div class="rmeta"><span class="rsrc">IFAM</span><span class="ryear">2021</span></div></a>
+        <a class="rcard" href="https://salaprimera.poder-judicial.go.cr/phocadownload/Publicaciones/Justicia_Administrativa_Municipal.pdf" target="_blank" rel="noopener"><span class="rtype articulo">Artículo</span><div class="rtitle" data-en="Municipal Administrative Justice">Justicia Administrativa Municipal</div><div class="rmeta"><span class="rsrc">Sala Primera · Poder Judicial</span></div></a>
+        <a class="rcard" href="https://www.corteidh.or.cr/tablas/r112970.pdf" target="_blank" rel="noopener"><span class="rtype articulo">Artículo</span><div class="rtitle" data-en="Reforms of the Municipal Regime (2016)">Reformas del Régimen Municipal</div><div class="rmeta"><span class="rsrc">Corte IDH · Biblioteca</span><span class="ryear">2016</span></div></a>
+        <a class="rcard" href="https://revistas.ucr.ac.cr/index.php/juridicas/article/view/21541" target="_blank" rel="noopener"><span class="rtype articulo">Artículo</span><div class="rtitle" data-en="Municipal public administration (Costa Rica)">Administración pública municipal (Costa Rica)</div><div class="rmeta"><span class="rsrc">Rev. Ciencias Jurídicas · UCR</span></div></a>
+        <a class="rcard" href="https://cgrfiles.cgr.go.cr/publico/docsweb/documentos/publicaciones-cgr/revista-derecho/19/revista-derecho-xix.pdf" target="_blank" rel="noopener"><span class="rtype articulo">Artículo</span><div class="rtitle" data-en="Journal of Public Treasury Law — Vol. XIX">Revista de Derecho de la Hacienda Pública — Vol. XIX</div><div class="rmeta"><span class="rsrc">CGR Costa Rica</span><span class="ryear">2022</span></div></a>
       </div>
     </div>
 
@@ -635,6 +760,21 @@
       var k=b.dataset.key;
       keyGroups.forEach(function(g){
         if(k==='all'||g.dataset.kgroup===k){g.hidden=false}
+        else{g.hidden=true}
+      });
+    });
+  });
+
+  /* Reading filter */
+  var readBtns=document.querySelectorAll('#read-filter .read-btn');
+  var readGroups=document.querySelectorAll('#read-items .read-group');
+  readBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      readBtns.forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      var k=b.dataset.rkey;
+      readGroups.forEach(function(g){
+        if(k==='all'||g.dataset.rgroup===k){g.hidden=false}
         else{g.hidden=true}
       });
     });
