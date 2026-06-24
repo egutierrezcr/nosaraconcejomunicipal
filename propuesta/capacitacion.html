@@ -10,13 +10,35 @@
     --ink:#103038;--mut:#5f7a80;--line:#bcd6da;--font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   *{box-sizing:border-box}
   body{margin:0;font-family:var(--font);color:var(--ink);background:#f4fafb;line-height:1.5}
-  .wrap{max-width:860px;margin:0 auto;padding:32px 24px 64px}
-  header .tag{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ocean);font-weight:700}
-  header h1{font-size:clamp(22px,3.6vw,34px);font-weight:800;color:var(--teal);margin:6px 0 4px;letter-spacing:-.4px}
-  .lead{background:linear-gradient(180deg,#fff,#f3fcfd);border:1.5px solid var(--ocean);border-radius:16px;padding:18px 22px;margin-top:14px}
-  .lead p{margin:0;font-size:16px;color:var(--ink)}
-  .lead .si{color:var(--bosque);font-weight:800}
-  .lead b{color:var(--teal)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px 64px}
+
+  /* Fixed top navbar */
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(14,110,124,.97);backdrop-filter:blur(8px);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 -24px 0}
+  .topbar .site-id{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:800;font-size:14px}
+  .topbar .site-id span{opacity:.7;font-weight:400;font-size:12px}
+  .topbar .tb-actions{display:flex;gap:6px}
+  .topbar .tb-actions button,.topbar .tb-actions a{font-size:12px;font-weight:700;border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit;border:none;text-decoration:none;line-height:1}
+  .topbar .btn-lang{background:rgba(255,255,255,.15);color:#fff}
+  .topbar .btn-lang:hover{background:rgba(255,255,255,.25)}
+  .topbar .btn-back{background:rgba(255,255,255,.9);color:var(--teal)}
+  .topbar .btn-back:hover{background:#fff}
+
+  /* Hero header */
+  .hero{background:linear-gradient(135deg,#0a555f 0%,var(--teal) 40%,var(--ocean) 100%);margin:0 -24px;padding:36px 24px 28px;color:#fff;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;right:-40px;bottom:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}
+  .hero .tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:700}
+  .hero h1{font-size:clamp(22px,3.6vw,34px);font-weight:800;color:#fff;margin:6px 0 4px;letter-spacing:-.4px}
+  .hero .lead{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:16px;padding:18px 22px;margin-top:14px}
+  .hero .lead p{margin:0;font-size:16px;color:rgba(255,255,255,.92)}
+  .hero .lead .si{color:var(--gold);font-weight:800}
+  .hero .lead b{color:#fff}
+
+  /* Section jump nav */
+  .jump-nav{position:sticky;top:44px;z-index:99;background:rgba(244,250,251,.95);backdrop-filter:blur(6px);margin:0 -24px;padding:8px 24px;display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .jump-nav::-webkit-scrollbar{display:none}
+  .jump-nav a{font-size:11.5px;font-weight:600;color:var(--mut);text-decoration:none;white-space:nowrap;padding:5px 10px;border-radius:999px;transition:all .15s;flex-shrink:0}
+  .jump-nav a:hover{color:var(--teal);background:var(--crema)}
+  .jump-nav a.active{color:#fff;background:var(--ocean)}
   h2.sec{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--ocean);font-weight:700;margin:30px 0 12px}
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:680px){.cards{grid-template-columns:1fr}}
@@ -103,15 +125,51 @@
   .read-group h3{font-size:13.5px;font-weight:800;color:#6B21A8;margin:0 0 10px;padding-left:2px}
   .read-group[hidden]{display:none}
 
-  footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--mut)}
-  @media print{body{background:#fff}.card,.lead,.vcard,.pcard{box-shadow:none}}
+  /* Lazy iframe placeholder */
+  .embed-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#103038,#0E6E7C);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:none;padding:0;font-family:inherit;transition:opacity .2s}
+  .embed-placeholder:hover{opacity:.9}
+  .embed-placeholder svg{width:56px;height:56px;margin-bottom:8px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+  .embed-placeholder span{color:rgba(255,255,255,.85);font-size:12px;font-weight:600}
+
+  /* CTA section */
+  .cta-box{background:linear-gradient(135deg,var(--teal),var(--ocean));border-radius:16px;padding:28px 24px;margin:32px 0;text-align:center;color:#fff}
+  .cta-box h2{font-size:20px;font-weight:800;margin:0 0 8px;letter-spacing:-.3px}
+  .cta-box p{margin:0 0 16px;font-size:14px;opacity:.9}
+  .cta-box .cta-btn{display:inline-block;background:#fff;color:var(--teal);font-weight:800;font-size:15px;padding:12px 28px;border-radius:999px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+  .cta-box .cta-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+
+  /* Enhanced footer */
+  footer{margin-top:36px;border-top:1px solid var(--line);padding-top:20px;font-size:12px;color:var(--mut)}
+  .ft-grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;margin-bottom:16px}
+  .ft-col h4{font-size:12px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px}
+  .ft-col a{display:block;font-size:12.5px;color:var(--mut);text-decoration:none;margin-bottom:4px}
+  .ft-col a:hover{color:var(--teal)}
+  .ft-email{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--ocean);text-decoration:none}
+  .ft-email:hover{color:var(--teal)}
+  .ft-legal{font-size:11px;color:var(--mut);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .ft-bottom{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:12px}
+  .ft-bottom a,.ft-bottom button{text-decoration:none;font-weight:700;font-size:13px;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:inherit;line-height:1;border:none}
+  .ft-bottom .btn-home{color:var(--teal);border:1.5px solid var(--line);background:#fff}
+  .ft-bottom .btn-home:hover{background:var(--crema)}
+  .ft-bottom .btn-pdf{background:var(--ocean);color:#fff}
+  .ft-bottom .btn-pdf:hover{filter:brightness(1.08)}
+
+  @media print{body{background:#fff}.card,.lead,.vcard,.pcard{box-shadow:none}.topbar,.jump-nav,.cta-box{display:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <style>.cmd-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 0 20px}.cmd-nav a.back,.cmd-nav button{text-decoration:none;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:inherit;line-height:1;border:none}.cmd-nav a.back{color:#0E6E7C;border:1.5px solid #bcd6da;background:#fff}.cmd-nav a.back:hover{background:#EDF7F9}.cmd-nav button.lang{background:#0E6E7C;color:#fff}.cmd-nav button.pdf{background:#1AA3B0;color:#fff}.cmd-nav button:hover{filter:brightness(1.08)}@media print{.cmd-nav{display:none!important}}</style>
-  <nav class="cmd-nav"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="lang" id="lang-btn" aria-label="Switch language">ENGLISH</button></nav>
-  <header>
+  <!-- Top bar -->
+  <nav class="topbar">
+    <a class="site-id" href="../index.html">CMD Nosara <span data-en="· District Council">· Concejo de Distrito</span></a>
+    <div class="tb-actions">
+      <button class="btn-lang" id="lang-btn" aria-label="Switch language">EN</button>
+      <a class="btn-back" href="../index.html" data-en="← Back">← Inicio</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
     <div class="tag" data-en="Nosara, Guanacaste · Networked district">Nosara, Guanacaste · Distrito en red</div>
     <h1 data-en="Train for the Municipal District Council">Formate para el Concejo Municipal de Distrito</h1>
     <div class="lead">
@@ -121,7 +179,16 @@
     </div>
   </header>
 
-  <h2 class="sec" data-en="Where to train (public institutions)">Dónde formarte (instituciones públicas)</h2>
+  <!-- Section jump nav -->
+  <nav class="jump-nav" id="jump-nav">
+    <a href="#instituciones" data-en="Institutions">Instituciones</a>
+    <a href="#videoteca" data-en="Video Library">Videoteca</a>
+    <a href="#videos-clave" data-en="Key Videos">Videos Clave</a>
+    <a href="#biblioteca" data-en="Library">Biblioteca</a>
+    <a href="#playlists" data-en="Playlists">Playlists</a>
+  </nav>
+
+  <h2 class="sec" id="instituciones" data-en="Where to train (public institutions)">Dónde formarte (instituciones públicas)</h2>
   <div class="cards">
     <div class="card">
       <div class="org" data-en="Municipal Academy">Academia Municipal</div>
@@ -159,7 +226,7 @@
     </div>
   </div>
   <!-- ── Videoteca Municipal ── -->
-  <h2 class="sec" data-en="Municipal Video Library · ~400+ training videos">Videoteca Municipal · ~400+ videos de capacitación</h2>
+  <h2 class="sec" id="videoteca" data-en="Municipal Video Library · ~400+ training videos">Videoteca Municipal · ~400+ videos de capacitación</h2>
 
   <div class="channels">
     <a class="ch-link" href="https://www.youtube.com/@IDEARIO1/videos" target="_blank" rel="noopener">
@@ -184,21 +251,30 @@
   <p style="font-size:13px;color:var(--mut);margin:0 0 10px" data-en="Browse all videos from each channel directly. Use the ☰ menu in the player to navigate the playlist.">Navegá todos los videos de cada canal directamente. Usá el menú ☰ del reproductor para recorrer la lista.</p>
   <div class="embed-row">
     <div class="embed-box">
-      <iframe src="https://www.youtube.com/embed/videoseries?list=UUsBF290wlL7mxXsbCZ0sJ6Q" title="IFCMDL · UNED" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <button class="embed-placeholder" data-src="https://www.youtube.com/embed/videoseries?list=UUsBF290wlL7mxXsbCZ0sJ6Q" aria-label="Cargar reproductor IFCMDL · UNED">
+        <svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg>
+        <span data-en="Click to load player">Click para cargar reproductor</span>
+      </button>
       <div class="eb-label"><span>IFCMDL · UNED</span><a href="https://www.youtube.com/@IDEARIO1/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
     </div>
     <div class="embed-box">
-      <iframe src="https://www.youtube.com/embed/videoseries?list=UUqhvYkH2sNqMc481w4tMa0w" title="CICAP · UCR" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <button class="embed-placeholder" data-src="https://www.youtube.com/embed/videoseries?list=UUqhvYkH2sNqMc481w4tMa0w" aria-label="Cargar reproductor CICAP · UCR">
+        <svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg>
+        <span data-en="Click to load player">Click para cargar reproductor</span>
+      </button>
       <div class="eb-label"><span>CICAP · UCR</span><a href="https://www.youtube.com/@CICAPUCR/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
     </div>
     <div class="embed-box">
-      <iframe src="https://www.youtube.com/embed/videoseries?list=UUeic026JSIC4suWe_tQKpZQ" title="ICAP" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <button class="embed-placeholder" data-src="https://www.youtube.com/embed/videoseries?list=UUeic026JSIC4suWe_tQKpZQ" aria-label="Cargar reproductor ICAP">
+        <svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6A89 89 0 0 0 0 24a89 89 0 0 0 1.5 16.3 8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6A89 89 0 0 0 68 24a89 89 0 0 0-1.5-16.3Z" fill="red"/><path d="m27 34 18-10-18-10v20Z" fill="#fff"/></svg>
+        <span data-en="Click to load player">Click para cargar reproductor</span>
+      </button>
       <div class="eb-label"><span>ICAP</span><a href="https://www.youtube.com/@ICAP_/videos" target="_blank" rel="noopener" data-en="Full channel →">Canal completo →</a></div>
     </div>
   </div>
 
   <!-- ── Videos clave para el CMD ── -->
-  <h2 class="sec" style="color:var(--bosque)" data-en="Key videos for the CMD · curated by topic">Videos clave para el CMD · curados por tema</h2>
+  <h2 class="sec" id="videos-clave" style="color:var(--bosque)" data-en="Key videos for the CMD · curated by topic">Videos clave para el CMD · curados por tema</h2>
   <p style="font-size:13px;color:var(--mut);margin:0 0 12px" data-en="Hand-picked videos essential for training in district governance. Each opens on YouTube.">Videos seleccionados esenciales para la formación en gobierno distrital. Cada uno abre en YouTube.</p>
 
   <div class="key-topics" id="key-filter">
@@ -303,7 +379,7 @@
   </div>
 
   <!-- ── Biblioteca: lecturas, investigaciones, tesis ── -->
-  <h2 class="sec" style="color:#6B21A8" data-en="Library · readings, research &amp; theses for the CMD">Biblioteca · lecturas, investigaciones y tesis para el CMD</h2>
+  <h2 class="sec" id="biblioteca" style="color:#6B21A8" data-en="Library · readings, research &amp; theses for the CMD">Biblioteca · lecturas, investigaciones y tesis para el CMD</h2>
   <p style="font-size:13px;color:var(--mut);margin:0 0 12px" data-en="Free publications from CGR, UNED, UCR, BID, MIDEPLAN and more. Each opens in a new tab.">Publicaciones gratuitas de CGR, UNED, UCR, BID, MIDEPLAN y más. Cada una abre en nueva pestaña.</p>
 
   <div class="read-topics" id="read-filter">
@@ -409,7 +485,7 @@
   </div>
 
   <!-- ── Catálogo de playlists por tema ── -->
-  <h2 class="sec" data-en="Playlists by topic (52 series · 400+ videos)">Playlists por tema (52 series · 400+ videos)</h2>
+  <h2 class="sec" id="playlists" data-en="Playlists by topic (52 series · 400+ videos)">Playlists por tema (52 series · 400+ videos)</h2>
 
   <div class="topics" id="topic-filter">
     <button class="topic-btn active" data-topic="all" data-en="All (52)">Todos (52)</button>
@@ -728,13 +804,46 @@
     gobernar mañana.
   </div>
 
-  <footer data-en="Links and videos from Costa Rican public institutions (UNED-IFCMDL, UCR-CICAP, ICAP, UCR-ProDUS, IFAM, MIDEPLAN). 52 playlists indexed with 400+ training videos. Each institution sets its own offering and requirements; check dates and availability on their sites. The Municipal District Council of Nosara is a proposal subject to the plebiscite; training, however, is available today.">
-    Enlaces y videos de instituciones públicas de Costa Rica (UNED-IFCMDL, UCR-CICAP, ICAP, UCR-ProDUS, IFAM, MIDEPLAN).
-    52 playlists indexadas con 400+ videos de capacitación. La oferta y los requisitos los define cada institución; verificá
-    fechas y cupos en sus sitios. El Concejo Municipal de Distrito de Nosara es una propuesta sujeta al plebiscito; la
-    capacitación, en cambio, está disponible desde hoy.
+  <!-- CTA -->
+  <div class="cta-box">
+    <h2 data-en="Ready to be part of Nosara's CMD?">¿Listo para ser parte del CMD de Nosara?</h2>
+    <p data-en="Training is free and starts now. Write to us to learn how you can get involved.">La capacitación es gratuita y empieza ya. Escribinos para saber cómo podés involucrarte.</p>
+    <a class="cta-btn" href="mailto:hola@muninosara.org" data-en="✉️ Write to us">✉️ Escribinos</a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="ft-grid">
+      <div class="ft-col">
+        <h4 data-en="Contact">Contacto</h4>
+        <a class="ft-email" href="mailto:hola@muninosara.org">✉️ hola@muninosara.org</a>
+      </div>
+      <div class="ft-col">
+        <h4 data-en="Sections">Secciones</h4>
+        <a href="#instituciones" data-en="Training institutions">Instituciones de formación</a>
+        <a href="#videos-clave" data-en="Key videos (46)">Videos clave (46)</a>
+        <a href="#biblioteca" data-en="Library (46 readings)">Biblioteca (46 lecturas)</a>
+        <a href="#playlists" data-en="Playlists (52)">Playlists (52)</a>
+      </div>
+      <div class="ft-col">
+        <h4 data-en="Sources">Fuentes</h4>
+        <a href="https://academiamunicipal.uned.ac.cr" target="_blank" rel="noopener">Academia Municipal · UNED</a>
+        <a href="https://cicap.ucr.ac.cr" target="_blank" rel="noopener">CICAP · UCR</a>
+        <a href="https://www.cgr.go.cr" target="_blank" rel="noopener">CGR Costa Rica</a>
+        <a href="https://www.ifam.go.cr" target="_blank" rel="noopener">IFAM</a>
+      </div>
+    </div>
+    <div class="ft-legal" data-en="Links and videos from Costa Rican public institutions. 52 playlists indexed with 400+ training videos. Each institution sets its own offering and requirements; check dates and availability on their sites. The Municipal District Council of Nosara is a proposal subject to the plebiscite; training, however, is available today.">
+      Enlaces y videos de instituciones públicas de Costa Rica (UNED-IFCMDL, UCR-CICAP, ICAP, UCR-ProDUS, IFAM, MIDEPLAN).
+      52 playlists indexadas con 400+ videos de capacitación. La oferta y los requisitos los define cada institución; verificá
+      fechas y cupos en sus sitios. El Concejo Municipal de Distrito de Nosara es una propuesta sujeta al plebiscito; la
+      capacitación, en cambio, está disponible desde hoy.
+    </div>
+    <div class="ft-bottom">
+      <a class="btn-home" href="../index.html" data-en="← Main page">← Página Principal</a>
+      <button class="btn-pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button>
+    </div>
   </footer>
-  <nav class="cmd-nav" style="margin:24px 0 0"><a class="back" href="../index.html" data-en="← Main page">← Página Principal</a><button class="pdf" onclick="window.print()" data-en="⬇️ Download PDF">⬇️ Descargar PDF</button></nav>
 </div>
 <script>
 "use strict";
@@ -747,12 +856,52 @@
       el.innerHTML=(l==='en')?el.dataset.en:el.dataset.es;
     });
     document.documentElement.lang=l;
-    if(btn) btn.textContent=(l==='en')?'ESPAÑOL':'ENGLISH';
+    if(btn) btn.textContent=(l==='en')?'ES':'EN';
   }
   apply(lang);
   if(btn) btn.addEventListener('click',function(){
     lang=(lang==='en')?'es':'en';apply(lang);
     try{localStorage.setItem('cmd-lang',lang);}catch(e){}
+  });
+
+  /* Lazy iframe loading */
+  document.querySelectorAll('.embed-placeholder').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var iframe=document.createElement('iframe');
+      iframe.src=btn.dataset.src;
+      iframe.title=btn.getAttribute('aria-label');
+      iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';
+      iframe.allowFullscreen=true;
+      iframe.style.cssText='width:100%;aspect-ratio:16/9;border:none;display:block';
+      btn.parentNode.replaceChild(iframe,btn);
+    });
+  });
+
+  /* Smooth scroll for jump nav */
+  document.querySelectorAll('.jump-nav a, .ft-col a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var target=document.querySelector(a.getAttribute('href'));
+      if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
+    });
+  });
+
+  /* Highlight active section in jump nav */
+  var jumpLinks=document.querySelectorAll('.jump-nav a');
+  var sections=[];
+  jumpLinks.forEach(function(a){
+    var s=document.querySelector(a.getAttribute('href'));
+    if(s) sections.push({el:s,link:a});
+  });
+  var scrollTimer;
+  window.addEventListener('scroll',function(){
+    clearTimeout(scrollTimer);
+    scrollTimer=setTimeout(function(){
+      var scrollY=window.scrollY+120;
+      var active=sections[0];
+      sections.forEach(function(s){if(s.el.offsetTop<=scrollY) active=s;});
+      jumpLinks.forEach(function(a){a.classList.remove('active')});
+      if(active) active.link.classList.add('active');
+    },50);
   });
 
   /* Key-video filter */
