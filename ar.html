@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concejo Municipal de Nosara — Realidad Aumentada</title>
+<meta name="description" content="Ancla el edificio del Concejo Municipal de Nosara al piso de tu espacio real, escalalo con un pellizco y entrá caminando a recorrerlo por dentro.">
+<script type="module" src="lib/model-viewer.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:linear-gradient(160deg,#071518 0%,#0d2a30 45%,#0a1a1f 100%);
+  font-family:Inter,system-ui,sans-serif;color:#EDF7F9}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+
+header{text-align:center;padding-top:8px}
+.badge{display:inline-block;background:rgba(26,163,176,.12);border:1px solid rgba(26,163,176,.3);border-radius:20px;
+  padding:4px 14px;font-size:11.5px;color:#1AA3B0;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+h1{font-size:clamp(20px,5vw,30px);font-weight:800;margin-top:10px;line-height:1.2}
+h1 .tl{color:#1AA3B0}h1 .gd{color:#E8A82C}
+.sub{color:#8ca8b0;font-size:13.5px;margin-top:6px;line-height:1.55}
+
+/* ---------- viewer ---------- */
+.viewer{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(26,163,176,.25);
+  background:radial-gradient(circle at 50% 40%,#14333b,#0a1a1f);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;background:transparent}
+.ar-btn{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;
+  padding:15px 34px;border:none;border-radius:40px;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,#E8A82C,#c98d1a);color:#1a1206;font-size:16px;font-weight:800;
+  box-shadow:0 8px 30px rgba(232,168,44,.45);white-space:nowrap}
+.ar-btn:active{transform:translateX(-50%) scale(.97)}
+.ar-btn svg{width:20px;height:20px}
+.hint-spin{position:absolute;top:12px;right:14px;background:rgba(10,26,31,.7);border:1px solid rgba(26,163,176,.2);
+  color:#7ec8d0;font-size:11px;padding:5px 12px;border-radius:14px;backdrop-filter:blur(6px)}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.st{background:rgba(14,110,124,.10);border:1px solid rgba(26,163,176,.2);border-radius:14px;padding:14px}
+.st .ico{font-size:22px}
+.st b{display:block;font-size:13.5px;color:#EDF7F9;margin:7px 0 4px}
+.st p{font-size:12.5px;color:#8ca8b0;line-height:1.5}
+.st .en{display:block;font-size:11px;color:#5a7a82;font-style:italic;margin-top:5px}
+
+.note{background:rgba(232,168,44,.07);border:1px solid rgba(232,168,44,.25);border-radius:14px;padding:12px 16px;
+  font-size:12.5px;color:#d8c49a;line-height:1.55}
+.note b{color:#E8A82C}
+
+footer{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding-top:6px}
+footer a{color:#7ec8d0;font-size:13px;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);padding-bottom:1px}
+footer a:hover{color:#EDF7F9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge">Nosara 2026 · Realidad Aumentada</span>
+    <h1><span class="tl">Concejo Municipal</span> de <span class="gd">Nosara</span><br>en tu espacio real</h1>
+    <p class="sub">Ancla el edificio al piso, escalalo con un pellizco y entrá caminando a recorrerlo por dentro.<br>
+    <em>Anchor the building to your floor, pinch to scale, and walk inside.</em></p>
+  </header>
+
+  <div class="viewer">
+    <model-viewer id="mv"
+      src="edificio-ar.glb"
+      alt="Edificio del Concejo Municipal de Nosara en 3D"
+      ar ar-modes="scene-viewer webxr quick-look"
+      ar-scale="auto"
+      ar-placement="floor"
+      camera-controls
+      auto-rotate rotation-per-second="12deg"
+      camera-orbit="35deg 72deg 42m"
+      min-camera-orbit="auto auto 3m"
+      max-camera-orbit="auto auto 90m"
+      exposure="1.05"
+      interaction-prompt="none"
+      loading="eager" reveal="auto">
+      <button class="ar-btn" slot="ar-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v10a1 1 0 0 1-1 1h-4v-6h-8v6H4a1 1 0 0 1-1-1z"/></svg>
+        Ver en AR
+      </button>
+    </model-viewer>
+    <span class="hint-spin">arrastrá para girar · 3D</span>
+  </div>
+
+  <div class="steps">
+    <div class="st"><span class="ico">📍</span><b>1 · Se ancla al piso</b>
+      <p>Apuntá a un piso plano con buena luz y movē el teléfono despacio: el edificio queda fijo en ese punto del mundo real.</p>
+      <span class="en">It stays world-locked: it will not follow the camera.</span></div>
+    <div class="st"><span class="ico">🤏</span><b>2 · Pellizcá para escalar</b>
+      <p>Dos dedos: agrandalo o achicalo. Un dedo: rotalo sobre su eje.</p>
+      <span class="en">Pinch to scale · one finger to rotate.</span></div>
+    <div class="st"><span class="ico">🚶</span><b>3 · Entrá caminando</b>
+      <p>Agrandalo bien y caminá con el teléfono: podés cruzar la puerta y ver todo por dentro (jardín, sala del Concejo, pantallas).</p>
+      <span class="en">Walk in with your phone and explore the interior.</span></div>
+    <div class="st"><span class="ico">💡</span><b>Mejor experiencia</b>
+      <p>Espacio abierto (patio, plaza o sala grande), buena luz y piso con textura. Funciona en Android (Chrome) y iPhone (Safari).</p>
+      <span class="en">Open space, good light, textured floor.</span></div>
+  </div>
+
+  <div class="note"><b>Interior real:</b> el modelo tiene paredes de doble cara y todo el mobiliario interior
+  (recepción, jardín central, sala del Concejo con sus 7 puestos, 100 sillas, pantallas informativas),
+  optimizado para correr fluido en teléfonos de gama media (~3&nbsp;MB, 75 mallas).</div>
+
+  <footer>
+    <a href="edificio.html">← Tour virtual del edificio</a>
+    <a href="https://muninosara.org">muninosara.org</a>
+  </footer>
+
+</div>
+</body>
+</html>
