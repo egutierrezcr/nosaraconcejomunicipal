@@ -482,6 +482,75 @@ benchSeat(-3.5,(GZ0+GZ1)/2,Math.PI/2);benchSeat(0.5,GZ1-1.5,Math.PI);
 standing(-1,GZ1-3,Math.PI*0.3,0x16A085);standing(1.8,GZ0+3,Math.PI*1.5,PAL.gold);person(-3.5,(GZ0+GZ1)/2-0.9,-Math.PI/2,0x2980B9);
 label({es:'Jardín Central',en:'Central Garden'},0,3.0,GZ1-0.3,'#2F6B4F',2.4);
 
+// ---------- Holographic territorial-planning table ----------
+// glowing cyan floating text (no box), redraws on language switch
+function holoLabelTex(text,color){
+  const c=document.createElement('canvas');c.width=560;c.height=68;const t=c.getContext('2d');
+  let fs=36;t.font=`bold ${fs}px Inter,sans-serif`;while(t.measureText(text).width>536&&fs>13){fs--;t.font=`bold ${fs}px Inter,sans-serif`;}
+  t.textAlign='center';t.textBaseline='middle';
+  t.lineWidth=5;t.strokeStyle='rgba(2,16,22,.75)';t.strokeText(text,280,36);
+  t.shadowColor=color;t.shadowBlur=16;t.fillStyle=color;t.fillText(text,280,36);t.fillText(text,280,36);
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
+function holoLabel(texts,color='#3fefff',w=2.6){
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false}));
+  reg(l=>{if(sp.material.map)sp.material.map.dispose();sp.material.map=holoLabelTex(tr(texts),color);sp.material.needsUpdate=true;sp.scale.set(w,w*68/560,1);});
+  return sp;}
+const HOLOX=2.8,HOLOZ=5.2;
+let holo=null;
+(function(){
+  const cyan=0x3fefff,cyanD=0x1AA3B0;
+  const lineMat=op=>new THREE.LineBasicMaterial({color:cyan,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false});
+  const fillMat=op=>new THREE.MeshBasicMaterial({color:cyanD,transparent:true,opacity:op,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
+  // pedestal / emitter
+  const base=new THREE.Group();
+  const ped=cyl(0.5,0.9,mk(0x0e2a30,{metalness:.5,roughness:.4}),6);ped.position.y=0.45;base.add(ped);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.045,8,6),new THREE.MeshBasicMaterial({color:cyan}));rim.rotation.x=Math.PI/2;rim.position.y=0.92;base.add(rim);
+  const emit=new THREE.Mesh(new THREE.CircleGeometry(0.46,24),fillMat(.5));emit.rotation.x=-Math.PI/2;emit.position.y=0.925;base.add(emit);
+  shad(base);base.position.set(HOLOX,0,HOLOZ);scene.add(base);addObs(HOLOX,HOLOZ,0.56,0.56);
+  scene.add(P(new THREE.PointLight(cyan,3,4.5,2),HOLOX,1.15,HOLOZ));
+  // faint projection cone
+  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.95,1.75,6,1,true),new THREE.MeshBasicMaterial({color:cyan,transparent:true,opacity:.05,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false}));
+  cone.position.set(HOLOX,1.9,HOLOZ);scene.add(cone);
+  // rotating hologram
+  holo=new THREE.Group();holo.position.set(HOLOX,1.05,HOLOZ);scene.add(holo);
+  // stylized Nosara landmass (shape in XY → rotate to lie flat: point (px,py) → world (px,0,-py))
+  const land=new THREE.Shape();
+  land.moveTo(-0.78,-0.72);
+  land.bezierCurveTo(-0.98,-0.2,-0.82,0.36,-0.46,0.62);
+  land.bezierCurveTo(-0.1,0.82,0.36,0.76,0.62,0.56);
+  land.bezierCurveTo(0.98,0.26,0.82,-0.36,0.56,-0.66);
+  land.bezierCurveTo(0.2,-0.86,-0.36,-0.86,-0.78,-0.72);
+  const landGeo=new THREE.ShapeGeometry(land),landEdge=new THREE.EdgesGeometry(landGeo);
+  const layers=[
+    {y:0.00,lbl:{es:'Comunidades y naturaleza',en:'Communities & nature'},op:.6},
+    {y:0.30,lbl:{es:'% Vivienda alquilada',en:'% Rented housing'},op:.5},
+    {y:0.58,lbl:{es:'% Internet',en:'% Internet'},op:.5},
+    {y:0.86,lbl:{es:'Fragilidad ambiental (IFA)',en:'Environmental fragility (IFA)'},op:.5},
+    {y:1.14,lbl:{es:'Relieve · elevación',en:'Relief · elevation'},op:.5},
+    {y:1.42,lbl:{es:'Parcelas (SIRI)',en:'Parcels (SIRI)'},op:.55},
+  ];
+  layers.forEach((L,i)=>{
+    const layer=new THREE.Group();layer.position.y=L.y;
+    const e1=new THREE.LineSegments(landEdge,lineMat(L.op));e1.rotation.x=-Math.PI/2;layer.add(e1);
+    const e2=new THREE.LineSegments(landEdge,lineMat(L.op*0.45));e2.rotation.x=-Math.PI/2;e2.scale.set(0.62,0.62,1);layer.add(e2);
+    const f=new THREE.Mesh(landGeo,fillMat(i===0?0.11:0.05));f.rotation.x=-Math.PI/2;layer.add(f);
+    if(i===0){const spots=[[-0.4,0.15],[0.15,0.4],[0.45,-0.05],[-0.1,-0.4],[0.5,0.45],[-0.55,-0.1],[0.05,0.6]];
+      spots.forEach(([sx,sy])=>{const o=new THREE.Mesh(new THREE.OctahedronGeometry(0.05),new THREE.MeshBasicMaterial({color:cyan,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false}));o.position.set(sx,0.03,-sy);layer.add(o);});}
+    holo.add(layer);
+    // fixed side label (does not spin) with connector tick
+    const sl=holoLabel(L.lbl,'#9ff6ff',1.55);sl.position.set(HOLOX+1.55,1.05+L.y,HOLOZ);scene.add(sl);
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(HOLOX+0.55,1.05+L.y,HOLOZ),new THREE.Vector3(HOLOX+0.9,1.05+L.y,HOLOZ)]),lineMat(0.4)));
+  });
+  // vertical data pillars (spin with hologram)
+  [[-0.78,-0.72],[-0.46,0.62],[0.62,0.56],[0.56,-0.66],[0.05,0.75],[-0.9,0.0]].forEach(([px,py])=>{
+    holo.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(px,0,-py),new THREE.Vector3(px,1.42,-py)]),lineMat(0.22)));});
+  // base grid ring
+  const ring=new THREE.Mesh(new THREE.RingGeometry(0.9,0.98,40),fillMat(0.35));ring.rotation.x=-Math.PI/2;ring.position.y=-0.03;holo.add(ring);
+  // floating title
+  const tt=holoLabel({es:'Planificación Territorial de Nosara',en:'Nosara Territorial Planning'},'#3fefff',3.3);tt.position.set(HOLOX,2.94,HOLOZ);scene.add(tt);
+  const st=holoLabel({es:'Comunidades locales de la mano con la naturaleza',en:'Local communities hand in hand with nature'},'#9ff6ff',3.4);st.position.set(HOLOX,2.66,HOLOZ);scene.add(st);
+})();
+
 // ============================================================
 // COMMUNITY / PARTICIPATION (east wing)
 // ============================================================
@@ -657,6 +726,8 @@ const WP=[
     title:{es:'Atención Ciudadana',en:'Citizen Services'},desc:{es:'Puntos de atención abiertos, trámites ágiles y trato humano. Pantallas que enlazan a capacitación y organigrama.',en:'Open service points, quick procedures and a human touch. Screens link to training and org chart.'}},
   {id:{es:'Jardín',en:'Garden'},x:0,z:6.5,yaw:0,pitch:0.1,
     title:{es:'Jardín Central',en:'Central Garden'},desc:{es:'El corazón del edificio: un espacio verde amplio, abierto al cielo, con agua y sombra. Para encontrarse y conversar.',en:'The heart of the building: a wide green space open to the sky, with water and shade. To meet and talk.'}},
+  {id:{es:'Planificación',en:'Planning'},x:HOLOX,z:9.8,yaw:0,pitch:0.17,
+    title:{es:'Planificación Territorial',en:'Territorial Planning'},desc:{es:'Una mesa holográfica proyecta las capas del distrito —parcelas, relieve, fragilidad ambiental, internet, vivienda— sobre el mapa de Nosara. Comunidades locales de la mano con la naturaleza.',en:'A holographic table projects the district layers —parcels, relief, environmental fragility, internet, housing— over the map of Nosara. Local communities hand in hand with nature.'}},
   {id:{es:'Comunidad',en:'Community'},x:BX1-5.5,z:(GZ0+GZ1)/2,yaw:-Math.PI/2,pitch:0,
     title:{es:'Espacio Comunitario',en:'Community Space'},desc:{es:'Cabildo digital, denuncias y transparencia, concursos de proveedores. Tu espacio para decidir y fiscalizar.',en:'Digital town hall, reports and transparency, supplier tenders. Your space to decide and oversee.'}},
   {id:{es:'Sistema',en:'System'},x:sidX,z:3,yaw:0,pitch:0.08,
@@ -787,6 +858,7 @@ const ZONES=[
   {x:0,z:BZ1-1,r:4.5,n:{es:'Entrada Principal',en:'Main Entrance'}},
   {x:-4.5,z:BZ1-2.5,r:3.5,n:{es:'Recepción',en:'Reception'}},
   {x:BX0+4.5,z:(GZ0+GZ1)/2,r:5,n:{es:'Atención Ciudadana',en:'Citizen Services'}},
+  {x:HOLOX,z:HOLOZ,r:2.6,n:{es:'Planificación Territorial',en:'Territorial Planning'}},
   {x:0,z:(GZ0+GZ1)/2,r:4.5,n:{es:'Jardín Central',en:'Central Garden'}},
   {x:BX1-4.5,z:(GZ0+GZ1)/2,r:5,n:{es:'Espacio Comunitario',en:'Community Space'}},
   {x:0,z:daisZ+7,r:12,n:{es:'Sala del Concejo',en:'Council Chamber'}},
@@ -859,6 +931,7 @@ function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta()
     mmT+=dt;if(mmT>0.25){mmT=0;drawMap();}
   }
   if(mainTree)mainTree.rotation.y=Math.sin(clock.elapsedTime*0.3)*0.012;
+  if(holo){holo.rotation.y+=dt*0.35;holo.position.y=1.05+Math.sin(clock.elapsedTime*0.9)*0.03;}
   renderer.render(scene,camera);}
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
