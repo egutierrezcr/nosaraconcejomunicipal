@@ -7,7 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,system-ui,sans-serif;color:#fff}
-#app{position:fixed;inset:0}canvas{display:block}
+#app{position:fixed;inset:0;z-index:2}canvas{display:block}
 
 /* ---------- Loading ---------- */
 #loading{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;z-index:30;background:#0a1a1f}
@@ -824,15 +824,24 @@ function checkLook(){raycaster.setFromCamera({x:0,y:0},camera);const hits=raycas
 // AR MODE
 // ============================================================
 const arVideo=document.getElementById('ar-video'),arClose=document.getElementById('ar-close'),arHint=document.getElementById('ar-hint');
-let arStream=null,arAX=0.5,arAY=0.55,arDist=34,arDrag=null,arLx=0,arLy=0,arPinch=0;
-async function beginAR(){try{arStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-  arVideo.srcObject=arStream;arVideo.style.display='block';mode='ar';
-  startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
-  arClose.style.display='block';arHint.style.display='block';arClose.textContent=tr(HT.arClose);arHint.textContent=tr(HT.arHint);
-  scene.background=null;renderer.setClearAlpha(0);updateAR();
-}catch(e){alert(tr(HT.arErr));}}
+let arStream=null,arAX=0.7,arAY=0.62,arDist=48,arDrag=null,arLx=0,arLy=0,arPinch=0;
+const _origFog=scene.fog;
+async function beginAR(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){alert(tr(HT.arErr)+' (no getUserMedia)');return;}
+  try{
+    try{arStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});}
+    catch(_){arStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}   // fallback: any camera
+    arVideo.srcObject=arStream;arVideo.style.display='block';
+    try{await arVideo.play();}catch(_){}                                                       // iOS needs explicit play
+    mode='ar';
+    startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
+    arClose.style.display='block';arHint.style.display='block';arClose.textContent=tr(HT.arClose);arHint.textContent=tr(HT.arHint);
+    scene.background=null;scene.fog=null;renderer.setClearAlpha(0);
+    arAX=0.7;arAY=0.62;arDist=48;updateAR();   // reset to a well-framed 3/4 aerial each time
+  }catch(e){alert(tr(HT.arErr)+' ('+((e&&e.name)||e)+')');}
+}
 function exitAR(){if(arStream){arStream.getTracks().forEach(t=>t.stop());arStream=null;}arVideo.style.display='none';arClose.style.display='none';arHint.style.display='none';
-  mode='menu';startEl.style.display='flex';startEl.style.opacity='1';scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
+  mode='menu';startEl.style.display='flex';startEl.style.opacity='1';scene.background=new THREE.Color(PAL.sky);scene.fog=_origFog;renderer.setClearAlpha(1);}
 function updateAR(){const cx=Math.sin(arAX)*Math.cos(arAY)*arDist,cy=Math.sin(arAY)*arDist+6,cz=Math.cos(arAX)*Math.cos(arAY)*arDist;
   camera.position.set(cx,cy,cz+(BZ0+BZ1)/2);camera.lookAt(0,2,(BZ0+BZ1)/2);}
 document.getElementById('enter-ar').addEventListener('click',beginAR);arClose.addEventListener('click',exitAR);
