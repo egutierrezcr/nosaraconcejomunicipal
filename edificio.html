@@ -116,6 +116,16 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 .touch #hint{font-size:11px;bottom:12px}
 .touch #info{font-size:12px}
 
+/* exit-tour button */
+#exit-tour{position:fixed;top:14px;left:14px;z-index:14;display:none;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:20px;border:1px solid rgba(232,168,44,.4);cursor:pointer;
+  background:rgba(10,26,31,.85);color:#E8A82C;font-size:12.5px;font-weight:700;backdrop-filter:blur(8px)}
+#exit-tour:active{background:rgba(232,168,44,.2)}
+
+/* back-to-landing link on start screen */
+#to-landing{margin-top:10px;font-size:12.5px;color:#7ec8d0;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);padding-bottom:1px}
+#to-landing:hover{color:#EDF7F9}
+
 /* rotate-to-landscape tip (portrait phones only) */
 #rot-tip{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;
   background:rgba(10,26,31,.88);border:1px solid rgba(232,168,44,.45);color:#E8A82C;padding:9px 18px;border-radius:22px;
@@ -135,6 +145,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <div id="minimap"><canvas id="mmc" width="300" height="300"></canvas></div>
 <div id="joy"><div id="stick"></div></div>
 <button id="jump"></button>
+<button id="exit-tour">✕ <span id="exit-txt"></span></button>
 <div id="rot-tip">📱 <span id="rot-txt"></span></div>
 <div id="arx-guide">
   <h2 id="axg-t"></h2>
@@ -165,6 +176,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   <div class="keys" id="kd"><span class="key" id="k-move"></span><span class="key" id="k-look"></span><span class="key" id="k-jump"></span><span class="key" id="k-run"></span></div>
   <div class="keys" id="km" style="display:none"><span class="key" id="k-mtouch"></span><span class="key" id="k-ltouch"></span></div>
   <p class="foot" id="s-foot"></p>
+  <a id="to-landing" href="https://muninosara.org"></a>
 </div>
 
 <script>
@@ -833,11 +845,19 @@ let locked=false;const startEl=document.getElementById('start'),cross=document.g
 let mode='menu';
 function beginTour(){mode='tour';startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
   cross.style.display='block';hint.style.display='block';wpEl.style.display='flex';
+  document.getElementById('exit-tour').style.display='flex';
   if(!isTouch){tag.style.display='block';minimap.style.display='block';}   // phones: clean HUD, no minimap/zone chip
   hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
   if(isTouch){joy.style.display='block';}else renderer.domElement.requestPointerLock();
   updRot();
   scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
+function exitTour(){cancelAuto();mode='menu';
+  if(locked)document.exitPointerLock();
+  ['exit-tour','cross','hint','tag','minimap','joy','jump','waypoints','linkBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  hideInfo();rotTip.style.display='none';
+  pos.set(0,EYE,isTouch?25:17);yaw=0;pitch=0;vy=0;onGround=true;   // reset spawn for next visit
+  startEl.style.display='flex';startEl.style.opacity='1';}
+document.getElementById('exit-tour').addEventListener('click',exitTour);
 // rotate-to-landscape tip (touch + portrait only)
 const rotTip=document.getElementById('rot-tip');
 function updRot(){rotTip.style.display=(mode==='tour'&&isTouch&&matchMedia('(orientation:portrait)').matches)?'flex':'none';}
@@ -993,6 +1013,8 @@ const HT={
     en:'Explore the building we can build: <span class="highlight">open, transparent and participatory</span>. Glass, a central garden, a town hall for the decisions that matter to Nosara. Open-door government.'},
   start:{es:'Iniciar tour virtual',en:'Start virtual tour'},
   guided:{es:'Enséñame un recorrido',en:'Show me around'},
+  exit:{es:'Salir',en:'Exit'},
+  toLanding:{es:'← Volver a muninosara.org',en:'← Back to muninosara.org'},
   autoHint:{es:'Recorrido automático · tocá el joystick o un punto para tomar el control',en:'Auto tour · touch the joystick or a stop to take control'},
   rotTip:{es:'Girá el teléfono a horizontal para ver mejor',en:'Rotate your phone to landscape for a better view'},
   arx:{es:'AR: caminá dentro del edificio',en:'AR: walk inside the building'},
@@ -1020,6 +1042,8 @@ function applyHTMLLang(){
   document.getElementById('enter-arx').textContent=tr(HT.arx);
   document.getElementById('enter-guided').textContent=tr(HT.guided);
   document.getElementById('rot-txt').textContent=tr(HT.rotTip);
+  document.getElementById('exit-txt').textContent=tr(HT.exit);
+  document.getElementById('to-landing').textContent=tr(HT.toLanding);
   document.getElementById('enter-ar').textContent=tr(HT.ar);
   document.getElementById('axg-t').textContent=tr(HT.axgT);
   document.getElementById('axg-1').textContent=tr(HT.axg1);
