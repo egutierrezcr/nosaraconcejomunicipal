@@ -106,6 +106,21 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   #info{right:10px;left:10px;max-width:none;top:auto;bottom:120px;transform:none}
   #minimap{width:96px;height:96px}
 }
+
+/* ---------- clean mobile HUD ---------- */
+.touch #minimap,.touch #jump,.touch #tag{display:none !important}
+.touch .wp{padding:4px 11px;font-size:11px}
+.touch #waypoints{bottom:42px;gap:5px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;
+  max-width:94vw;padding:3px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.touch #waypoints::-webkit-scrollbar{display:none}
+.touch #hint{font-size:11px;bottom:12px}
+.touch #info{font-size:12px}
+
+/* rotate-to-landscape tip (portrait phones only) */
+#rot-tip{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;
+  background:rgba(10,26,31,.88);border:1px solid rgba(232,168,44,.45);color:#E8A82C;padding:9px 18px;border-radius:22px;
+  font-size:12.5px;font-weight:700;white-space:nowrap;backdrop-filter:blur(8px)}
+@media(orientation:landscape){#rot-tip{display:none !important}}
 </style>
 </head>
 <body>
@@ -120,6 +135,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <div id="minimap"><canvas id="mmc" width="300" height="300"></canvas></div>
 <div id="joy"><div id="stick"></div></div>
 <button id="jump"></button>
+<div id="rot-tip">📱 <span id="rot-txt"></span></div>
 <div id="arx-guide">
   <h2 id="axg-t"></h2>
   <div class="steps">
@@ -142,6 +158,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   <p id="s-intro"></p>
   <div class="btns">
     <button class="btn-main" id="enter"></button>
+    <button class="btn-ar" id="enter-guided" style="border-color:rgba(26,163,176,.5);color:#7ec8d0"></button>
     <button class="btn-ar" id="enter-arx"></button>
     <button class="btn-ar" id="enter-ar" style="display:none"></button>
   </div>
@@ -160,6 +177,7 @@ window.addEventListener('error',e=>{const L=document.getElementById('loading');
 import*as THREE from'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 const isTouch=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window||location.search.includes('touch=1');
+if(isTouch)document.body.classList.add('touch');
 const app=document.getElementById('app');
 let lang='es';
 const SITE='https://muninosara.org';
@@ -191,7 +209,7 @@ scene.fog=new THREE.FogExp2(0xc8e6f0,0.009);
 const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,0.05,300);
 camera.rotation.order='YXZ';
 const EYE=1.62;
-const pos=new THREE.Vector3(0,EYE,17);
+const pos=new THREE.Vector3(0,EYE,isTouch?25:17);   // phones start farther back: see the whole building + learn controls
 let yaw=0,pitch=0;          // yaw=0 looks -Z (north), into the building
 let vy=0,onGround=true;     // vertical velocity for jumping
 const GRAV=-19,JUMP=6.4;
@@ -771,7 +789,7 @@ const WP=[
     title:{es:'Localidades de Nosara',en:'Nosara Localities'},desc:{es:'Arenales, Delicias, Garza, Nosara centro, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood y Río Montaña. Todas cuentan.',en:'Arenales, Delicias, Garza, Nosara center, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood and Río Montaña. They all count.'}},
 ];
 const wpEl=document.getElementById('waypoints');const visited=new Set();
-WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>goWP(i));wpEl.appendChild(b);});
+WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>{cancelAuto();goWP(i);});wpEl.appendChild(b);});
 let transitioning=false;
 function goWP(i){const w=WP[i];if(transitioning)return;transitioning=true;visited.add(i);
   document.querySelectorAll('.wp').forEach(b=>{b.classList.toggle('visited',visited.has(+b.dataset.i));b.classList.toggle('active',+b.dataset.i===i);});
@@ -807,17 +825,39 @@ function drawMap(){const w=mmc.width,h=mmc.height,sc=w/46,ox=w/2,oz=h*0.42;
 const keys={};addEventListener('keydown',e=>{keys[e.code]=true;
   if(e.code==='Escape'&&locked)document.exitPointerLock();
   if(e.code==='KeyE'&&curLink&&mode==='tour')openLink();
+  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))cancelAuto();
   if(e.code==='Space')e.preventDefault();});
 addEventListener('keyup',e=>keys[e.code]=false);
 let locked=false;const startEl=document.getElementById('start'),cross=document.getElementById('cross'),hint=document.getElementById('hint'),
   joy=document.getElementById('joy'),tag=document.getElementById('tag'),minimap=document.getElementById('minimap'),jumpBtn=document.getElementById('jump');
 let mode='menu';
 function beginTour(){mode='tour';startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
-  cross.style.display='block';hint.style.display='block';tag.style.display='block';wpEl.style.display='flex';minimap.style.display='block';
+  cross.style.display='block';hint.style.display='block';wpEl.style.display='flex';
+  if(!isTouch){tag.style.display='block';minimap.style.display='block';}   // phones: clean HUD, no minimap/zone chip
   hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
-  if(isTouch){joy.style.display='block';jumpBtn.style.display='block';}else renderer.domElement.requestPointerLock();
+  if(isTouch){joy.style.display='block';}else renderer.domElement.requestPointerLock();
+  updRot();
   scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
+// rotate-to-landscape tip (touch + portrait only)
+const rotTip=document.getElementById('rot-tip');
+function updRot(){rotTip.style.display=(mode==='tour'&&isTouch&&matchMedia('(orientation:portrait)').matches)?'flex':'none';}
+try{matchMedia('(orientation:portrait)').addEventListener('change',updRot);}catch(e){}
 document.getElementById('enter').addEventListener('click',beginTour);
+
+// ---------- guided tour: auto-visits every waypoint; any input takes control back ----------
+let autoTour=false,autoIdx=0,autoTimer=null;
+function startGuided(){beginTour();autoTour=true;autoIdx=0;
+  hint.textContent=tr(HT.autoHint);
+  setTimeout(stepAuto,700);}
+function stepAuto(){if(!autoTour)return;
+  transitioning=false;            // never let a stalled transition block the next stop
+  goWP(autoIdx);
+  autoTimer=setTimeout(()=>{autoIdx++;
+    if(autoIdx>=WP.length){cancelAuto();return;}
+    stepAuto();},5500);}
+function cancelAuto(){if(!autoTour)return;autoTour=false;clearTimeout(autoTimer);
+  hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);}
+document.getElementById('enter-guided').addEventListener('click',startGuided);
 document.addEventListener('pointerlockchange',()=>locked=document.pointerLockElement===renderer.domElement);
 document.addEventListener('mousemove',e=>{if(!locked||mode!=='tour')return;yaw-=e.movementX*0.002;pitch-=e.movementY*0.002;pitch=Math.max(-1.35,Math.min(1.35,pitch));});
 renderer.domElement.addEventListener('click',()=>{if(!isTouch&&mode==='tour'&&!locked&&startEl.style.display==='none')renderer.domElement.requestPointerLock();});
@@ -828,7 +868,7 @@ jumpBtn.addEventListener('touchstart',e=>{e.preventDefault();doJump();},{passive
 
 // joystick
 let joyVec={x:0,y:0},joyId=null;const stick=document.getElementById('stick');
-function jS(t){joyId=t.identifier;jM(t);}
+function jS(t){cancelAuto();joyId=t.identifier;jM(t);}
 function jM(t){const r=joy.getBoundingClientRect();let dx=t.clientX-(r.left+55),dy=t.clientY-(r.top+55);const d=Math.hypot(dx,dy),mx=40;if(d>mx){dx*=mx/d;dy*=mx/d;}stick.style.transform=`translate(${dx}px,${dy}px)`;joyVec.x=dx/mx;joyVec.y=dy/mx;}
 function jE(){joyId=null;joyVec={x:0,y:0};stick.style.transform='translate(0,0)';}
 joy.addEventListener('touchstart',e=>{e.preventDefault();jS(e.changedTouches[0]);},{passive:false});
@@ -952,6 +992,9 @@ const HT={
   intro:{es:'Explora el edificio que podemos construir: <span class="highlight">abierto, transparente y participativo</span>. Vidrio, jardín central, cabildo para las decisiones que importan para Nosara. Gobierno de puertas abiertas.',
     en:'Explore the building we can build: <span class="highlight">open, transparent and participatory</span>. Glass, a central garden, a town hall for the decisions that matter to Nosara. Open-door government.'},
   start:{es:'Iniciar tour virtual',en:'Start virtual tour'},
+  guided:{es:'Enséñame un recorrido',en:'Show me around'},
+  autoHint:{es:'Recorrido automático · tocá el joystick o un punto para tomar el control',en:'Auto tour · touch the joystick or a stop to take control'},
+  rotTip:{es:'Girá el teléfono a horizontal para ver mejor',en:'Rotate your phone to landscape for a better view'},
   arx:{es:'AR: caminá dentro del edificio',en:'AR: walk inside the building'},
   arxPrep:{es:'Preparando AR…',en:'Preparing AR…'},
   arxNo:{es:'Tu navegador no soporta AR nativo aquí. Probá con Chrome (Android) o Safari (iPhone).',en:'Your browser does not support native AR here. Try Chrome (Android) or Safari (iPhone).'},
@@ -966,7 +1009,7 @@ const HT={
   kmove:{es:'W A S D mover',en:'W A S D move'},klook:{es:'Ratón mirar',en:'Mouse look'},kjump:{es:'Espacio saltar',en:'Space jump'},krun:{es:'Shift correr',en:'Shift run'},
   kmtouch:{es:'Joystick mover',en:'Joystick move'},kltouch:{es:'Arrastrá para mirar',en:'Drag to look'},
   hintDesk:{es:'WASD caminar · ratón mirar · Espacio saltar · Shift correr',en:'WASD move · mouse look · Space jump · Shift run'},
-  hintTouch:{es:'Joystick mover · arrastrá para mirar · botón saltar',en:'Joystick move · drag to look · jump button'},
+  hintTouch:{es:'Joystick para caminar · arrastrá para mirar',en:'Joystick to walk · drag to look'},
   jump:{es:'Saltar',en:'Jump'},
   arClose:{es:'Salir de AR',en:'Exit AR'},arHint:{es:'Arrastrá para rotar · pellizcá para acercar',en:'Drag to rotate · pinch to zoom'},
   arErr:{es:'No se pudo acceder a la cámara. Revisá los permisos.',en:'Could not access the camera. Check permissions.'},
@@ -975,6 +1018,8 @@ function applyHTMLLang(){
   document.getElementById('s-intro').innerHTML=tr(HT.intro);
   document.getElementById('enter').textContent=tr(HT.start);
   document.getElementById('enter-arx').textContent=tr(HT.arx);
+  document.getElementById('enter-guided').textContent=tr(HT.guided);
+  document.getElementById('rot-txt').textContent=tr(HT.rotTip);
   document.getElementById('enter-ar').textContent=tr(HT.ar);
   document.getElementById('axg-t').textContent=tr(HT.axgT);
   document.getElementById('axg-1').textContent=tr(HT.axg1);
