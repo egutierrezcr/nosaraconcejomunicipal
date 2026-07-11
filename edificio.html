@@ -127,11 +127,16 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   <p class="foot" id="s-foot"></p>
 </div>
 
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script>
+// surface any startup error on the loading screen (mobile diagnosis)
+window.addEventListener('error',e=>{const L=document.getElementById('loading');
+  if(L&&L.style.display!=='none'){const s=L.querySelector('span');if(s)s.textContent='Error: '+(e.message||'desconocido');}});
+</script>
 <script type="module">
-import*as THREE from'three';
+// direct URL import (no importmap) → works on older mobile Safari/Chrome
+import*as THREE from'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-const isTouch=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window;
+const isTouch=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window||location.search.includes('touch=1');
 const app=document.getElementById('app');
 let lang='es';
 const SITE='https://muninosara.org';
@@ -283,6 +288,12 @@ scene.add(P(new THREE.PointLight(0xfff8d0,4,18,1.4),0,9,(GZ0+GZ1)/2));
 // PEOPLE / FURNITURE
 // ============================================================
 const skins=[M.skin1,M.skin2,M.skin3,M.skin4];const hairs=[M.hair1,M.hair2,M.hair3,M.hair4];let pidx=0;
+// every other figure is a woman: fuller hair down the back/sides + ponytail
+function womanHair(g,hM,headY){
+  g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.155,14,14,0,Math.PI*2,0,Math.PI*.62),hM),0,headY+0.03,0));
+  g.add(P(box(0.24,0.22,0.1,hM),0,headY-0.08,-0.11));                    // hair down the back
+  g.add(P(box(0.07,0.2,0.07,hM),0,headY-0.16,-0.16));                    // ponytail
+}
 function chair(x,z,rot,col=0x2d3a42){const g=new THREE.Group();const cm=mk(col,{roughness:.6});
   g.add(P(box(0.46,0.07,0.46,cm),0,0.44,0));g.add(P(box(0.46,0.48,0.07,cm),0,0.70,-0.2));
   g.add(P(box(0.06,0.42,0.06,M.metal),0,0.22,0));g.add(P(cyl(0.24,0.04,M.metal,10),0,0.02,0));
@@ -291,15 +302,15 @@ function benchSeat(x,z,rot){const g=new THREE.Group();
   g.add(P(box(1.7,0.07,0.5,M.wood),0,0.42,0));g.add(P(box(1.7,0.4,0.07,M.wood),0,0.64,-0.22));
   [[-0.75,0],[0.75,0]].forEach(([lx,lz])=>g.add(P(box(0.06,0.4,0.4,M.metal),lx,0.2,lz)));
   shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);addObs(x,z,0.95,0.4);}
-function person(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];pidx++;const pM=mk(0x2b3440,{roughness:.85});
+function person(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];const fem=pidx%2===1;pidx++;const pM=mk(0x2b3440,{roughness:.85});
   g.add(P(box(0.40,0.50,0.24,sM),0,0.96,0));g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.13,14,14),kM),0,1.32,0));
-  g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.35,0));
+  if(fem)womanHair(g,hM,1.35);else g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.35,0));
   g.add(P(box(0.32,0.14,0.38,pM),0,0.58,0.16));g.add(P(box(0.28,0.36,0.14,pM),0,0.28,0.32));
   g.add(P(box(0.11,0.36,0.13,sM),-0.26,0.92,0.03));g.add(P(box(0.11,0.36,0.13,sM),0.26,0.92,0.03));
   shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);return g;}
-function standing(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];pidx++;const pM=mk(0x2b3440,{roughness:.85});
+function standing(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];const fem=pidx%2===1;pidx++;const pM=mk(0x2b3440,{roughness:.85});
   g.add(P(box(0.40,0.55,0.24,sM),0,1.18,0));g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.13,14,14),kM),0,1.58,0));
-  g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.61,0));
+  if(fem)womanHair(g,hM,1.61);else g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.61,0));
   g.add(P(box(0.34,0.55,0.2,pM),0,0.58,0));g.add(P(box(0.14,0.56,0.2,pM),-0.14,0.28,0));g.add(P(box(0.14,0.56,0.2,pM),0.14,0.28,0));
   g.add(P(box(0.11,0.42,0.13,sM),-0.26,1.12,0.03));g.add(P(box(0.11,0.42,0.13,sM),0.26,1.12,0.03));
   shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);}
@@ -654,24 +665,21 @@ screen(-13.6,daisZ+6,Math.PI/2,3,2.2,{
   ]},
   foot:{es:'Cifras ilustrativas · se decide en Cabildo',en:'Illustrative figures · decided in Town Hall'}});
 
-// ---------- Localities map screen ----------
+// ---------- Localities screen: complete list (no map, all readable) ----------
+const LOCALIDADES=['Arenales','Delicias','Garza','Nosara centro','San Carlos','San Pedro','La Esperanza','Guiones','Pelada','Santa Marta','Santa Teresita','San Ramón','Los Ángeles-Rivera Norte','San Juan','Hollywood','Río Montaña'];
 function mapTex(){const c=document.createElement('canvas');c.width=520;c.height=390;const t=c.getContext('2d');
   t.fillStyle='#07171c';t.fillRect(0,0,520,390);t.fillStyle='#1AA3B0';t.fillRect(0,0,520,9);
-  t.fillStyle='#1AA3B0';t.font='bold 27px Inter,sans-serif';t.fillText(lang==='es'?'Localidades de Nosara':'Nosara Localities',24,50);
-  // stylized coastline
-  t.strokeStyle='rgba(63,169,201,.5)';t.lineWidth=3;t.beginPath();t.moveTo(60,120);t.bezierCurveTo(90,180,70,260,120,340);t.stroke();
-  t.fillStyle='rgba(63,169,201,.12)';t.fillRect(0,90,70,300);
-  const spots=[
-    {x:150,y:150,n:'Arenales',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
-    {x:250,y:200,n:'Nosara',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
-    {x:200,y:280,n:'Santa Teresita',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
-    {x:360,y:160,n:'Delicias',c:'#1AA3B0',tag:lang==='es'?'Siguiente':'Next'},
-    {x:410,y:250,n:'Garza',c:'#1AA3B0',tag:lang==='es'?'Siguiente':'Next'},
-    {x:300,y:330,n:'Santa Marta',c:'#C0392B',tag:lang==='es'?'Urgente':'Urgent'},
-  ];
-  spots.forEach(s=>{t.fillStyle=s.c;t.beginPath();t.arc(s.x,s.y,9,0,7);t.fill();
-    t.fillStyle='#EDF7F9';t.font='bold 18px Inter,sans-serif';t.fillText(s.n,s.x+16,s.y+2);
-    t.fillStyle=s.c;t.font='13px Inter,sans-serif';t.fillText(s.tag,s.x+16,s.y+20);});
+  t.fillStyle='#1AA3B0';t.font='bold 26px Inter,sans-serif';t.fillText(lang==='es'?'Localidades de Nosara':'Nosara Localities',24,46);
+  t.fillStyle='#7ec8d0';t.font='14px Inter,sans-serif';
+  t.fillText(lang==='es'?'Todas las comunidades del distrito, ninguna se queda atrás':'Every community in the district, none left behind',24,70);
+  // 16 localities in two columns of 8
+  t.font='bold 17px Inter,sans-serif';
+  LOCALIDADES.forEach((n,i)=>{
+    const col=Math.floor(i/8),x=24+col*252,y=104+(i%8)*34;
+    t.fillStyle='#1AA3B0';t.beginPath();t.arc(x+5,y-5,4.5,0,7);t.fill();
+    t.fillStyle='#EDF7F9';t.fillText(n,x+20,y);});
+  t.fillStyle='#5a7a82';t.font='italic 14px Inter,sans-serif';
+  t.fillText(lang==='es'?'Una instancia municipal que responda a cada una':'A municipal body that answers to each one',24,378);
   const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
 (function(){const g=new THREE.Group();
   g.add(P(box(3.12,2.32,0.06,mk(0x1AA3B0,{emissive:0x1AA3B0,emissiveIntensity:.5})),0,2.05,0));
@@ -737,7 +745,7 @@ const WP=[
   {id:{es:'Agenda',en:'Agenda'},x:-11.5,z:daisZ+6,yaw:Math.PI/2,pitch:0,
     title:{es:'Agenda y Presupuesto',en:'Agenda & Budget'},desc:{es:'Salud, ambulancias, calles, becas, ambiente, agua y policía municipal. Prioridades que se deciden en Cabildo.',en:'Health, ambulances, streets, scholarships, environment, water and municipal police. Priorities decided in Town Hall.'}},
   {id:{es:'Localidades',en:'Localities'},x:11.5,z:daisZ+6,yaw:-Math.PI/2,pitch:0,
-    title:{es:'Localidades de Nosara',en:'Nosara Localities'},desc:{es:'Prioridades: Arenales, Nosara y Santa Teresita. Siguientes: Delicias y Garza. Urgente: Santa Marta.',en:'Priorities: Arenales, Nosara and Santa Teresita. Next: Delicias and Garza. Urgent: Santa Marta.'}},
+    title:{es:'Localidades de Nosara',en:'Nosara Localities'},desc:{es:'Arenales, Delicias, Garza, Nosara centro, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood y Río Montaña. Todas cuentan.',en:'Arenales, Delicias, Garza, Nosara center, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood and Río Montaña. They all count.'}},
 ];
 const wpEl=document.getElementById('waypoints');const visited=new Set();
 WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>goWP(i));wpEl.appendChild(b);});
