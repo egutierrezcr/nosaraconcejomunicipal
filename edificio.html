@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Concejo Municipal de Nosara — Tour Virtual 3D</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,system-ui,sans-serif;color:#fff}
+#app{position:fixed;inset:0}canvas{display:block}
+
+/* ---------- Loading ---------- */
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;z-index:30;background:#0a1a1f}
+#loading .spin{width:40px;height:40px;border:3px solid rgba(26,163,176,.2);border-top-color:#1AA3B0;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#loading span{color:#1AA3B0;font-size:14px}
+
+/* ---------- Start screen ---------- */
+#start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:linear-gradient(160deg,#071518 0%,#0d2a30 40%,#0a1a1f 100%);z-index:20;text-align:center;padding:24px;transition:opacity .5s}
+#start .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(26,163,176,.12);border:1px solid rgba(26,163,176,.25);border-radius:20px;padding:5px 14px;font-size:12px;color:#1AA3B0;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+#start h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.15;max-width:560px}
+#start h1 .tl{color:#1AA3B0} #start h1 .gd{color:#E8A82C}
+#start p{color:#8ca8b0;max-width:460px;line-height:1.65;font-size:14px}
+#start .highlight{color:#EDF7F9;font-weight:600}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.btn-main{padding:14px 30px;font-size:15px;font-weight:700;border:none;border-radius:40px;cursor:pointer;
+  background:linear-gradient(135deg,#1AA3B0,#0E6E7C);color:#fff;box-shadow:0 6px 28px rgba(26,163,176,.35);transition:transform .15s,box-shadow .15s}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(26,163,176,.45)}
+.btn-ar{padding:14px 30px;font-size:15px;font-weight:700;border:2px solid rgba(232,168,44,.5);border-radius:40px;cursor:pointer;
+  background:rgba(232,168,44,.08);color:#E8A82C;transition:transform .15s,background .15s}
+.btn-ar:hover{transform:translateY(-2px);background:rgba(232,168,44,.15)}
+.keys{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.key{background:rgba(14,110,124,.12);border:1px solid rgba(26,163,176,.2);border-radius:6px;padding:4px 10px;font-size:11px;color:#7ec8d0}
+#start .foot{margin-top:8px;font-size:11px;color:#4a6a72}
+
+/* ---------- Language toggle ---------- */
+#lang{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:22;display:flex;background:rgba(10,26,31,.85);
+  border:1px solid rgba(26,163,176,.3);border-radius:20px;overflow:hidden;backdrop-filter:blur(8px);font-weight:700;font-size:13px}
+#lang button{border:none;background:none;color:#7ec8d0;padding:7px 16px;cursor:pointer;transition:all .2s}
+#lang button.on{background:#1AA3B0;color:#fff}
+
+/* ---------- HUD ---------- */
+#cross{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:rgba(255,255,255,.8);
+  box-shadow:0 0 0 1px rgba(0,0,0,.3),0 0 8px rgba(26,163,176,.4);z-index:10;pointer-events:none;display:none}
+#tag{position:fixed;top:56px;left:14px;z-index:10;font-size:12px;font-weight:600;color:#1AA3B0;
+  background:rgba(10,26,31,.75);padding:6px 14px;border-radius:20px;backdrop-filter:blur(8px);border:1px solid rgba(26,163,176,.15);display:none}
+#hint{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:10;background:rgba(10,26,31,.75);padding:7px 16px;
+  border-radius:20px;font-size:12px;color:#7ec8d0;backdrop-filter:blur(8px);pointer-events:none;display:none;white-space:nowrap;border:1px solid rgba(26,163,176,.1)}
+
+/* ---------- Tour waypoints ---------- */
+#waypoints{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);z-index:11;display:none;gap:6px;flex-wrap:wrap;justify-content:center;max-width:95vw}
+.wp{padding:6px 13px;font-size:12px;font-weight:600;border:1px solid rgba(26,163,176,.25);border-radius:16px;cursor:pointer;
+  background:rgba(10,26,31,.8);color:#7ec8d0;backdrop-filter:blur(6px);transition:all .2s;white-space:nowrap}
+.wp:hover,.wp.active{background:rgba(26,163,176,.2);color:#fff;border-color:rgba(26,163,176,.5)}
+.wp.visited{border-color:rgba(232,168,44,.3);color:#E8A82C}
+
+/* ---------- Info card ---------- */
+#info{position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:12;max-width:290px;padding:18px;border-radius:16px;
+  background:rgba(10,26,31,.9);backdrop-filter:blur(12px);border:1px solid rgba(26,163,176,.2);
+  opacity:0;pointer-events:none;transition:opacity .35s}
+#info.show{opacity:1;pointer-events:auto}
+#info h3{font-size:15px;color:#1AA3B0;margin-bottom:6px;font-weight:700}
+#info p{font-size:13px;color:#a0bfc6;line-height:1.55}
+#info .close-info{position:absolute;top:8px;right:10px;background:none;border:none;color:#5a7a82;cursor:pointer;font-size:16px}
+
+/* ---------- Link prompt ---------- */
+#linkBtn{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:13;display:none;align-items:center;gap:8px;
+  padding:11px 20px;border-radius:24px;border:1px solid rgba(232,168,44,.5);background:rgba(10,26,31,.92);
+  color:#E8A82C;font-weight:700;font-size:14px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
+#linkBtn .kbd{font-size:11px;background:rgba(232,168,44,.15);border:1px solid rgba(232,168,44,.35);border-radius:5px;padding:2px 6px}
+
+/* ---------- Minimap ---------- */
+#minimap{position:fixed;top:14px;right:14px;z-index:10;width:130px;height:130px;border-radius:12px;
+  background:rgba(10,26,31,.8);border:1px solid rgba(26,163,176,.2);backdrop-filter:blur(6px);display:none;overflow:hidden}
+#minimap canvas{width:100%;height:100%}
+
+/* ---------- AR ---------- */
+#ar-video{position:fixed;inset:0;z-index:1;object-fit:cover;display:none;width:100%;height:100%}
+#ar-close{position:fixed;top:14px;left:14px;z-index:16;padding:10px 20px;font-size:14px;font-weight:700;border:none;border-radius:20px;
+  cursor:pointer;background:rgba(10,26,31,.85);color:#1AA3B0;border:1px solid rgba(26,163,176,.3);pointer-events:auto;display:none}
+#ar-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:16;background:rgba(10,26,31,.8);padding:8px 18px;
+  border-radius:20px;font-size:12px;color:#7ec8d0;pointer-events:none;display:none}
+
+/* ---------- Touch controls ---------- */
+#joy{position:fixed;left:22px;bottom:22px;width:110px;height:110px;border-radius:50%;z-index:15;
+  background:rgba(26,163,176,.08);border:2px solid rgba(26,163,176,.25);display:none;touch-action:none}
+#stick{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;
+  background:rgba(26,163,176,.7);box-shadow:0 3px 12px rgba(0,0,0,.3)}
+#jump{position:fixed;right:24px;bottom:34px;width:76px;height:76px;border-radius:50%;z-index:15;display:none;
+  background:rgba(232,168,44,.15);border:2px solid rgba(232,168,44,.4);color:#E8A82C;font-weight:700;font-size:13px;touch-action:none}
+
+@media(max-width:500px){
+  #info{right:10px;left:10px;max-width:none;top:auto;bottom:120px;transform:none}
+  #minimap{width:96px;height:96px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="cross"></div>
+<div id="lang"><button id="es" class="on">ES</button><button id="en">EN</button></div>
+<div id="tag"></div>
+<div id="hint"></div>
+<div id="waypoints"></div>
+<div id="info"><button class="close-info" onclick="hideInfo()">&times;</button><h3 id="info-t"></h3><p id="info-p"></p></div>
+<button id="linkBtn"><span id="linkTxt"></span><span class="kbd" id="linkKbd">E</span></button>
+<div id="minimap"><canvas id="mmc" width="300" height="300"></canvas></div>
+<div id="joy"><div id="stick"></div></div>
+<button id="jump"></button>
+<video id="ar-video" playsinline autoplay muted></video>
+<button id="ar-close"></button>
+<div id="ar-hint"></div>
+
+<div id="loading"><div class="spin"></div><span>Construyendo el Concejo...</span></div>
+
+<div id="start">
+  <div class="badge">Nosara 2026</div>
+  <h1><span class="tl">Concejo Municipal</span><br>de <span class="gd">Nosara</span></h1>
+  <p id="s-intro"></p>
+  <div class="btns">
+    <button class="btn-main" id="enter"></button>
+    <button class="btn-ar" id="enter-ar"></button>
+  </div>
+  <div class="keys" id="kd"><span class="key" id="k-move"></span><span class="key" id="k-look"></span><span class="key" id="k-jump"></span><span class="key" id="k-run"></span></div>
+  <div class="keys" id="km" style="display:none"><span class="key" id="k-mtouch"></span><span class="key" id="k-ltouch"></span></div>
+  <p class="foot" id="s-foot"></p>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import*as THREE from'three';
+
+const isTouch=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window;
+const app=document.getElementById('app');
+let lang='es';
+const SITE='https://muninosara.org';
+
+// ============================================================
+// I18N REGISTRY (3D labels + screens redraw on language switch)
+// ============================================================
+const i18nReg=[];
+function reg(fn){fn(lang);i18nReg.push(fn);}
+function tr(o){return (o&&o[lang])||(o&&o.es)||o;}
+
+// ============================================================
+// RENDERER / SCENE / CAMERA
+// ============================================================
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
+app.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xc8e6f0);
+scene.fog=new THREE.FogExp2(0xc8e6f0,0.009);
+
+const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,0.05,300);
+camera.rotation.order='YXZ';
+const EYE=1.62;
+const pos=new THREE.Vector3(0,EYE,17);
+let yaw=0,pitch=0;          // yaw=0 looks -Z (north), into the building
+let vy=0,onGround=true;     // vertical velocity for jumping
+const GRAV=-19,JUMP=6.4;
+
+// ============================================================
+// NOSARA PALETTE
+// ============================================================
+const PAL={teal:0x0E6E7C,ocean:0x1AA3B0,bosque:0x2F6B4F,crema:0xEDF7F9,gold:0xE8A82C,
+  warmW:0xF5EDE0,wood:0xB8935A,woodD:0x7A5C35,concrete:0xD8CFC4,stone:0xBAB0A4,
+  glass:0xBFE8EE,steel:0x94A8B4,sky:0xc8e6f0,grass:0x5DAA68,darkG:0x2F6B4F};
+
+const mk=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.8,...o});
+const M={
+  floor:mk(PAL.warmW,{roughness:.92}),floorStone:mk(PAL.stone,{roughness:.95}),
+  floorWood:mk(PAL.wood,{roughness:.75}),
+  wall:mk(PAL.crema,{roughness:.95}),wallAcc:mk(PAL.teal,{roughness:.7}),
+  ceil:mk(0xfafcfd,{roughness:1}),
+  wood:mk(PAL.wood,{roughness:.6}),woodD:mk(PAL.woodD,{roughness:.65}),
+  metal:mk(PAL.steel,{roughness:.35,metalness:.5}),dark:mk(0x2d3a42),
+  frameGlow:mk(PAL.ocean,{emissive:PAL.ocean,emissiveIntensity:.7,roughness:.4}),
+  teal:mk(PAL.teal,{roughness:.55}),ocean:mk(PAL.ocean,{roughness:.55}),
+  gold:mk(PAL.gold,{roughness:.5}),
+  glass:mk(PAL.glass,{transparent:true,opacity:.16,roughness:.08,side:THREE.DoubleSide}),
+  glassWall:mk(PAL.glass,{transparent:true,opacity:.22,roughness:.05,side:THREE.DoubleSide}),
+  panel:mk(0xffffff,{emissive:0xffffff,emissiveIntensity:.5}),
+  pot:mk(0xBB7744),leaf:mk(PAL.grass),leaf2:mk(PAL.darkG),
+  grass:mk(0x6FBF73,{roughness:.95}),ground:mk(0x9BB07A,{roughness:1}),
+  water:mk(0x3FA9C9,{roughness:.2,metalness:.3,transparent:true,opacity:.85}),
+  red:mk(0xC0392B),blue:mk(0x2C5F8F),purple:mk(0x6A4C93),orange:mk(0xD35400),
+  skin1:mk(0xC8926B,{roughness:.7}),skin2:mk(0xA0704B,{roughness:.7}),skin3:mk(0xDEB896,{roughness:.7}),skin4:mk(0x8A5A3B,{roughness:.7}),
+  hair1:mk(0x2A1A12,{roughness:.95}),hair2:mk(0x5C3A1E,{roughness:.95}),hair3:mk(0x1A1A1A,{roughness:.95}),hair4:mk(0x6b6b6b,{roughness:.95}),
+};
+
+const box=(w,h,d,m)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
+const cyl=(r,h,m,s=16)=>new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,s),m);
+const shad=g=>g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+const P=(m,x,y,z)=>{m.position.set(x,y,z);return m;};   // .position is read-only in r160
+
+// ============================================================
+// BUILDING DIMENSIONS (expanded)
+// ============================================================
+const BX0=-15,BX1=15,BZ0=-26,BZ1=15,H=4.0,HI=5.8,T=0.18;
+const GX0=-5.5,GX1=5.5,GZ0=-2,GZ1=10;     // bigger central garden
+const obstacles=[];
+const addObs=(cx,cz,hx,hz)=>obstacles.push({x0:cx-hx,x1:cx+hx,z0:cz-hz,z1:cz+hz});
+const linkTargets=[];
+
+// ============================================================
+// GROUND & EXTERIOR
+// ============================================================
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(160,160),M.ground),0,-0.01,0,-Math.PI/2,true);
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(34,6),M.floorStone),0,0.02,18,-Math.PI/2,true);
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(5,10),M.floorStone),0,0.01,24,-Math.PI/2,true);
+function addAtScene(m,x,y,z,rx,recv){m.position.set(x,y,z);if(rx!==undefined)m.rotation.x=rx;if(recv)m.receiveShadow=true;scene.add(m);return m;}
+
+// ============================================================
+// FLOORS
+// ============================================================
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(BX1-BX0,BZ1-GZ0),M.floor),0,0,(GZ0+BZ1)/2,-Math.PI/2,true);
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(BX1-BX0,GZ0-BZ0),M.floorWood),0,0,(BZ0+GZ0)/2,-Math.PI/2,true);
+addAtScene(new THREE.Mesh(new THREE.PlaneGeometry(GX1-GX0+1.4,GZ1-GZ0+1.4),M.floorStone),0,0.01,(GZ0+GZ1)/2,-Math.PI/2,true);
+
+// ============================================================
+// WALLS
+// ============================================================
+function wall(w,h,d,x,y,z,m){const b=box(w,h,d,m);b.position.set(x,y,z);b.castShadow=b.receiveShadow=true;scene.add(b);return b;}
+function glassPane(w,h,x,y,z){const g=box(w,h,0.04,M.glassWall);g.position.set(x,y,z);scene.add(g);return g;}
+function column(x,z,h=H){const c=cyl(0.16,h,M.concrete);c.position.set(x,h/2,z);shad(c);scene.add(c);addObs(x,z,0.22,0.22);}
+function louver(x,z){const g=new THREE.Group();const n=Math.floor(H/0.24);for(let i=0;i<n;i++){const s=box(0.13,0.06,0.13,M.wood);s.position.y=0.2+i*0.24;g.add(s);}g.position.set(x,0,z);shad(g);scene.add(g);}
+
+wall(BX1-BX0,HI,T,0,HI/2,BZ0,M.wall);                 // north (council back)
+for(let x=BX0+2.2;x<=BX1-2.2;x+=3.8)if(Math.abs(x)>3.5)column(x,BZ1);    // open south entrance (clear center)
+wall(3.4,1,T,BX0+1.6,0.5,BZ1,M.wallAcc);wall(3.4,1,T,BX1-1.6,0.5,BZ1,M.wallAcc);
+// east & west with glass bands + louvers
+[BX0,BX1].forEach(bx=>{
+  wall(T,1.0,BZ1-BZ0,bx,0.5,(BZ0+BZ1)/2,M.wall);
+  wall(T,0.6,BZ1-BZ0,bx,H-0.3,(BZ0+BZ1)/2,M.wall);
+  glassPane(0.04,H-1.6,bx,1.0+(H-1.6)/2,(BZ0+BZ1)/2);
+  for(let z=BZ0+2.5;z<BZ1;z+=3.2)louver(bx+(bx<0?-0.16:0.16),z);
+});
+// interior glass partition between garden hall and council (z=GZ0), central doorway gap x[-1.8,1.8]
+const gpHalfW=(BX1-1.8-1)/2;
+glassPane(gpHalfW,H-0.5,(1.8+1+BX1)/2-0.5,H/2-0.2,GZ0);
+glassPane(gpHalfW,H-0.5,-(1.8+1+BX1)/2+0.5,H/2-0.2,GZ0);
+wall(3.6,0.35,T,0,H-0.15,GZ0,M.wallAcc);
+wall(0.08,H,0.08,1.8,H/2,GZ0,M.teal);wall(0.08,H,0.08,-1.8,H/2,GZ0,M.teal);
+addObs((1.8+BX1)/2,GZ0,gpHalfW/2+1,T);addObs(-(1.8+BX1)/2,GZ0,gpHalfW/2+1,T);
+// garden low walls + glass (x=GX0, x=GX1)
+[GX0,GX1].forEach(gx=>{wall(T,1.2,GZ1-GZ0,gx,0.6,(GZ0+GZ1)/2,M.wallAcc);glassPane(0.04,H-1.5,gx,1.2+(H-1.5)/2,(GZ0+GZ1)/2);});
+for(let x=-8;x<=8;x+=4)if(Math.abs(x)>2)column(x,GZ1+2);   // clear central axis into the garden
+
+// ============================================================
+// ROOF (open over garden)
+// ============================================================
+// main level ceiling with rectangular hole over garden
+wall((GX0-BX0),0.15,(BZ1-GZ0),(BX0+GX0)/2,H,(GZ0+BZ1)/2,M.ceil);          // west of hole
+wall((BX1-GX1),0.15,(BZ1-GZ0),(GX1+BX1)/2,H,(GZ0+BZ1)/2,M.ceil);          // east of hole
+wall((GX1-GX0),0.15,(BZ1-GZ1),0,H,(GZ1+BZ1)/2,M.ceil);                    // south of hole
+wall(BX1-BX0-1,0.15,GZ0-BZ0,0,HI,(BZ0+GZ0)/2,M.ceil);                     // council ceiling (higher)
+const bfly=box(BX1-BX0-2,0.08,1.6,M.teal);bfly.position.set(0,HI+0.09,(BZ0+GZ0)/2);bfly.rotation.x=0.04;scene.add(bfly);
+wall(BX1-BX0+2,0.1,2.6,0,H-0.2,BZ1+1,M.ceil);                            // south overhang
+for(let x=-9;x<=9;x+=4.5)if(Math.abs(x)>3.5)column(x,BZ1+2,H-0.2);       // clear central doorway
+
+// ============================================================
+// LIGHTS
+// ============================================================
+scene.add(new THREE.HemisphereLight(0xfff8ef,0x88a090,0.62));
+const sun=new THREE.DirectionalLight(0xfff4d6,1.3);
+sun.position.set(-16,22,14);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-26,right:26,top:26,bottom:-26,near:1,far:70});sun.shadow.bias=-0.0003;scene.add(sun);
+function ceilLight(x,z,h){const p=box(1.6,0.06,0.9,M.panel);p.position.set(x,h-0.05,z);scene.add(p);const pl=new THREE.PointLight(0xfff8ef,5,13,2);pl.position.set(x,h-0.25,z);scene.add(pl);}
+for(let x=-10;x<=10;x+=6.5)for(let z=GZ1+2;z<BZ1;z+=4)ceilLight(x,z,H);
+for(let x=-11;x<=11;x+=5.5)for(let z=BZ0+2.5;z<GZ0-1;z+=4.5)ceilLight(x,z,HI);
+scene.add(P(new THREE.PointLight(0xfff8d0,4,18,1.4),0,9,(GZ0+GZ1)/2));
+
+// ============================================================
+// PEOPLE / FURNITURE
+// ============================================================
+const skins=[M.skin1,M.skin2,M.skin3,M.skin4];const hairs=[M.hair1,M.hair2,M.hair3,M.hair4];let pidx=0;
+function chair(x,z,rot,col=0x2d3a42){const g=new THREE.Group();const cm=mk(col,{roughness:.6});
+  g.add(P(box(0.46,0.07,0.46,cm),0,0.44,0));g.add(P(box(0.46,0.48,0.07,cm),0,0.70,-0.2));
+  g.add(P(box(0.06,0.42,0.06,M.metal),0,0.22,0));g.add(P(cyl(0.24,0.04,M.metal,10),0,0.02,0));
+  shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);return g;}
+function benchSeat(x,z,rot){const g=new THREE.Group();
+  g.add(P(box(1.7,0.07,0.5,M.wood),0,0.42,0));g.add(P(box(1.7,0.4,0.07,M.wood),0,0.64,-0.22));
+  [[-0.75,0],[0.75,0]].forEach(([lx,lz])=>g.add(P(box(0.06,0.4,0.4,M.metal),lx,0.2,lz)));
+  shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);addObs(x,z,0.95,0.4);}
+function person(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];pidx++;const pM=mk(0x2b3440,{roughness:.85});
+  g.add(P(box(0.40,0.50,0.24,sM),0,0.96,0));g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.13,14,14),kM),0,1.32,0));
+  g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.35,0));
+  g.add(P(box(0.32,0.14,0.38,pM),0,0.58,0.16));g.add(P(box(0.28,0.36,0.14,pM),0,0.28,0.32));
+  g.add(P(box(0.11,0.36,0.13,sM),-0.26,0.92,0.03));g.add(P(box(0.11,0.36,0.13,sM),0.26,0.92,0.03));
+  shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);return g;}
+function standing(x,z,rot,shirt=PAL.teal){const g=new THREE.Group();const sM=mk(shirt,{roughness:.8}),kM=skins[pidx%4],hM=hairs[pidx%4];pidx++;const pM=mk(0x2b3440,{roughness:.85});
+  g.add(P(box(0.40,0.55,0.24,sM),0,1.18,0));g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.13,14,14),kM),0,1.58,0));
+  g.add(P(new THREE.Mesh(new THREE.SphereGeometry(0.14,14,14,0,Math.PI*2,0,Math.PI*.58),hM),0,1.61,0));
+  g.add(P(box(0.34,0.55,0.2,pM),0,0.58,0));g.add(P(box(0.14,0.56,0.2,pM),-0.14,0.28,0));g.add(P(box(0.14,0.56,0.2,pM),0.14,0.28,0));
+  g.add(P(box(0.11,0.42,0.13,sM),-0.26,1.12,0.03));g.add(P(box(0.11,0.42,0.13,sM),0.26,1.12,0.03));
+  shad(g);g.position.set(x,0,z);g.rotation.y=rot;scene.add(g);}
+function plant(x,z,scale=1){const g=new THREE.Group();
+  g.add(P(cyl(0.22*scale,0.38*scale,M.pot,10),0,0.19*scale,0));
+  for(let i=0;i<5;i++){const r=0.18+Math.random()*0.12;const s=new THREE.Mesh(new THREE.SphereGeometry(r*scale,7,7),i%2?M.leaf:M.leaf2);
+    s.position.set((Math.random()-.5)*0.3*scale,0.55*scale+Math.random()*0.4*scale,(Math.random()-.5)*0.3*scale);g.add(s);}
+  shad(g);g.position.set(x,0,z);scene.add(g);addObs(x,z,0.3*scale,0.3*scale);}
+function tree(x,z,big=1){const g=new THREE.Group();
+  const trunk=cyl(0.2*big,3.8*big,M.woodD,8);trunk.position.y=1.9*big;g.add(trunk);
+  const t2=cyl(0.1*big,2*big,M.woodD,6);t2.position.set(0.3*big,2.6*big,0.2*big);t2.rotation.z=0.3;g.add(t2);
+  [[0,4.1,0,1.4],[0.6,4.5,0.3,1.0],[-0.5,4.3,-0.3,1.1],[0.3,3.6,0.5,0.9],[-0.4,4.8,0.1,0.8],[0.7,3.9,-0.3,0.95]]
+    .forEach(([ox,oy,oz,r])=>{const s=new THREE.Mesh(new THREE.SphereGeometry(r*big,8,8),Math.random()>.4?M.leaf:M.leaf2);s.position.set(ox*big,oy*big,oz*big);g.add(s);});
+  shad(g);g.position.set(x,0,z);scene.add(g);addObs(x,z,0.55*big,0.55*big);return g;}
+function deskUnit(x,z,rot,withPerson=true,shirt=PAL.teal){const g=new THREE.Group();
+  g.add(P(box(1.4,0.06,0.7,M.wood),0,0.74,0));
+  [[-0.62,-0.28],[0.62,-0.28],[-0.62,0.28],[0.62,0.28]].forEach(([lx,lz])=>g.add(P(box(0.06,0.72,0.06,M.metal),lx,0.36,lz)));
+  g.add(P(box(0.55,0.34,0.03,mk(0x0b1622,{emissive:0x0e3d50,emissiveIntensity:.9})),0,1.0,-0.2));
+  g.add(P(box(0.04,0.14,0.04,M.metal),0,0.84,-0.2));g.add(P(box(0.36,0.02,0.12,M.dark),0,0.78,0.06));
+  shad(g);g.rotation.y=rot;g.position.set(x,0,z);scene.add(g);
+  const bx=x-Math.sin(rot)*0.6,bz=z-Math.cos(rot)*0.6;chair(bx,bz,rot);if(withPerson)person(bx,bz,rot,shirt);
+  const hx=Math.abs(Math.cos(rot))>0.5?0.78:0.42,hz=Math.abs(Math.cos(rot))>0.5?0.42:0.78;addObs(x,z,hx,hz);}
+function tableGroup(x,z){const t=box(1.9,0.06,0.95,M.wood);t.position.set(x,0.74,z);t.castShadow=t.receiveShadow=true;scene.add(t);
+  [[-0.8,-0.38],[0.8,-0.38],[-0.8,0.38],[0.8,0.38]].forEach(([lx,lz])=>{const l=box(0.06,0.72,0.06,M.metal);l.position.set(x+lx,0.36,z+lz);scene.add(l);});
+  addObs(x,z,1.05,0.58);chair(x-0.5,z-0.75,0,0x455A64);chair(x+0.5,z-0.75,0,0x455A64);chair(x-0.5,z+0.75,Math.PI,0x455A64);chair(x+0.5,z+0.75,Math.PI,0x455A64);}
+
+// ============================================================
+// TEXT HELPERS (canvas → texture)
+// ============================================================
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function labelTex(text,color){const c=document.createElement('canvas');c.width=440;c.height=72;const t=c.getContext('2d');
+  t.fillStyle='rgba(10,26,31,.85)';roundRect(t,3,3,434,66,15);t.fill();t.strokeStyle=color;t.lineWidth=2;t.stroke();
+  let fs=30;t.font=`bold ${fs}px Inter,sans-serif`;while(t.measureText(text).width>410&&fs>15){fs--;t.font=`bold ${fs}px Inter,sans-serif`;}
+  t.fillStyle=color;t.textAlign='center';t.textBaseline='middle';t.fillText(text,220,38);
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
+function label(texts,x,y,z,color='#1AA3B0',w=2.2){
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false}));sp.position.set(x,y,z);scene.add(sp);
+  reg(l=>{if(sp.material.map)sp.material.map.dispose();sp.material.map=labelTex(tr(texts),color);sp.material.needsUpdate=true;sp.scale.set(w,w*72/440,1);});
+  return sp;}
+function wrapText(t,ctx,x,y,maxW,lh){const words=t.split(' ');let line='',yy=y;for(const w of words){const test=line+w+' ';if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,x,yy);line=w+' ';yy+=lh;}else line=test;}ctx.fillText(line,x,yy);return yy;}
+function screenTex(title,lines,accent='#1AA3B0',opts={}){
+  const c=document.createElement('canvas');c.width=520;c.height=390;const t=c.getContext('2d');
+  t.fillStyle=opts.bg||'#07171c';t.fillRect(0,0,520,390);
+  t.fillStyle=accent;t.fillRect(0,0,520,9);
+  if(opts.badge){t.fillStyle=accent;t.font='bold 15px Inter,sans-serif';t.textAlign='right';t.fillText(opts.badge,496,32);}
+  t.textAlign='left';t.fillStyle=accent;t.font='bold 30px Inter,sans-serif';t.fillText(title,26,54);
+  let y=96;t.font='19px Inter,sans-serif';
+  lines.forEach(ln=>{
+    if(ln.h){t.fillStyle=opts.h||'#EDF7F9';t.font='bold 20px Inter,sans-serif';y=wrapText(ln.h,t,26,y,468,25)+34;t.font='19px Inter,sans-serif';return;}
+    const txt=typeof ln==='string'?ln:ln.t;const amt=ln.amt;
+    t.fillStyle=ln.c||'#bfe0e6';
+    if(amt){t.fillText('• '+txt,26,y);t.fillStyle=accent;t.textAlign='right';t.font='bold 19px Inter,sans-serif';t.fillText(amt,496,y);t.textAlign='left';t.font='19px Inter,sans-serif';y+=33;}
+    else y=wrapText((ln.bullet===false?'':'• ')+txt,t,26,y,468,25)+31;
+  });
+  if(opts.foot){t.fillStyle='#5a7a82';t.font='italic 15px Inter,sans-serif';t.fillText(opts.foot,26,376);}
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
+
+// Digital wall screen: glowing panel. data={title:{es,en},lines:{es:[],en:[]},accent,badge:{es,en},foot,url,linkLabel:{es,en}}
+function screen(x,z,ry,w,h,data){
+  const g=new THREE.Group();const acc=data.accent||'#1AA3B0';const accHex=parseInt(acc.slice(1),16);
+  g.add(P(box(w+0.12,h+0.12,0.06,mk(accHex,{emissive:accHex,emissiveIntensity:.5,roughness:.4})),0,h/2+0.9,0));  // glowing frame
+  g.add(P(box(w+0.02,h+0.02,0.05,M.dark),0,h/2+0.9,0.02));
+  const scr=box(w,h,0.02,new THREE.MeshBasicMaterial());scr.position.set(0,h/2+0.9,0.05);g.add(scr);
+  g.add(P(box(0.12,0.9,0.12,M.metal),0,0.45,0));                                                                 // stand
+  g.add(P(cyl(0.35,0.05,M.metal,12),0,0.03,0));
+  shad(g);g.rotation.y=ry;g.position.set(x,0,z);scene.add(g);addObs(x,z,0.4,0.4);
+  reg(l=>{if(scr.material.map)scr.material.map.dispose();
+    scr.material.map=screenTex(tr(data.title),tr(data.lines),acc,{badge:data.badge?tr(data.badge):null,foot:data.foot?tr(data.foot):null,bg:data.bg,h:data.h});
+    scr.material.needsUpdate=true;});
+  if(data.url){scr.userData={url:data.url,label:data.linkLabel};linkTargets.push(scr);}
+  return g;}
+
+// ============================================================
+// ENTRANCE HALL
+// ============================================================
+label({es:'Concejo Municipal de Nosara',en:'Nosara Municipal Council'},0,3.0,BZ1-0.5,'#E8A82C',3.4);
+(function(){const d=box(3.4,1.0,0.85,M.teal);d.position.set(-4.5,0.5,BZ1-2.5);d.castShadow=d.receiveShadow=true;scene.add(d);
+  P(box(3.6,0.05,1.05,M.wood),-4.5,1.04,BZ1-2.5);scene.add(d);addObs(-4.5,BZ1-2.5,1.9,0.65);
+  const top=box(3.6,0.05,1.05,M.wood);top.position.set(-4.5,1.04,BZ1-2.5);scene.add(top);
+  person(-4.5,BZ1-1.8,Math.PI,PAL.ocean);label({es:'Recepción',en:'Reception'},-4.5,2.15,BZ1-2.5,'#1AA3B0');})();
+benchSeat(3,BZ1-4,0);standing(1.5,BZ1-3,Math.PI*0.7,PAL.bosque);standing(4.5,BZ1-3.5,Math.PI*1.2,0xC0392B);
+plant(9,BZ1-2);plant(-9,BZ1-2);
+
+// welcome digital screen
+screen(6.5,BZ1-2.2,Math.PI,2.4,1.5,{
+  title:{es:'Gobierno abierto',en:'Open government'},
+  badge:{es:'AI-NATIVE',en:'AI-NATIVE'},accent:'#1AA3B0',
+  lines:{es:[{h:'Tu Concejo, transparente'},'Presupuesto: ₡2.445,5 millones','8.716 residentes · Censo 2024','Menos burocracia, más inversión','Internet-native, datos abiertos'],
+    en:[{h:'Your Council, transparent'},'Budget: ₡2,445.5 million','8,716 residents · 2024 Census','Less bureaucracy, more investment','Internet-native, open data']},
+  foot:{es:'muninosara.org',en:'muninosara.org'}});
+
+// SÚMATE — plebiscite petition (biggest, gold, links to the site's #sumate)
+screen(-8.5,BZ1-5,0,3.0,1.9,{
+  title:{es:'Súmate',en:'Join in'},accent:'#E8A82C',badge:{es:'FIRMÁ ↗',en:'SIGN ↗'},
+  lines:{es:[
+    {h:'"¿Está de acuerdo con la creación del Concejo Municipal del Distrito de Bocas de Nosara, Sí o No?"'},
+    'Sumá tu voz al registro rumbo al 2028','Es gratis, seguro y toma un minuto'],
+    en:[
+    {h:'"Do you agree with the creation of the Municipal Council of the District of Bocas de Nosara, Yes or No?"'},
+    'Add your voice to the register toward 2028','Free, safe and takes a minute']},
+  foot:{es:'muninosara.org/#sumate',en:'muninosara.org/#sumate'},
+  url:SITE+'/#sumate',linkLabel:{es:'Firmar la petición',en:'Sign the petition'}});
+standing(-8.5,BZ1-3.6,Math.PI,PAL.gold);standing(-7.2,BZ1-3.8,Math.PI*0.85,0x2980B9);
+
+// Sistema de Información Distrital — interconnected data hub (budget ↔ communities ↔ needs)
+function sidTex(){const c=document.createElement('canvas');c.width=560;c.height=400;const x=c.getContext('2d');
+  x.fillStyle='#061318';x.fillRect(0,0,560,400);x.fillStyle='#1AA3B0';x.fillRect(0,0,560,9);
+  x.fillStyle='#1AA3B0';x.font='bold 26px Inter,sans-serif';x.textAlign='left';
+  x.fillText(lang==='es'?'Sistema de Información Distrital':'District Information System',24,46);
+  x.fillStyle='#7ec8d0';x.font='15px Inter,sans-serif';
+  x.fillText(lang==='es'?'Presupuesto ↔ Comunidades ↔ Necesidades · en tiempo real':'Budget ↔ Communities ↔ Needs · real-time',24,70);
+  const cx=280,cy=235,R=118;
+  const nodes=[
+    {n:'Arenales',need:lang==='es'?'Prioridad':'Priority',c:'#E8A82C'},
+    {n:'Nosara',need:lang==='es'?'Prioridad':'Priority',c:'#E8A82C'},
+    {n:'Sta. Teresita',need:lang==='es'?'Prioridad':'Priority',c:'#E8A82C'},
+    {n:'Delicias',need:lang==='es'?'Siguiente':'Next',c:'#1AA3B0'},
+    {n:'Garza',need:lang==='es'?'Siguiente':'Next',c:'#1AA3B0'},
+    {n:'Sta. Marta',need:lang==='es'?'Urgente':'Urgent',c:'#C0392B'},
+  ];
+  // links
+  nodes.forEach((nd,i)=>{const a=-Math.PI/2+i/nodes.length*Math.PI*2;const nx=cx+Math.cos(a)*R,ny=cy+Math.sin(a)*R;
+    const grd=x.createLinearGradient(cx,cy,nx,ny);grd.addColorStop(0,'rgba(26,163,176,.9)');grd.addColorStop(1,'rgba(26,163,176,.15)');
+    x.strokeStyle=grd;x.lineWidth=2;x.beginPath();x.moveTo(cx,cy);x.lineTo(nx,ny);x.stroke();});
+  // center node
+  x.fillStyle='#0E6E7C';x.beginPath();x.arc(cx,cy,42,0,7);x.fill();x.strokeStyle='#1AA3B0';x.lineWidth=3;x.stroke();
+  x.fillStyle='#EDF7F9';x.font='bold 15px Inter,sans-serif';x.textAlign='center';
+  x.fillText(lang==='es'?'PRESU-':'BUD-',cx,cy-4);x.fillText(lang==='es'?'PUESTO':'GET',cx,cy+14);
+  // community nodes
+  nodes.forEach((nd,i)=>{const a=-Math.PI/2+i/nodes.length*Math.PI*2;const nx=cx+Math.cos(a)*R,ny=cy+Math.sin(a)*R;
+    x.fillStyle=nd.c;x.beginPath();x.arc(nx,ny,8,0,7);x.fill();
+    const right=Math.cos(a)>-0.3;x.textAlign=right?'left':'right';const ox=right?14:-14;
+    x.fillStyle='#EDF7F9';x.font='bold 15px Inter,sans-serif';x.fillText(nd.n,nx+ox,ny+1);
+    x.fillStyle=nd.c;x.font='12px Inter,sans-serif';x.fillText(nd.need,nx+ox,ny+17);});
+  // needs legend
+  x.textAlign='left';x.fillStyle='#5a7a82';x.font='13px Inter,sans-serif';
+  x.fillText(lang==='es'?'Salud · Agua · Calles · Becas · Ambiente · Seguridad':'Health · Water · Roads · Grants · Environment · Safety',24,388);
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
+const sidX=BX1-4,sidZ=GZ0+0.55;
+(function(){const g=new THREE.Group();
+  g.add(P(box(3.42,2.52,0.06,mk(0x1AA3B0,{emissive:0x1AA3B0,emissiveIntensity:.55})),0,2.15,0));
+  const scr=box(3.3,2.4,0.02,new THREE.MeshBasicMaterial());scr.position.set(0,2.15,0.05);g.add(scr);
+  g.add(P(box(0.14,1.0,0.14,M.metal),0,0.5,0));g.add(P(cyl(0.4,0.05,M.metal,12),0,0.03,0));
+  shad(g);g.rotation.y=0;g.position.set(sidX,0,sidZ);scene.add(g);addObs(sidX,sidZ,0.4,0.4);
+  reg(()=>{if(scr.material.map)scr.material.map.dispose();scr.material.map=sidTex();scr.material.needsUpdate=true;});})();
+label({es:'Sistema de Información Distrital',en:'District Information System'},sidX,3.7,sidZ+0.2,'#1AA3B0',3.2);
+
+// ============================================================
+// CITIZEN SERVICES (west wing)
+// ============================================================
+label({es:'Atención Ciudadana',en:'Citizen Services'},(BX0+GX0)/2,2.5,GZ0+0.5,'#1AA3B0',2.6);
+deskUnit(BX0+3.2,GZ0+1.5,Math.PI/2,true,PAL.ocean);
+deskUnit(BX0+3.2,GZ0+4,Math.PI/2,true,0xB5651D);
+deskUnit(BX0+3.2,GZ1-3,Math.PI/2,true,PAL.teal);
+deskUnit(BX0+3.2,GZ1-0.5,Math.PI/2,true,0x8E44AD);
+chair(BX0+5.8,GZ0+1.5,-Math.PI/2,0x607D8B);person(BX0+5.8,GZ0+1.5,-Math.PI/2,0x2980B9);
+chair(BX0+5.8,GZ0+4,-Math.PI/2,0x607D8B);
+chair(BX0+5.8,GZ1-3,-Math.PI/2,0x607D8B);person(BX0+5.8,GZ1-3,-Math.PI/2,PAL.gold);
+plant(BX0+1.4,(GZ0+GZ1)/2);
+
+// two link screens in the services aisle
+screen(BX0+0.4,GZ0+2.6,Math.PI/2,2,1.3,{
+  title:{es:'Capacitación',en:'Training'},accent:'#E8A82C',badge:{es:'ABRIR ↗',en:'OPEN ↗'},
+  lines:{es:[{h:'Vecinos que se forman'},'Cursos y talleres del CMD','Concejo preparado y capaz'],en:[{h:'Neighbors who learn'},'CMD courses and workshops','A prepared, capable Council']},
+  url:SITE+'/propuesta/capacitacion.html',linkLabel:{es:'Abrir Capacitación',en:'Open Training'}});
+screen(BX0+0.4,GZ1-1.8,Math.PI/2,2,1.3,{
+  title:{es:'Organigrama',en:'Org chart'},accent:'#E8A82C',badge:{es:'ABRIR ↗',en:'OPEN ↗'},
+  lines:{es:[{h:'Quién es quién'},'Estructura del Concejo','Roles claros, sin misterios'],en:[{h:'Who is who'},'Council structure','Clear roles, no mysteries']},
+  url:SITE+'/propuesta/organigrama.html',linkLabel:{es:'Abrir Organigrama',en:'Open Org chart'}});
+
+// ============================================================
+// CENTRAL GARDEN (bigger, open to sky)
+// ============================================================
+const mainTree=tree(-1.5,(GZ0+GZ1)/2,1.15);tree(2.2,GZ0+2,0.8);
+// water feature
+const pond=new THREE.Mesh(new THREE.CircleGeometry(1.4,24),M.water);pond.rotation.x=-Math.PI/2;pond.position.set(2.5,0.06,GZ1-2.5);scene.add(pond);
+const pondRim=new THREE.Mesh(new THREE.TorusGeometry(1.42,0.1,8,24),M.stone);pondRim.rotation.x=-Math.PI/2;pondRim.position.set(2.5,0.08,GZ1-2.5);scene.add(pondRim);addObs(2.5,GZ1-2.5,1.5,1.5);
+plant(-3.5,GZ0+1.5,1.2);plant(3.8,GZ1-1,1.2);plant(-3,GZ1-1,1);plant(3.5,GZ0+1,1);
+benchSeat(-3.5,(GZ0+GZ1)/2,Math.PI/2);benchSeat(0.5,GZ1-1.5,Math.PI);
+standing(-1,GZ1-3,Math.PI*0.3,0x16A085);standing(1.8,GZ0+3,Math.PI*1.5,PAL.gold);person(-3.5,(GZ0+GZ1)/2-0.9,-Math.PI/2,0x2980B9);
+label({es:'Jardín Central',en:'Central Garden'},0,3.0,GZ1-0.3,'#2F6B4F',2.4);
+
+// ============================================================
+// COMMUNITY / PARTICIPATION (east wing)
+// ============================================================
+label({es:'Espacio Comunitario',en:'Community Space'},(GX1+BX1)/2,2.5,GZ0+0.5,'#E8A82C',2.6);
+tableGroup(BX1-3.6,GZ0+1.8);tableGroup(BX1-3.6,GZ1-2);
+person(BX1-4.4,GZ0+1.1,0,0x6A4C93);person(BX1-2.8,GZ0+2.5,Math.PI,0x2980B9);person(BX1-4.4,GZ1-1.3,Math.PI*0.5,PAL.bosque);
+plant(BX1-1.4,(GZ0+GZ1)/2);
+
+// Cabildo digital voting station
+screen(BX1-0.4,GZ0+2,-Math.PI/2,2.2,1.4,{
+  title:{es:'Cabildo Digital',en:'Digital Town Hall'},accent:'#1AA3B0',badge:{es:'VOTÁ',en:'VOTE'},
+  lines:{es:[{h:'Decidí las prioridades'},'Votá presupuestos de Nosara','Participación real y abierta','Cada voz cuenta igual'],en:[{h:'Decide the priorities'},'Vote on Nosara budgets','Real, open participation','Every voice counts equally']},
+  foot:{es:'Democracia participativa',en:'Participatory democracy'}});
+// Denuncias / transparencia
+screen(BX1-0.4,(GZ0+GZ1)/2,-Math.PI/2,2.2,1.4,{
+  title:{es:'Denuncias y Transparencia',en:'Reports & Transparency'},accent:'#E8A82C',badge:{es:'24/7',en:'24/7'},
+  lines:{es:[{h:'Rendición de cuentas'},'Reportá irregularidades','Seguimiento en línea','Actas y gastos públicos'],en:[{h:'Accountability'},'Report irregularities','Track online','Public minutes and spending']},
+  foot:{es:'Sin miedo, con respaldo',en:'No fear, fully backed'}});
+// Concurso de proveedores
+screen(BX1-0.4,GZ1-2,-Math.PI/2,2.2,1.4,{
+  title:{es:'Concurso de Proveedores',en:'Supplier Tenders'},accent:'#1AA3B0',badge:{es:'ABIERTO',en:'OPEN'},
+  lines:{es:[{h:'Compras transparentes'},'Concursos abiertos y públicos','Mejor precio, mejor servicio','Eficiencia, cero dedazos'],en:[{h:'Transparent procurement'},'Open, public tenders','Best price, best service','Efficiency, zero favoritism']},
+  foot:{es:'Cada colón, rendido',en:'Every colón accounted for'}});
+// Presupuesto link screen
+screen(BX1-4,BZ1-2.2,Math.PI,2.2,1.3,{
+  title:{es:'Presupuesto',en:'Budget'},accent:'#E8A82C',badge:{es:'ABRIR ↗',en:'OPEN ↗'},
+  lines:{es:[{h:'Simulá el presupuesto'},'Jugá con la distribución','Administración · programas · inversión'],en:[{h:'Simulate the budget'},'Play with the allocation','Admin · programs · investment']},
+  url:SITE+'/propuesta/simulador.html',linkLabel:{es:'Abrir Simulador',en:'Open Simulator'}});
+
+// ============================================================
+// COUNCIL CHAMBER
+// ============================================================
+label({es:'Sala del Concejo Municipal',en:'Municipal Council Chamber'},0,HI-0.7,BZ0+0.6,'#E8A82C',3.6);
+const daisZ=BZ0+2.6;
+const plat=box(20,0.3,3.6,M.woodD);plat.position.set(0,0.15,daisZ-0.2);plat.receiveShadow=true;scene.add(plat);
+// long table + executive wing on the left
+const tbl=box(16,0.08,0.95,M.wood);tbl.position.set(-1,1.02,daisZ);tbl.castShadow=true;scene.add(tbl);
+const tblFront=box(16,0.72,0.06,M.woodD);tblFront.position.set(-1,0.62,daisZ+0.47);scene.add(tblFront);
+addObs(-1,daisZ,8.2,0.85);
+// preside desk (síndico/a) slightly forward + raised
+const pdesk=box(2.2,0.1,1.0,M.wood);pdesk.position.set(0,1.1,daisZ+1.0);pdesk.castShadow=true;scene.add(pdesk);addObs(0,daisZ+1.0,1.2,0.6);
+
+const council=[
+  {x:-7.5,rol:{es:'Intendente/a',en:'Mayor'},col:0xC0392B},
+  {x:-6.0,rol:{es:'Viceintendente/a',en:'Vice-Mayor'},col:0xD35400},
+  {x:-3.0,rol:{es:'Concejal Propietario/a',en:'Council Member'},col:PAL.teal},
+  {x:-1.5,rol:{es:'Concejal Propietario/a',en:'Council Member'},col:PAL.teal},
+  {x:1.5, rol:{es:'Concejal Propietario/a',en:'Council Member'},col:PAL.teal},
+  {x:3.0, rol:{es:'Concejal Propietario/a',en:'Council Member'},col:PAL.teal},
+  {x:6.5, rol:{es:'Secretaría',en:'Secretary'},col:0x8E44AD},
+];
+council.forEach(s=>{const cz=daisZ-0.65;chair(s.x,cz,0,0x263238);person(s.x,cz,0,s.col);
+  label(s.rol,s.x,2.15,daisZ-0.25,s.rol.es.includes('ntendente')?'#ff9d5c':'#8fd6ff',1.9);});
+// Síndico/a preside (center front)
+chair(0,daisZ+0.4,0,0x1b262c);person(0,daisZ+0.4,0,PAL.ocean);
+label({es:'Síndico/a — preside',en:'Síndico/a — presides'},0,2.35,daisZ+1.0,'#1AA3B0',2.4);
+
+// podium (uso de la palabra)
+const podZ=daisZ+4.2;const pod=box(0.85,1.15,0.62,M.woodD);pod.position.set(-9,0.57,podZ);pod.castShadow=true;scene.add(pod);
+P(box(0.95,0.04,0.52,M.wood),-9,1.17,podZ);const podTop=box(0.95,0.04,0.52,M.wood);podTop.position.set(-9,1.17,podZ);scene.add(podTop);
+addObs(-9,podZ,0.55,0.42);label({es:'Uso de la palabra',en:'Public floor'},-9,1.95,podZ,'#EDF7F9',2.0);
+standing(-9,podZ+0.7,0,PAL.bosque);
+
+// 4 suplentes seated (right side)
+label({es:'Concejales Suplentes',en:'Alternate Members'},10.5,2.15,daisZ+2.4,'#8ca8b0',2.2);
+for(let i=0;i<4;i++){const z=daisZ+1.4+i*1.15;chair(10.8,z,-Math.PI/2,0x455A64);person(10.8,z,-Math.PI/2,[0x16A085,0x2980B9,0x8E44AD,0xC0392B][i]);}
+
+// 100 public chairs (10 x 10) facing dais (-Z)
+label({es:'Público · 100 asientos',en:'Public · 100 seats'},-11.5,2.15,daisZ+8,'#8ca8b0',2.4);
+const pcols=[PAL.teal,0x8E44AD,0x16A085,0xC0392B,0x2980B9,PAL.bosque,PAL.gold,0xD35400,0x2C5F8F,0x6A4C93];
+let fillN=0;
+for(let r=0;r<10;r++)for(let c2=0;c2<10;c2++){
+  const x=-9+c2*2, z=daisZ+4.6+r*1.3;
+  chair(x,z,Math.PI,0x37474f);
+  if(Math.random()<0.5){person(x,z,Math.PI,pcols[(r+c2)%10]);fillN++;}
+}
+// aisle plants
+plant(-12.5,daisZ+3,1.3);plant(12.5,daisZ+3,1.3);plant(-12.5,daisZ+10,1.1);plant(12.5,daisZ+10,1.1);
+
+// ---------- Agenda screen (hypothetical budget) ----------
+screen(-13.6,daisZ+6,Math.PI/2,3,2.2,{
+  title:{es:'Agenda de la Sesión',en:'Session Agenda'},accent:'#E8A82C',badge:{es:'HIPOTÉTICO',en:'HYPOTHETICAL'},
+  lines:{es:[
+    {h:'Inversión propuesta para Nosara'},
+    {t:'Clínica de salud integral',amt:'₡180 M'},
+    {t:'Ambulancias y Cruz Roja',amt:'₡95 M'},
+    {t:'Pavimentar calles A, B, C',amt:'₡320 M'},
+    {t:'Becas para estudiantes',amt:'₡60 M'},
+    {t:'Conservación y zonas verdes',amt:'₡75 M'},
+    {t:'Nuevo pozo de agua potable',amt:'₡140 M'},
+    {t:'Policía municipal',amt:'₡110 M'},
+  ],en:[
+    {h:'Proposed investment for Nosara'},
+    {t:'Integral health clinic',amt:'₡180 M'},
+    {t:'Ambulances & Red Cross',amt:'₡95 M'},
+    {t:'Pave streets A, B, C',amt:'₡320 M'},
+    {t:'Student scholarships',amt:'₡60 M'},
+    {t:'Conservation & green zones',amt:'₡75 M'},
+    {t:'New drinking-water well',amt:'₡140 M'},
+    {t:'Municipal police',amt:'₡110 M'},
+  ]},
+  foot:{es:'Cifras ilustrativas · se decide en Cabildo',en:'Illustrative figures · decided in Town Hall'}});
+
+// ---------- Localities map screen ----------
+function mapTex(){const c=document.createElement('canvas');c.width=520;c.height=390;const t=c.getContext('2d');
+  t.fillStyle='#07171c';t.fillRect(0,0,520,390);t.fillStyle='#1AA3B0';t.fillRect(0,0,520,9);
+  t.fillStyle='#1AA3B0';t.font='bold 27px Inter,sans-serif';t.fillText(lang==='es'?'Localidades de Nosara':'Nosara Localities',24,50);
+  // stylized coastline
+  t.strokeStyle='rgba(63,169,201,.5)';t.lineWidth=3;t.beginPath();t.moveTo(60,120);t.bezierCurveTo(90,180,70,260,120,340);t.stroke();
+  t.fillStyle='rgba(63,169,201,.12)';t.fillRect(0,90,70,300);
+  const spots=[
+    {x:150,y:150,n:'Arenales',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
+    {x:250,y:200,n:'Nosara',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
+    {x:200,y:280,n:'Santa Teresita',c:'#E8A82C',tag:lang==='es'?'Prioridad':'Priority'},
+    {x:360,y:160,n:'Delicias',c:'#1AA3B0',tag:lang==='es'?'Siguiente':'Next'},
+    {x:410,y:250,n:'Garza',c:'#1AA3B0',tag:lang==='es'?'Siguiente':'Next'},
+    {x:300,y:330,n:'Santa Marta',c:'#C0392B',tag:lang==='es'?'Urgente':'Urgent'},
+  ];
+  spots.forEach(s=>{t.fillStyle=s.c;t.beginPath();t.arc(s.x,s.y,9,0,7);t.fill();
+    t.fillStyle='#EDF7F9';t.font='bold 18px Inter,sans-serif';t.fillText(s.n,s.x+16,s.y+2);
+    t.fillStyle=s.c;t.font='13px Inter,sans-serif';t.fillText(s.tag,s.x+16,s.y+20);});
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;return tex;}
+(function(){const g=new THREE.Group();
+  g.add(P(box(3.12,2.32,0.06,mk(0x1AA3B0,{emissive:0x1AA3B0,emissiveIntensity:.5})),0,2.05,0));
+  const scr=box(3,2.2,0.02,new THREE.MeshBasicMaterial());scr.position.set(0,2.05,0.05);g.add(scr);
+  g.add(P(box(0.12,0.95,0.12,M.metal),0,0.47,0));g.add(P(cyl(0.35,0.05,M.metal,12),0,0.03,0));
+  shad(g);g.rotation.y=-Math.PI/2;g.position.set(13.6,0,daisZ+6);scene.add(g);addObs(13.6,daisZ+6,0.4,0.4);
+  reg(()=>{if(scr.material.map)scr.material.map.dispose();scr.material.map=mapTex();scr.material.needsUpdate=true;});})();
+
+// ============================================================
+// FLAGS (Costa Rica + Guanacaste) behind the dais
+// ============================================================
+function crFlag(cx){const bands=[0x002B7F,0xffffff,0xCE1126,0xffffff,0x002B7F];const bh=1.9/5;
+  bands.forEach((c,i)=>{const b=box(3.0,bh,0.04,mk(c,{roughness:.9,emissive:c,emissiveIntensity:.04}));b.position.set(cx,HI-0.6-i*bh,BZ0+0.13);scene.add(b);});}
+function guanacasteFlag(cx){
+  // three horizontal stripes: blue / white / green + red triangle at hoist (left)
+  const stripes=[0x0F72B5,0xffffff,0x2F8B4F];const bh=1.9/3;const W=3.0;
+  stripes.forEach((c,i)=>{const b=box(W,bh,0.04,mk(c,{roughness:.9,emissive:c,emissiveIntensity:.05}));b.position.set(cx,HI-0.6-i*bh-bh/2+bh/2,BZ0+0.13);b.position.y=HI-0.6-bh/2-i*bh;scene.add(b);});
+  const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(0,1.9);sh.lineTo(1.15,0.95);sh.lineTo(0,0);
+  const tri=new THREE.Mesh(new THREE.ShapeGeometry(sh),mk(0xD52B1E,{roughness:.85,emissive:0xD52B1E,emissiveIntensity:.06}));
+  tri.position.set(cx-W/2,HI-0.6-1.9,BZ0+0.15);scene.add(tri);}
+crFlag(-5.5);guanacasteFlag(1.2);
+label({es:'NOSARA',en:'NOSARA'},6.5,HI-1.3,BZ0+0.16,'#E8A82C',2.2);
+label({es:'Costa Rica',en:'Costa Rica'},-5.5,HI-2.9,BZ0+0.16,'#8fd6ff',1.8);
+label({es:'Guanacaste',en:'Guanacaste'},1.2,HI-2.9,BZ0+0.16,'#6FBF73',1.8);
+
+// transparency screens on the glass partition (facing council)
+screen(4.5,GZ0+0.35,Math.PI,2.1,1.35,{
+  title:{es:'Transparencia',en:'Transparency'},accent:'#1AA3B0',
+  lines:{es:[{t:'Administración',amt:'27%'},{t:'Programas',amt:'26%'},{t:'Inversión directa',amt:'47%'},{t:'Total',amt:'₡2.445,5 M'}],
+    en:[{t:'Administration',amt:'27%'},{t:'Programs',amt:'26%'},{t:'Direct investment',amt:'47%'},{t:'Total',amt:'₡2,445.5 M'}]}});
+screen(-4.5,GZ0+0.35,Math.PI,2.1,1.35,{
+  title:{es:'Gobierno Abierto',en:'Open Government'},accent:'#E8A82C',
+  lines:{es:['Sesiones públicas semanales','Actas abiertas en línea','Audiencias ciudadanas','Datos en tiempo real'],en:['Weekly public sessions','Open minutes online','Citizen hearings','Real-time data']}});
+
+plant(-11,BZ0+1.4,1.4);plant(11,BZ0+1.4,1.4);
+
+// exterior landscaping
+tree(-18,4,1.1);tree(17,10,1.1);tree(-16,-14,1.1);tree(18,-8,1.0);
+for(let i=0;i<7;i++){const a=i/7*6.28,r=22+Math.random()*8;plant(Math.cos(a)*r,Math.sin(a)*r-4,0.9+Math.random()*0.6);}
+
+// ============================================================
+// WAYPOINTS
+// ============================================================
+const WP=[
+  {id:{es:'Entrada',en:'Entrance'},x:0,z:12.5,yaw:0,pitch:0.05,
+    title:{es:'Bienvenida',en:'Welcome'},desc:{es:'La entrada es abierta, sin barreras: columnas en vez de paredes. Cualquier persona entra y es atendida.',en:'The entrance is open, no barriers: columns instead of walls. Anyone walks in and is served.'}},
+  {id:{es:'Súmate',en:'Join in'},x:-8.5,z:13,yaw:0,pitch:0.03,
+    title:{es:'Súmate al plebiscito',en:'Join the plebiscite'},desc:{es:'La pregunta que HOY más importa: ¿creamos el Concejo Municipal del Distrito de Bocas de Nosara? Sumá tu firma rumbo al 2028.',en:'The question that matters most TODAY: shall we create the Municipal Council of the District of Bocas de Nosara? Add your signature toward 2028.'}},
+  {id:{es:'Recepción',en:'Reception'},x:-4.5,z:11.5,yaw:0,pitch:0,
+    title:{es:'Recepción Ciudadana',en:'Citizen Reception'},desc:{es:'Personal que te orienta desde el primer momento. Sin filas eternas ni ventanillas cerradas.',en:'Staff who guide you from the first moment. No endless lines or closed counters.'}},
+  {id:{es:'Servicios',en:'Services'},x:BX0+5.8,z:(GZ0+GZ1)/2,yaw:Math.PI/2,pitch:0,
+    title:{es:'Atención Ciudadana',en:'Citizen Services'},desc:{es:'Puntos de atención abiertos, trámites ágiles y trato humano. Pantallas que enlazan a capacitación y organigrama.',en:'Open service points, quick procedures and a human touch. Screens link to training and org chart.'}},
+  {id:{es:'Jardín',en:'Garden'},x:0,z:6.5,yaw:0,pitch:0.1,
+    title:{es:'Jardín Central',en:'Central Garden'},desc:{es:'El corazón del edificio: un espacio verde amplio, abierto al cielo, con agua y sombra. Para encontrarse y conversar.',en:'The heart of the building: a wide green space open to the sky, with water and shade. To meet and talk.'}},
+  {id:{es:'Comunidad',en:'Community'},x:BX1-5.5,z:(GZ0+GZ1)/2,yaw:-Math.PI/2,pitch:0,
+    title:{es:'Espacio Comunitario',en:'Community Space'},desc:{es:'Cabildo digital, denuncias y transparencia, concursos de proveedores. Tu espacio para decidir y fiscalizar.',en:'Digital town hall, reports and transparency, supplier tenders. Your space to decide and oversee.'}},
+  {id:{es:'Sistema',en:'System'},x:sidX,z:3,yaw:0,pitch:0.08,
+    title:{es:'Sistema de Información Distrital',en:'District Information System'},desc:{es:'Un tablero moderno que conecta el presupuesto con cada comunidad y sus necesidades, en tiempo real y con datos abiertos. Menos papeleo, más decisiones informadas.',en:'A modern dashboard connecting the budget with every community and its needs, in real time with open data. Less paperwork, more informed decisions.'}},
+  {id:{es:'Concejo',en:'Council'},x:0,z:daisZ+9,yaw:0,pitch:0.03,
+    title:{es:'Sala del Concejo',en:'Council Chamber'},desc:{es:'Paredes de vidrio: nada se esconde. Síndico/a preside, Intendente/a y Vice juntos, y 100 asientos para el público.',en:'Glass walls: nothing hidden. The Síndico/a presides, Mayor and Vice sit together, and 100 public seats.'}},
+  {id:{es:'Agenda',en:'Agenda'},x:-11.5,z:daisZ+6,yaw:Math.PI/2,pitch:0,
+    title:{es:'Agenda y Presupuesto',en:'Agenda & Budget'},desc:{es:'Salud, ambulancias, calles, becas, ambiente, agua y policía municipal. Prioridades que se deciden en Cabildo.',en:'Health, ambulances, streets, scholarships, environment, water and municipal police. Priorities decided in Town Hall.'}},
+  {id:{es:'Localidades',en:'Localities'},x:11.5,z:daisZ+6,yaw:-Math.PI/2,pitch:0,
+    title:{es:'Localidades de Nosara',en:'Nosara Localities'},desc:{es:'Prioridades: Arenales, Nosara y Santa Teresita. Siguientes: Delicias y Garza. Urgente: Santa Marta.',en:'Priorities: Arenales, Nosara and Santa Teresita. Next: Delicias and Garza. Urgent: Santa Marta.'}},
+];
+const wpEl=document.getElementById('waypoints');const visited=new Set();
+WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>goWP(i));wpEl.appendChild(b);});
+let transitioning=false;
+function goWP(i){const w=WP[i];if(transitioning)return;transitioning=true;visited.add(i);
+  document.querySelectorAll('.wp').forEach(b=>{b.classList.toggle('visited',visited.has(+b.dataset.i));b.classList.toggle('active',+b.dataset.i===i);});
+  showInfo(w.title,w.desc);
+  const s={x:pos.x,z:pos.z,yaw,pitch},t0=performance.now();
+  (function step(now){const p=Math.min(1,(now-t0)/850),e=1-(1-p)*(1-p);
+    pos.x=s.x+(w.x-s.x)*e;pos.z=s.z+(w.z-s.z)*e;yaw=s.yaw+(w.yaw-s.yaw)*e;pitch=s.pitch+(w.pitch-s.pitch)*e;
+    if(p<1)requestAnimationFrame(step);else transitioning=false;})(performance.now());}
+
+// ============================================================
+// INFO CARD
+// ============================================================
+const infoEl=document.getElementById('info'),infoT=document.getElementById('info-t'),infoP=document.getElementById('info-p');
+let curInfo=null;
+function showInfo(t,p){curInfo={t,p};infoT.textContent=tr(t);infoP.textContent=tr(p);infoEl.classList.add('show');}
+window.hideInfo=()=>{infoEl.classList.remove('show');curInfo=null;};
+
+// ============================================================
+// MINIMAP
+// ============================================================
+const mmc=document.getElementById('mmc'),mmx=mmc.getContext('2d');
+function drawMap(){const w=mmc.width,h=mmc.height,sc=w/46,ox=w/2,oz=h*0.42;
+  mmx.fillStyle='rgba(10,26,31,.92)';mmx.fillRect(0,0,w,h);
+  mmx.strokeStyle='rgba(26,163,176,.4)';mmx.lineWidth=1.5;mmx.strokeRect(ox+BX0*sc,oz+BZ0*sc,(BX1-BX0)*sc,(BZ1-BZ0)*sc);
+  mmx.fillStyle='rgba(47,107,79,.35)';mmx.fillRect(ox+GX0*sc,oz+GZ0*sc,(GX1-GX0)*sc,(GZ1-GZ0)*sc);
+  mmx.strokeStyle='rgba(26,163,176,.25)';mmx.beginPath();mmx.moveTo(ox+BX0*sc,oz+GZ0*sc);mmx.lineTo(ox+BX1*sc,oz+GZ0*sc);mmx.stroke();
+  const px=ox+pos.x*sc,pz=oz+pos.z*sc;mmx.fillStyle='#E8A82C';mmx.beginPath();mmx.arc(px,pz,4,0,7);mmx.fill();
+  mmx.strokeStyle='#E8A82C';mmx.lineWidth=2;mmx.beginPath();mmx.moveTo(px,pz);mmx.lineTo(px-Math.sin(yaw)*11,pz-Math.cos(yaw)*11);mmx.stroke();}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+const keys={};addEventListener('keydown',e=>{keys[e.code]=true;
+  if(e.code==='Escape'&&locked)document.exitPointerLock();
+  if(e.code==='KeyE'&&curLink&&mode==='tour')openLink();
+  if(e.code==='Space')e.preventDefault();});
+addEventListener('keyup',e=>keys[e.code]=false);
+let locked=false;const startEl=document.getElementById('start'),cross=document.getElementById('cross'),hint=document.getElementById('hint'),
+  joy=document.getElementById('joy'),tag=document.getElementById('tag'),minimap=document.getElementById('minimap'),jumpBtn=document.getElementById('jump');
+let mode='menu';
+function beginTour(){mode='tour';startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
+  cross.style.display='block';hint.style.display='block';tag.style.display='block';wpEl.style.display='flex';minimap.style.display='block';
+  hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
+  if(isTouch){joy.style.display='block';jumpBtn.style.display='block';}else renderer.domElement.requestPointerLock();
+  scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
+document.getElementById('enter').addEventListener('click',beginTour);
+document.addEventListener('pointerlockchange',()=>locked=document.pointerLockElement===renderer.domElement);
+document.addEventListener('mousemove',e=>{if(!locked||mode!=='tour')return;yaw-=e.movementX*0.002;pitch-=e.movementY*0.002;pitch=Math.max(-1.35,Math.min(1.35,pitch));});
+renderer.domElement.addEventListener('click',()=>{if(!isTouch&&mode==='tour'&&!locked&&startEl.style.display==='none')renderer.domElement.requestPointerLock();});
+
+// jump
+function doJump(){if(onGround&&mode==='tour'){vy=JUMP;onGround=false;}}
+jumpBtn.addEventListener('touchstart',e=>{e.preventDefault();doJump();},{passive:false});
+
+// joystick
+let joyVec={x:0,y:0},joyId=null;const stick=document.getElementById('stick');
+function jS(t){joyId=t.identifier;jM(t);}
+function jM(t){const r=joy.getBoundingClientRect();let dx=t.clientX-(r.left+55),dy=t.clientY-(r.top+55);const d=Math.hypot(dx,dy),mx=40;if(d>mx){dx*=mx/d;dy*=mx/d;}stick.style.transform=`translate(${dx}px,${dy}px)`;joyVec.x=dx/mx;joyVec.y=dy/mx;}
+function jE(){joyId=null;joyVec={x:0,y:0};stick.style.transform='translate(0,0)';}
+joy.addEventListener('touchstart',e=>{e.preventDefault();jS(e.changedTouches[0]);},{passive:false});
+joy.addEventListener('touchmove',e=>{e.preventDefault();for(const t of e.changedTouches)if(t.identifier===joyId)jM(t);},{passive:false});
+joy.addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===joyId)jE();});
+let lookId=null,lx=0,ly=0;
+addEventListener('touchstart',e=>{if(!isTouch||mode!=='tour')return;for(const t of e.touches)if(t.identifier!==joyId){lookId=t.identifier;lx=t.clientX;ly=t.clientY;break;}});
+addEventListener('touchmove',e=>{if(!isTouch||mode!=='tour')return;for(const t of e.touches)if(t.identifier===lookId){yaw-=(t.clientX-lx)*0.004;pitch-=(t.clientY-ly)*0.004;pitch=Math.max(-1.35,Math.min(1.35,pitch));lx=t.clientX;ly=t.clientY;}},{passive:false});
+addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===lookId)lookId=null;});
+
+// ============================================================
+// LINK RAYCASTING (open CMD sections)
+// ============================================================
+const raycaster=new THREE.Raycaster();const linkBtn=document.getElementById('linkBtn'),linkTxt=document.getElementById('linkTxt'),linkKbd=document.getElementById('linkKbd');
+let curLink=null;
+function openLink(){if(curLink&&curLink.url)window.open(curLink.url,'_blank','noopener');}
+linkBtn.addEventListener('click',openLink);
+function checkLook(){raycaster.setFromCamera({x:0,y:0},camera);const hits=raycaster.intersectObjects(linkTargets,false);
+  const hit=hits.length&&hits[0].distance<7?hits[0].object:null;
+  if(hit!==(curLink&&curLink._m)){curLink=hit?{url:hit.userData.url,label:hit.userData.label,_m:hit}:null;
+    if(curLink){linkTxt.textContent=tr(curLink.label);linkKbd.style.display=isTouch?'none':'inline';linkBtn.style.display='flex';}else linkBtn.style.display='none';}}
+
+// ============================================================
+// AR MODE
+// ============================================================
+const arVideo=document.getElementById('ar-video'),arClose=document.getElementById('ar-close'),arHint=document.getElementById('ar-hint');
+let arStream=null,arAX=0.5,arAY=0.55,arDist=34,arDrag=null,arLx=0,arLy=0,arPinch=0;
+async function beginAR(){try{arStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  arVideo.srcObject=arStream;arVideo.style.display='block';mode='ar';
+  startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
+  arClose.style.display='block';arHint.style.display='block';arClose.textContent=tr(HT.arClose);arHint.textContent=tr(HT.arHint);
+  scene.background=null;renderer.setClearAlpha(0);updateAR();
+}catch(e){alert(tr(HT.arErr));}}
+function exitAR(){if(arStream){arStream.getTracks().forEach(t=>t.stop());arStream=null;}arVideo.style.display='none';arClose.style.display='none';arHint.style.display='none';
+  mode='menu';startEl.style.display='flex';startEl.style.opacity='1';scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
+function updateAR(){const cx=Math.sin(arAX)*Math.cos(arAY)*arDist,cy=Math.sin(arAY)*arDist+6,cz=Math.cos(arAX)*Math.cos(arAY)*arDist;
+  camera.position.set(cx,cy,cz+(BZ0+BZ1)/2);camera.lookAt(0,2,(BZ0+BZ1)/2);}
+document.getElementById('enter-ar').addEventListener('click',beginAR);arClose.addEventListener('click',exitAR);
+renderer.domElement.addEventListener('touchstart',e=>{if(mode!=='ar')return;if(e.touches.length===2)arPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);else{arDrag=e.touches[0].identifier;arLx=e.touches[0].clientX;arLy=e.touches[0].clientY;}},{passive:true});
+renderer.domElement.addEventListener('touchmove',e=>{if(mode!=='ar')return;e.preventDefault();if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);arDist=Math.max(16,Math.min(60,arDist*(arPinch/d)));arPinch=d;updateAR();}else if(arDrag!==null){const t=e.touches[0];arAX+=(t.clientX-arLx)*0.005;arAY=Math.max(0.12,Math.min(1.25,arAY+(t.clientY-arLy)*0.003));arLx=t.clientX;arLy=t.clientY;updateAR();}},{passive:false});
+renderer.domElement.addEventListener('touchend',()=>{if(mode==='ar')arDrag=null;},{passive:true});
+renderer.domElement.addEventListener('mousedown',e=>{if(mode==='ar'){arDrag=1;arLx=e.clientX;arLy=e.clientY;}});
+renderer.domElement.addEventListener('mousemove',e=>{if(mode!=='ar'||arDrag===null)return;arAX+=(e.clientX-arLx)*0.004;arAY=Math.max(0.12,Math.min(1.25,arAY+(e.clientY-arLy)*0.003));arLx=e.clientX;arLy=e.clientY;updateAR();});
+renderer.domElement.addEventListener('mouseup',()=>{if(mode==='ar')arDrag=null;});
+renderer.domElement.addEventListener('wheel',e=>{if(mode!=='ar')return;arDist=Math.max(16,Math.min(60,arDist+e.deltaY*0.03));updateAR();},{passive:true});
+
+// ============================================================
+// COLLISION
+// ============================================================
+const PR=0.34;
+function collide(x,z){if(x<BX0+T+PR||x>BX1-T-PR||z<BZ0+T+PR)return true;if(z>BZ1-0.3)return false;
+  for(const o of obstacles)if(x>o.x0-PR&&x<o.x1+PR&&z>o.z0-PR&&z<o.z1+PR)return true;return false;}
+
+// ============================================================
+// ZONES
+// ============================================================
+const ZONES=[
+  {x:0,z:BZ1-1,r:4.5,n:{es:'Entrada Principal',en:'Main Entrance'}},
+  {x:-4.5,z:BZ1-2.5,r:3.5,n:{es:'Recepción',en:'Reception'}},
+  {x:BX0+4.5,z:(GZ0+GZ1)/2,r:5,n:{es:'Atención Ciudadana',en:'Citizen Services'}},
+  {x:0,z:(GZ0+GZ1)/2,r:4.5,n:{es:'Jardín Central',en:'Central Garden'}},
+  {x:BX1-4.5,z:(GZ0+GZ1)/2,r:5,n:{es:'Espacio Comunitario',en:'Community Space'}},
+  {x:0,z:daisZ+7,r:12,n:{es:'Sala del Concejo',en:'Council Chamber'}},
+];
+let curZone='';
+
+// ============================================================
+// I18N — HTML STRINGS
+// ============================================================
+const HT={
+  intro:{es:'Explora el edificio que podemos construir: <span class="highlight">abierto, transparente y participativo</span>. Vidrio, jardín central, cabildo para las decisiones que importan para Nosara. Gobierno de puertas abiertas.',
+    en:'Explore the building we can build: <span class="highlight">open, transparent and participatory</span>. Glass, a central garden, a town hall for the decisions that matter to Nosara. Open-door government.'},
+  start:{es:'Iniciar tour virtual',en:'Start virtual tour'},
+  ar:{es:'Vista AR con cámara',en:'AR camera view'},
+  foot:{es:'Basado en la propuesta real del Plebiscito de Nosara',en:'Based on the real Nosara Plebiscite proposal'},
+  kmove:{es:'W A S D mover',en:'W A S D move'},klook:{es:'Ratón mirar',en:'Mouse look'},kjump:{es:'Espacio saltar',en:'Space jump'},krun:{es:'Shift correr',en:'Shift run'},
+  kmtouch:{es:'Joystick mover',en:'Joystick move'},kltouch:{es:'Arrastrá para mirar',en:'Drag to look'},
+  hintDesk:{es:'WASD caminar · ratón mirar · Espacio saltar · Shift correr',en:'WASD move · mouse look · Space jump · Shift run'},
+  hintTouch:{es:'Joystick mover · arrastrá para mirar · botón saltar',en:'Joystick move · drag to look · jump button'},
+  jump:{es:'Saltar',en:'Jump'},
+  arClose:{es:'Salir de AR',en:'Exit AR'},arHint:{es:'Arrastrá para rotar · pellizcá para acercar',en:'Drag to rotate · pinch to zoom'},
+  arErr:{es:'No se pudo acceder a la cámara. Revisá los permisos.',en:'Could not access the camera. Check permissions.'},
+};
+function applyHTMLLang(){
+  document.getElementById('s-intro').innerHTML=tr(HT.intro);
+  document.getElementById('enter').textContent=tr(HT.start);
+  document.getElementById('enter-ar').textContent=tr(HT.ar);
+  document.getElementById('s-foot').textContent=tr(HT.foot);
+  document.getElementById('k-move').textContent=tr(HT.kmove);document.getElementById('k-look').textContent=tr(HT.klook);
+  document.getElementById('k-jump').textContent=tr(HT.kjump);document.getElementById('k-run').textContent=tr(HT.krun);
+  document.getElementById('k-mtouch').textContent=tr(HT.kmtouch);document.getElementById('k-ltouch').textContent=tr(HT.kltouch);
+  jumpBtn.textContent=tr(HT.jump);
+  WP.forEach((w,i)=>{wpEl.children[i].textContent=tr(w.id);});
+  if(mode==='tour')hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
+  if(curInfo){infoT.textContent=tr(curInfo.t);infoP.textContent=tr(curInfo.p);}
+  if(curLink)linkTxt.textContent=tr(curLink.label);
+  arClose.textContent=tr(HT.arClose);arHint.textContent=tr(HT.arHint);
+  document.documentElement.lang=lang;
+}
+function setLang(l){if(l===lang)return;lang=l;
+  document.getElementById('es').classList.toggle('on',l==='es');document.getElementById('en').classList.toggle('on',l==='en');
+  i18nReg.forEach(fn=>fn(l));applyHTMLLang();}
+document.getElementById('es').addEventListener('click',()=>setLang('es'));
+document.getElementById('en').addEventListener('click',()=>setLang('en'));
+
+// ============================================================
+// LOOP
+// ============================================================
+const clock=new THREE.Clock();let mmT=0,lkT=0;
+function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),0.05);
+  if(mode==='tour'){
+    camera.rotation.y=yaw;camera.rotation.x=pitch;
+    if(!transitioning){let mF=0,mR=0;
+      if(keys['KeyW']||keys['ArrowUp'])mF+=1;if(keys['KeyS']||keys['ArrowDown'])mF-=1;
+      if(keys['KeyA']||keys['ArrowLeft'])mR-=1;if(keys['KeyD']||keys['ArrowRight'])mR+=1;
+      if(isTouch){mF+=-joyVec.y;mR+=joyVec.x;}
+      if(keys['Space'])doJump();
+      const speed=3.0*((keys['ShiftLeft']||keys['ShiftRight'])?1.9:1);
+      const len=Math.hypot(mF,mR);if(len>1){mF/=len;mR/=len;}
+      if(mF||mR){const fx=-Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
+        const nx=pos.x+(fx*mF+rx*mR)*speed*dt,nz=pos.z+(fz*mF+rz*mR)*speed*dt;
+        if(!collide(nx,pos.z))pos.x=nx;if(!collide(pos.x,nz))pos.z=nz;}
+    }
+    // jump physics
+    if(!onGround||pos.y>EYE){vy+=GRAV*dt;pos.y+=vy*dt;if(pos.y<=EYE){pos.y=EYE;vy=0;onGround=true;}}
+    camera.position.copy(pos);
+    let near='';for(const z of ZONES){if(Math.hypot(pos.x-z.x,pos.z-z.z)<z.r){near=tr(z.n);break;}}
+    if(near!==curZone){curZone=near;tag.textContent=near?'📍 '+near:'Concejo Municipal de Nosara';}
+    lkT+=dt;if(lkT>0.12){lkT=0;checkLook();}
+    mmT+=dt;if(mmT>0.25){mmT=0;drawMap();}
+  }
+  if(mainTree)mainTree.rotation.y=Math.sin(clock.elapsedTime*0.3)*0.012;
+  renderer.render(scene,camera);}
+
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+if(isTouch){document.getElementById('kd').style.display='none';document.getElementById('km').style.display='flex';}
+applyHTMLLang();
+document.getElementById('loading').style.display='none';
+frame();
+</script>
+</body>
+</html>
