@@ -120,7 +120,8 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   <p id="s-intro"></p>
   <div class="btns">
     <button class="btn-main" id="enter"></button>
-    <button class="btn-ar" id="enter-ar"></button>
+    <button class="btn-ar" id="enter-arx"></button>
+    <button class="btn-ar" id="enter-ar" style="border-color:rgba(126,200,208,.35);color:#7ec8d0"></button>
   </div>
   <div class="keys" id="kd"><span class="key" id="k-move"></span><span class="key" id="k-look"></span><span class="key" id="k-jump"></span><span class="key" id="k-run"></span></div>
   <div class="keys" id="km" style="display:none"><span class="key" id="k-mtouch"></span><span class="key" id="k-ltouch"></span></div>
@@ -853,6 +854,42 @@ function exitAR(){if(arStream){arStream.getTracks().forEach(t=>t.stop());arStrea
 function updateAR(){const cx=Math.sin(arAX)*Math.cos(arAY)*arDist,cy=Math.sin(arAY)*arDist+6,cz=Math.cos(arAX)*Math.cos(arAY)*arDist;
   camera.position.set(cx,cy,cz+(BZ0+BZ1)/2);camera.lookAt(0,2,(BZ0+BZ1)/2);}
 document.getElementById('enter-ar').addEventListener('click',beginAR);arClose.addEventListener('click',exitAR);
+
+// ============================================================
+// TRUE AR (model-viewer → native Scene Viewer / Quick Look / WebXR)
+// Same stack as the anfibios AR: anchors to a surface, pinch to
+// scale, and you physically walk inside with your phone.
+// ============================================================
+let mvEl=null,mvReady=false;
+function loadMV(){return new Promise(res=>{
+  if(mvEl)return res();
+  const s=document.createElement('script');s.type='module';s.src='lib/model-viewer.min.js';
+  s.onload=()=>{
+    mvEl=document.createElement('model-viewer');
+    mvEl.setAttribute('src','edificio.glb');
+    mvEl.setAttribute('ar','');
+    mvEl.setAttribute('ar-modes','webxr scene-viewer quick-look');
+    mvEl.setAttribute('ar-scale','auto');            // pinch = resize
+    mvEl.setAttribute('ar-placement','floor');       // anchors to the ground
+    mvEl.setAttribute('loading','eager');mvEl.setAttribute('reveal','auto');
+    mvEl.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;';
+    mvEl.addEventListener('load',()=>{mvReady=true;});
+    document.body.appendChild(mvEl);res();
+  };
+  s.onerror=()=>res();
+  document.head.appendChild(s);
+});}
+setTimeout(loadMV,2500);                             // preload so the button responds instantly
+const arxBtn=document.getElementById('enter-arx');
+arxBtn.addEventListener('click',async()=>{
+  if(mvEl&&mvEl.canActivateAR){try{await mvEl.activateAR();return;}catch(e){}}
+  arxBtn.textContent=tr(HT.arxPrep);
+  await loadMV();
+  for(let i=0;i<40&&!mvReady;i++)await new Promise(r=>setTimeout(r,250));
+  arxBtn.textContent=tr(HT.arx);
+  if(mvEl&&mvEl.canActivateAR){try{await mvEl.activateAR();return;}catch(e){}}
+  alert(tr(HT.arxNo));
+});
 renderer.domElement.addEventListener('touchstart',e=>{if(mode!=='ar')return;if(e.touches.length===2)arPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);else{arDrag=e.touches[0].identifier;arLx=e.touches[0].clientX;arLy=e.touches[0].clientY;}},{passive:true});
 renderer.domElement.addEventListener('touchmove',e=>{if(mode!=='ar')return;e.preventDefault();if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);arDist=Math.max(16,Math.min(60,arDist*(arPinch/d)));arPinch=d;updateAR();}else if(arDrag!==null){const t=e.touches[0];arAX+=(t.clientX-arLx)*0.005;arAY=Math.max(0.12,Math.min(1.25,arAY+(t.clientY-arLy)*0.003));arLx=t.clientX;arLy=t.clientY;updateAR();}},{passive:false});
 renderer.domElement.addEventListener('touchend',()=>{if(mode==='ar')arDrag=null;},{passive:true});
@@ -889,7 +926,10 @@ const HT={
   intro:{es:'Explora el edificio que podemos construir: <span class="highlight">abierto, transparente y participativo</span>. Vidrio, jardín central, cabildo para las decisiones que importan para Nosara. Gobierno de puertas abiertas.',
     en:'Explore the building we can build: <span class="highlight">open, transparent and participatory</span>. Glass, a central garden, a town hall for the decisions that matter to Nosara. Open-door government.'},
   start:{es:'Iniciar tour virtual',en:'Start virtual tour'},
-  ar:{es:'Vista AR con cámara',en:'AR camera view'},
+  arx:{es:'AR real: ponelo en tu espacio',en:'True AR: place it in your space'},
+  arxPrep:{es:'Preparando AR…',en:'Preparing AR…'},
+  arxNo:{es:'Tu navegador no soporta AR nativo aquí. Probá con Chrome (Android) o Safari (iPhone), o usá la vista AR simple.',en:'Your browser does not support native AR here. Try Chrome (Android) or Safari (iPhone), or use the simple AR view.'},
+  ar:{es:'AR simple (cámara)',en:'Simple AR (camera)'},
   foot:{es:'Basado en la propuesta real del Plebiscito de Nosara',en:'Based on the real Nosara Plebiscite proposal'},
   kmove:{es:'W A S D mover',en:'W A S D move'},klook:{es:'Ratón mirar',en:'Mouse look'},kjump:{es:'Espacio saltar',en:'Space jump'},krun:{es:'Shift correr',en:'Shift run'},
   kmtouch:{es:'Joystick mover',en:'Joystick move'},kltouch:{es:'Arrastrá para mirar',en:'Drag to look'},
@@ -902,6 +942,7 @@ const HT={
 function applyHTMLLang(){
   document.getElementById('s-intro').innerHTML=tr(HT.intro);
   document.getElementById('enter').textContent=tr(HT.start);
+  document.getElementById('enter-arx').textContent=tr(HT.arx);
   document.getElementById('enter-ar').textContent=tr(HT.ar);
   document.getElementById('s-foot').textContent=tr(HT.foot);
   document.getElementById('k-move').textContent=tr(HT.kmove);document.getElementById('k-look').textContent=tr(HT.klook);
@@ -956,6 +997,29 @@ if(isTouch){document.getElementById('kd').style.display='none';document.getEleme
 applyHTMLLang();
 document.getElementById('loading').style.display='none';
 frame();
+
+// ============================================================
+// GLB EXPORT (tooling: open with ?export=1, chunks on window)
+// ============================================================
+if(location.search.includes('export=1')){(async()=>{try{
+  const mod=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/exporters/GLTFExporter.js/+esm');
+  // prune what makes no sense in room-scale AR: text sprites, huge ground, exterior landscaping, lights
+  const kill=[];const wp3=new THREE.Vector3();
+  scene.traverse(o=>{
+    if(o.isSprite||o.isLight){kill.push(o);return;}
+    if(o.geometry&&o.geometry.parameters&&o.geometry.parameters.width>100){kill.push(o);return;}   // 160m ground
+    if(o.parent===scene){o.getWorldPosition(wp3);
+      if(Math.abs(wp3.x)>BX1+1.6||wp3.z>BZ1+1.6||wp3.z<BZ0-1.6)kill.push(o);}
+  });
+  kill.forEach(o=>o.parent&&o.parent.remove(o));
+  new mod.GLTFExporter().parse(scene,gltf=>{
+    const u8=new Uint8Array(gltf);let bin='';const CH=0x8000;
+    for(let i=0;i<u8.length;i+=CH)bin+=String.fromCharCode.apply(null,u8.subarray(i,i+CH));
+    const b64=btoa(bin);window.__glb=[];const S=262144;
+    for(let i=0;i<b64.length;i+=S)window.__glb.push(b64.slice(i,i+S));
+    document.title='GLB_READY_'+window.__glb.length+'_'+u8.length;
+  },e=>{document.title='GLB_ERR';console.error(e);},{binary:true});
+}catch(e){document.title='GLB_ERR2';console.error(e);}})();}
 </script>
 </body>
 </html>
