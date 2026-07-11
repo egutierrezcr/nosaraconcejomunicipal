@@ -523,11 +523,11 @@ let holo=null;
   const landGeo=new THREE.ShapeGeometry(land),landEdge=new THREE.EdgesGeometry(landGeo);
   const layers=[
     {y:0.00,lbl:{es:'Comunidades y naturaleza',en:'Communities & nature'},op:.6},
-    {y:0.30,lbl:{es:'% Vivienda alquilada',en:'% Rented housing'},op:.5},
-    {y:0.58,lbl:{es:'% Internet',en:'% Internet'},op:.5},
-    {y:0.86,lbl:{es:'Fragilidad ambiental (IFA)',en:'Environmental fragility (IFA)'},op:.5},
-    {y:1.14,lbl:{es:'Relieve · elevación',en:'Relief · elevation'},op:.5},
-    {y:1.42,lbl:{es:'Parcelas (SIRI)',en:'Parcels (SIRI)'},op:.55},
+    {y:0.30,lbl:{es:'Vivienda',en:'Housing'},op:.5},
+    {y:0.58,lbl:{es:'Internet',en:'Internet'},op:.5},
+    {y:0.86,lbl:{es:'Salud',en:'Health'},op:.5},
+    {y:1.14,lbl:{es:'Educación',en:'Education'},op:.5},
+    {y:1.42,lbl:{es:'Emergencias',en:'Emergencies'},op:.55},
   ];
   layers.forEach((L,i)=>{
     const layer=new THREE.Group();layer.position.y=L.y;
@@ -608,11 +608,11 @@ council.forEach(s=>{const cz=daisZ-0.65;chair(s.x,cz,0,0x263238);person(s.x,cz,0
 chair(0,daisZ+0.4,0,0x1b262c);person(0,daisZ+0.4,0,PAL.ocean);
 label({es:'Síndico/a — preside',en:'Síndico/a — presides'},0,2.35,daisZ+1.0,'#1AA3B0',2.4);
 
-// podium (uso de la palabra)
-const podZ=daisZ+4.2;const pod=box(0.85,1.15,0.62,M.woodD);pod.position.set(-9,0.57,podZ);pod.castShadow=true;scene.add(pod);
-P(box(0.95,0.04,0.52,M.wood),-9,1.17,podZ);const podTop=box(0.95,0.04,0.52,M.wood);podTop.position.set(-9,1.17,podZ);scene.add(podTop);
-addObs(-9,podZ,0.55,0.42);label({es:'Uso de la palabra',en:'Public floor'},-9,1.95,podZ,'#EDF7F9',2.0);
-standing(-9,podZ+0.7,0,PAL.bosque);
+// podium (uso de la palabra) — centered, facing the councilors and presidency
+const podZ=daisZ+3.0;const pod=box(0.85,1.15,0.62,M.woodD);pod.position.set(0,0.57,podZ);pod.castShadow=true;scene.add(pod);
+const podTop=box(0.95,0.04,0.52,M.wood);podTop.position.set(0,1.17,podZ);scene.add(podTop);
+addObs(0,podZ,0.55,0.42);label({es:'Uso de la palabra',en:'Public floor'},0,1.95,podZ,'#EDF7F9',2.0);
+standing(0,podZ+0.7,Math.PI,PAL.bosque);   // speaker faces the dais (north)
 
 // 4 suplentes seated (right side)
 label({es:'Concejales Suplentes',en:'Alternate Members'},10.5,2.15,daisZ+2.4,'#8ca8b0',2.2);
@@ -727,7 +727,7 @@ const WP=[
   {id:{es:'Jardín',en:'Garden'},x:0,z:6.5,yaw:0,pitch:0.1,
     title:{es:'Jardín Central',en:'Central Garden'},desc:{es:'El corazón del edificio: un espacio verde amplio, abierto al cielo, con agua y sombra. Para encontrarse y conversar.',en:'The heart of the building: a wide green space open to the sky, with water and shade. To meet and talk.'}},
   {id:{es:'Planificación',en:'Planning'},x:HOLOX,z:9.8,yaw:0,pitch:0.17,
-    title:{es:'Planificación Territorial',en:'Territorial Planning'},desc:{es:'Una mesa holográfica proyecta las capas del distrito —parcelas, relieve, fragilidad ambiental, internet, vivienda— sobre el mapa de Nosara. Comunidades locales de la mano con la naturaleza.',en:'A holographic table projects the district layers —parcels, relief, environmental fragility, internet, housing— over the map of Nosara. Local communities hand in hand with nature.'}},
+    title:{es:'Planificación Territorial',en:'Territorial Planning'},desc:{es:'Una mesa holográfica proyecta las capas del distrito —salud, educación, emergencias, internet, vivienda— sobre el mapa de Nosara. Comunidades locales de la mano con la naturaleza.',en:'A holographic table projects the district layers —health, education, emergencies, internet, housing— over the map of Nosara. Local communities hand in hand with nature.'}},
   {id:{es:'Comunidad',en:'Community'},x:BX1-5.5,z:(GZ0+GZ1)/2,yaw:-Math.PI/2,pitch:0,
     title:{es:'Espacio Comunitario',en:'Community Space'},desc:{es:'Cabildo digital, denuncias y transparencia, concursos de proveedores. Tu espacio para decidir y fiscalizar.',en:'Digital town hall, reports and transparency, supplier tenders. Your space to decide and oversee.'}},
   {id:{es:'Sistema',en:'System'},x:sidX,z:3,yaw:0,pitch:0.08,
