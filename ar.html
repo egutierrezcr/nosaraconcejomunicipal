@@ -10,7 +10,15 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{min-height:100%;background:linear-gradient(160deg,#071518 0%,#0d2a30 45%,#0a1a1f 100%);
   font-family:Inter,system-ui,sans-serif;color:#EDF7F9}
-.wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.wrap{max-width:760px;margin:0 auto;padding:56px 16px 40px;display:flex;flex-direction:column;gap:16px}
+
+/* sticky top nav: always-visible way back, no scrolling needed */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;gap:8px;
+  padding:10px 14px;background:rgba(7,21,24,.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(26,163,176,.15)}
+.topnav a{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#7ec8d0;text-decoration:none;
+  padding:6px 13px;border-radius:16px;border:1px solid rgba(126,200,208,.2);white-space:nowrap}
+.topnav a:hover{color:#EDF7F9;border-color:rgba(126,200,208,.4)}
+.topnav a.home{color:#E8A82C;border-color:rgba(232,168,44,.3)}
 
 header{text-align:center;padding-top:8px}
 .badge{display:inline-block;background:rgba(26,163,176,.12);border:1px solid rgba(26,163,176,.3);border-radius:20px;
@@ -43,13 +51,13 @@ model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;
 .note{background:rgba(232,168,44,.07);border:1px solid rgba(232,168,44,.25);border-radius:14px;padding:12px 16px;
   font-size:12.5px;color:#d8c49a;line-height:1.55}
 .note b{color:#E8A82C}
-
-footer{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding-top:6px}
-footer a{color:#7ec8d0;font-size:13px;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);padding-bottom:1px}
-footer a:hover{color:#EDF7F9}
 </style>
 </head>
 <body>
+<nav class="topnav">
+  <a href="https://muninosara.org" class="home">🏠 Inicio</a>
+  <a href="edificio.html">🚶 Tour virtual</a>
+</nav>
 <div class="wrap">
 
   <header>
@@ -100,11 +108,6 @@ footer a:hover{color:#EDF7F9}
   <div class="note"><b>Interior real:</b> el modelo tiene paredes de doble cara y todo el mobiliario interior
   (recepción, jardín central, sala del Concejo con sus 7 puestos, 100 sillas, pantallas informativas),
   optimizado para correr fluido en teléfonos de gama media (~3&nbsp;MB, 75 mallas).</div>
-
-  <footer>
-    <a href="edificio.html">← Tour virtual del edificio</a>
-    <a href="https://muninosara.org">muninosara.org</a>
-  </footer>
 
 </div>
 </body>

@@ -30,6 +30,9 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 .btn-ar{padding:14px 30px;font-size:15px;font-weight:700;border:2px solid rgba(232,168,44,.5);border-radius:40px;cursor:pointer;
   background:rgba(232,168,44,.08);color:#E8A82C;transition:transform .15s,background .15s}
 .btn-ar:hover{transform:translateY(-2px);background:rgba(232,168,44,.15)}
+.link-guided{margin-top:2px;background:none;border:none;color:#7ec8d0;font-size:12.5px;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;padding:6px 10px;font-family:inherit}
+.link-guided:hover{color:#EDF7F9}
 .keys{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px}
 .key{background:rgba(14,110,124,.12);border:1px solid rgba(26,163,176,.2);border-radius:6px;padding:4px 10px;font-size:11px;color:#7ec8d0}
 #start .foot{margin-top:8px;font-size:11px;color:#4a6a72}
@@ -81,18 +84,6 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   cursor:pointer;background:rgba(10,26,31,.85);color:#1AA3B0;border:1px solid rgba(26,163,176,.3);pointer-events:auto;display:none}
 #ar-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:16;background:rgba(10,26,31,.8);padding:8px 18px;
   border-radius:20px;font-size:12px;color:#7ec8d0;pointer-events:none;display:none}
-
-/* ---------- AR guide overlay ---------- */
-#arx-guide{position:fixed;inset:0;z-index:21;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-  background:rgba(7,21,24,.96);text-align:center;padding:28px}
-#arx-guide h2{font-size:22px;font-weight:800;color:#E8A82C}
-#arx-guide .steps{display:flex;flex-direction:column;gap:12px;max-width:340px;text-align:left}
-#arx-guide .st{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#bfe0e6;line-height:1.5}
-#arx-guide .st .n{flex:0 0 26px;height:26px;border-radius:50%;background:rgba(232,168,44,.15);border:1px solid rgba(232,168,44,.4);
-  color:#E8A82C;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
-#arx-guide .go{margin-top:8px;padding:15px 38px;font-size:16px;font-weight:800;border:none;border-radius:40px;cursor:pointer;
-  background:linear-gradient(135deg,#E8A82C,#c98d1a);color:#1a1206;box-shadow:0 6px 28px rgba(232,168,44,.35)}
-#arx-guide .back{background:none;border:none;color:#5a7a82;font-size:13px;cursor:pointer;margin-top:2px;text-decoration:underline}
 
 /* ---------- Touch controls ---------- */
 #joy{position:fixed;left:22px;bottom:22px;width:110px;height:110px;border-radius:50%;z-index:15;
@@ -147,16 +138,6 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <button id="jump"></button>
 <button id="exit-tour">✕ <span id="exit-txt"></span></button>
 <div id="rot-tip">📱 <span id="rot-txt"></span></div>
-<div id="arx-guide">
-  <h2 id="axg-t"></h2>
-  <div class="steps">
-    <div class="st"><span class="n">1</span><span id="axg-1"></span></div>
-    <div class="st"><span class="n">2</span><span id="axg-2"></span></div>
-    <div class="st"><span class="n">3</span><span id="axg-3"></span></div>
-  </div>
-  <button class="go" id="axg-go"></button>
-  <button class="back" id="axg-back"></button>
-</div>
 <video id="ar-video" playsinline autoplay muted></video>
 <button id="ar-close"></button>
 <div id="ar-hint"></div>
@@ -169,10 +150,10 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   <p id="s-intro"></p>
   <div class="btns">
     <button class="btn-main" id="enter"></button>
-    <button class="btn-ar" id="enter-guided" style="border-color:rgba(26,163,176,.5);color:#7ec8d0"></button>
     <button class="btn-ar" id="enter-arx"></button>
-    <button class="btn-ar" id="enter-ar" style="display:none"></button>
   </div>
+  <button class="link-guided" id="enter-guided"></button>
+  <button class="btn-ar" id="enter-ar" style="display:none"></button>
   <div class="keys" id="kd"><span class="key" id="k-move"></span><span class="key" id="k-look"></span><span class="key" id="k-jump"></span><span class="key" id="k-run"></span></div>
   <div class="keys" id="km" style="display:none"><span class="key" id="k-mtouch"></span><span class="key" id="k-ltouch"></span></div>
   <p class="foot" id="s-foot"></p>
@@ -801,7 +782,7 @@ const WP=[
     title:{es:'Localidades de Nosara',en:'Nosara Localities'},desc:{es:'Arenales, Delicias, Garza, Nosara centro, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood y Río Montaña. Todas cuentan.',en:'Arenales, Delicias, Garza, Nosara center, San Carlos, San Pedro, La Esperanza, Guiones, Pelada, Santa Marta, Santa Teresita, San Ramón, Los Ángeles-Rivera Norte, San Juan, Hollywood and Río Montaña. They all count.'}},
 ];
 const wpEl=document.getElementById('waypoints');const visited=new Set();
-WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>{cancelAuto();goWP(i);});wpEl.appendChild(b);});
+WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.dataset.i=i;b.addEventListener('click',()=>{cancelAuto();transitioning=false;goWP(i);});wpEl.appendChild(b);});
 let transitioning=false;
 function goWP(i){const w=WP[i];if(transitioning)return;transitioning=true;visited.add(i);
   document.querySelectorAll('.wp').forEach(b=>{b.classList.toggle('visited',visited.has(+b.dataset.i));b.classList.toggle('active',+b.dataset.i===i);});
@@ -895,7 +876,13 @@ joy.addEventListener('touchstart',e=>{e.preventDefault();jS(e.changedTouches[0])
 joy.addEventListener('touchmove',e=>{e.preventDefault();for(const t of e.changedTouches)if(t.identifier===joyId)jM(t);},{passive:false});
 joy.addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===joyId)jE();});
 let lookId=null,lx=0,ly=0;
-addEventListener('touchstart',e=>{if(!isTouch||mode!=='tour')return;for(const t of e.touches)if(t.identifier!==joyId){lookId=t.identifier;lx=t.clientX;ly=t.clientY;break;}});
+// only start a "look" drag if the touch actually landed on the 3D canvas —
+// otherwise every tap on a HUD button (waypoint chip, exit, language toggle)
+// also nudges the camera, which felt broken on mobile especially during the
+// guided tour's dense waypoint row.
+addEventListener('touchstart',e=>{if(!isTouch||mode!=='tour')return;
+  if(e.target!==renderer.domElement&&e.target!==app)return;
+  for(const t of e.touches)if(t.identifier!==joyId){lookId=t.identifier;lx=t.clientX;ly=t.clientY;cancelAuto();break;}});
 addEventListener('touchmove',e=>{if(!isTouch||mode!=='tour')return;for(const t of e.touches)if(t.identifier===lookId){yaw-=(t.clientX-lx)*0.004;pitch-=(t.clientY-ly)*0.004;pitch=Math.max(-1.35,Math.min(1.35,pitch));lx=t.clientX;ly=t.clientY;}},{passive:false});
 addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===lookId)lookId=null;});
 
@@ -942,40 +929,9 @@ document.getElementById('enter-ar').addEventListener('click',beginAR);arClose.ad
 // Same stack as the anfibios AR: anchors to a surface, pinch to
 // scale, and you physically walk inside with your phone.
 // ============================================================
-let mvEl=null,mvReady=false;
-function loadMV(){return new Promise(res=>{
-  if(mvEl)return res();
-  const s=document.createElement('script');s.type='module';s.src='lib/model-viewer.min.js';
-  s.onload=()=>{
-    mvEl=document.createElement('model-viewer');
-    mvEl.setAttribute('src','edificio.glb');
-    mvEl.setAttribute('ar','');
-    mvEl.setAttribute('ar-modes','webxr scene-viewer quick-look');
-    mvEl.setAttribute('ar-scale','fixed');           // human scale 1:1 — walk inside for real
-    mvEl.setAttribute('ar-placement','floor');       // anchors to the detected floor
-    mvEl.setAttribute('loading','eager');mvEl.setAttribute('reveal','auto');
-    mvEl.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;';
-    mvEl.addEventListener('load',()=>{mvReady=true;});
-    document.body.appendChild(mvEl);res();
-  };
-  s.onerror=()=>res();
-  document.head.appendChild(s);
-});}
-setTimeout(loadMV,1200);                             // preload early: model is light now (~0.8MB)
-const arxBtn=document.getElementById('enter-arx'),axg=document.getElementById('arx-guide');
-arxBtn.addEventListener('click',()=>{loadMV();axg.style.display='flex';});
-document.getElementById('axg-back').addEventListener('click',()=>{axg.style.display='none';});
-document.getElementById('axg-go').addEventListener('click',async()=>{
-  const go=document.getElementById('axg-go');
-  go.textContent=tr(HT.arxPrep);
-  await loadMV();
-  for(let i=0;i<40&&!mvReady;i++)await new Promise(r=>setTimeout(r,250));
-  go.textContent=tr(HT.axgGo);
-  if(mvEl&&mvEl.canActivateAR){
-    try{await mvEl.activateAR();axg.style.display='none';return;}catch(e){}
-  }
-  axg.style.display='none';alert(tr(HT.arxNo));
-});
+// AR now lives on its own page (ar.html): world-locked anchor, pinch-to-scale,
+// walk inside — proven to work great. One tap, no in-page duplicate flow.
+document.getElementById('enter-arx').addEventListener('click',()=>{location.href='ar.html';});
 renderer.domElement.addEventListener('touchstart',e=>{if(mode!=='ar')return;if(e.touches.length===2)arPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);else{arDrag=e.touches[0].identifier;arLx=e.touches[0].clientX;arLy=e.touches[0].clientY;}},{passive:true});
 renderer.domElement.addEventListener('touchmove',e=>{if(mode!=='ar')return;e.preventDefault();if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);arDist=Math.max(16,Math.min(60,arDist*(arPinch/d)));arPinch=d;updateAR();}else if(arDrag!==null){const t=e.touches[0];arAX+=(t.clientX-arLx)*0.005;arAY=Math.max(0.12,Math.min(1.25,arAY+(t.clientY-arLy)*0.003));arLx=t.clientX;arLy=t.clientY;updateAR();}},{passive:false});
 renderer.domElement.addEventListener('touchend',()=>{if(mode==='ar')arDrag=null;},{passive:true});
@@ -1012,20 +968,12 @@ const HT={
   intro:{es:'Explora el edificio que podemos construir: <span class="highlight">abierto, transparente y participativo</span>. Vidrio, jardín central, cabildo para las decisiones que importan para Nosara. Gobierno de puertas abiertas.',
     en:'Explore the building we can build: <span class="highlight">open, transparent and participatory</span>. Glass, a central garden, a town hall for the decisions that matter to Nosara. Open-door government.'},
   start:{es:'Iniciar tour virtual',en:'Start virtual tour'},
-  guided:{es:'Enséñame un recorrido',en:'Show me around'},
+  guided:{es:'…o enséñame un recorrido guiado',en:'…or show me a guided tour'},
   exit:{es:'Salir',en:'Exit'},
   toLanding:{es:'← Volver a muninosara.org',en:'← Back to muninosara.org'},
   autoHint:{es:'Recorrido automático · tocá el joystick o un punto para tomar el control',en:'Auto tour · touch the joystick or a stop to take control'},
   rotTip:{es:'Girá el teléfono a horizontal para ver mejor',en:'Rotate your phone to landscape for a better view'},
-  arx:{es:'AR: caminá dentro del edificio',en:'AR: walk inside the building'},
-  arxPrep:{es:'Preparando AR…',en:'Preparing AR…'},
-  arxNo:{es:'Tu navegador no soporta AR nativo aquí. Probá con Chrome (Android) o Safari (iPhone).',en:'Your browser does not support native AR here. Try Chrome (Android) or Safari (iPhone).'},
-  axgT:{es:'Antes de empezar',en:'Before you start'},
-  axg1:{es:'Salí a un espacio abierto (patio, plaza, sala grande) con buena luz.',en:'Go to an open space (yard, plaza, big room) with good light.'},
-  axg2:{es:'Apuntá el teléfono al piso y movelo despacio en círculos hasta que el edificio se asiente.',en:'Point the phone at the floor and move it slowly in circles until the building settles.'},
-  axg3:{es:'El edificio aparece a escala real: caminá con tu teléfono para entrar y recorrerlo por dentro.',en:'The building appears at real scale: walk with your phone to enter and explore it inside.'},
-  axgGo:{es:'Empezar AR',en:'Start AR'},
-  axgBack:{es:'Volver',en:'Back'},
+  arx:{es:'📱 Ver en AR (entrá caminando)',en:'📱 View in AR (walk inside)'},
   ar:{es:'AR simple (cámara)',en:'Simple AR (camera)'},
   foot:{es:'Basado en la propuesta real del Plebiscito de Nosara',en:'Based on the real Nosara Plebiscite proposal'},
   kmove:{es:'W A S D mover',en:'W A S D move'},klook:{es:'Ratón mirar',en:'Mouse look'},kjump:{es:'Espacio saltar',en:'Space jump'},krun:{es:'Shift correr',en:'Shift run'},
@@ -1045,12 +993,6 @@ function applyHTMLLang(){
   document.getElementById('exit-txt').textContent=tr(HT.exit);
   document.getElementById('to-landing').textContent=tr(HT.toLanding);
   document.getElementById('enter-ar').textContent=tr(HT.ar);
-  document.getElementById('axg-t').textContent=tr(HT.axgT);
-  document.getElementById('axg-1').textContent=tr(HT.axg1);
-  document.getElementById('axg-2').textContent=tr(HT.axg2);
-  document.getElementById('axg-3').textContent=tr(HT.axg3);
-  document.getElementById('axg-go').textContent=tr(HT.axgGo);
-  document.getElementById('axg-back').textContent=tr(HT.axgBack);
   document.getElementById('s-foot').textContent=tr(HT.foot);
   document.getElementById('k-move').textContent=tr(HT.kmove);document.getElementById('k-look').textContent=tr(HT.klook);
   document.getElementById('k-jump').textContent=tr(HT.kjump);document.getElementById('k-run').textContent=tr(HT.krun);
