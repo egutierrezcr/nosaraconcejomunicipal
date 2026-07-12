@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a1a1f">
 <title>Concejo Municipal de Nosara — Tour Virtual 3D</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,system-ui,sans-serif;color:#fff}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,system-ui,sans-serif;color:#fff;overscroll-behavior:none}
 #app{position:fixed;inset:0;z-index:2}canvas{display:block}
+:root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px)}
 
 /* ---------- Loading ---------- */
 #loading{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;z-index:30;background:#0a1a1f}
@@ -16,8 +18,20 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 #loading span{color:#1AA3B0;font-size:14px}
 
 /* ---------- Start screen ---------- */
+/* overflow-y:auto is a safety net: on short/landscape phones this content
+   must never become unreachable just because there's no room for it */
 #start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-  background:linear-gradient(160deg,#071518 0%,#0d2a30 40%,#0a1a1f 100%);z-index:20;text-align:center;padding:24px;transition:opacity .5s}
+  background:linear-gradient(160deg,#071518 0%,#0d2a30 40%,#0a1a1f 100%);z-index:20;text-align:center;
+  padding:calc(24px + var(--sat)) calc(24px + var(--sar)) calc(24px + var(--sab)) calc(24px + var(--sal));
+  transition:opacity .5s;overflow-y:auto;-webkit-overflow-scrolling:touch}
+@media (max-height:520px){
+  #start{gap:8px;padding-top:calc(14px + var(--sat));padding-bottom:calc(14px + var(--sab))}
+  #start .badge{padding:3px 12px;font-size:10.5px}
+  #start h1{font-size:clamp(17px,4vw,24px);line-height:1.1}
+  #start p{font-size:12px;line-height:1.4}
+  .btn-main,.btn-ar{padding:10px 22px;font-size:13.5px}
+  .keys,#start .foot{display:none}
+}
 #start .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(26,163,176,.12);border:1px solid rgba(26,163,176,.25);border-radius:20px;padding:5px 14px;font-size:12px;color:#1AA3B0;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 #start h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.15;max-width:560px}
 #start h1 .tl{color:#1AA3B0} #start h1 .gd{color:#E8A82C}
@@ -38,21 +52,23 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 #start .foot{margin-top:8px;font-size:11px;color:#4a6a72}
 
 /* ---------- Language toggle ---------- */
-#lang{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:22;display:flex;background:rgba(10,26,31,.85);
+#lang{position:fixed;top:calc(14px + var(--sat));left:50%;transform:translateX(-50%);z-index:22;display:flex;background:rgba(10,26,31,.85);
   border:1px solid rgba(26,163,176,.3);border-radius:20px;overflow:hidden;backdrop-filter:blur(8px);font-weight:700;font-size:13px}
 #lang button{border:none;background:none;color:#7ec8d0;padding:7px 16px;cursor:pointer;transition:all .2s}
 #lang button.on{background:#1AA3B0;color:#fff}
+.touch #lang button{padding:10px 17px}   /* comfortable tap target on phones */
 
 /* ---------- HUD ---------- */
 #cross{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:rgba(255,255,255,.8);
   box-shadow:0 0 0 1px rgba(0,0,0,.3),0 0 8px rgba(26,163,176,.4);z-index:10;pointer-events:none;display:none}
-#tag{position:fixed;top:56px;left:14px;z-index:10;font-size:12px;font-weight:600;color:#1AA3B0;
+#tag{position:fixed;top:calc(56px + var(--sat));left:calc(14px + var(--sal));z-index:10;font-size:12px;font-weight:600;color:#1AA3B0;
   background:rgba(10,26,31,.75);padding:6px 14px;border-radius:20px;backdrop-filter:blur(8px);border:1px solid rgba(26,163,176,.15);display:none}
-#hint{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:10;background:rgba(10,26,31,.75);padding:7px 16px;
-  border-radius:20px;font-size:12px;color:#7ec8d0;backdrop-filter:blur(8px);pointer-events:none;display:none;white-space:nowrap;border:1px solid rgba(26,163,176,.1)}
+#hint{position:fixed;left:50%;bottom:calc(16px + var(--sab));transform:translateX(-50%);z-index:10;background:rgba(10,26,31,.75);padding:7px 16px;
+  border-radius:20px;font-size:12px;color:#7ec8d0;backdrop-filter:blur(8px);pointer-events:none;display:none;white-space:nowrap;border:1px solid rgba(26,163,176,.1);
+  max-width:92vw;text-overflow:ellipsis;overflow:hidden}
 
 /* ---------- Tour waypoints ---------- */
-#waypoints{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);z-index:11;display:none;gap:6px;flex-wrap:wrap;justify-content:center;max-width:95vw}
+#waypoints{position:fixed;bottom:calc(52px + var(--sab));left:50%;transform:translateX(-50%);z-index:11;display:none;gap:6px;flex-wrap:wrap;justify-content:center;max-width:95vw}
 .wp{padding:6px 13px;font-size:12px;font-weight:600;border:1px solid rgba(26,163,176,.25);border-radius:16px;cursor:pointer;
   background:rgba(10,26,31,.8);color:#7ec8d0;backdrop-filter:blur(6px);transition:all .2s;white-space:nowrap}
 .wp:hover,.wp.active{background:rgba(26,163,176,.2);color:#fff;border-color:rgba(26,163,176,.5)}
@@ -86,11 +102,11 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   border-radius:20px;font-size:12px;color:#7ec8d0;pointer-events:none;display:none}
 
 /* ---------- Touch controls ---------- */
-#joy{position:fixed;left:22px;bottom:22px;width:110px;height:110px;border-radius:50%;z-index:15;
+#joy{position:fixed;left:calc(22px + var(--sal));bottom:calc(22px + var(--sab));width:110px;height:110px;border-radius:50%;z-index:15;
   background:rgba(26,163,176,.08);border:2px solid rgba(26,163,176,.25);display:none;touch-action:none}
 #stick{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;
   background:rgba(26,163,176,.7);box-shadow:0 3px 12px rgba(0,0,0,.3)}
-#jump{position:fixed;right:24px;bottom:34px;width:76px;height:76px;border-radius:50%;z-index:15;display:none;
+#jump{position:fixed;right:calc(24px + var(--sar));bottom:calc(34px + var(--sab));width:76px;height:76px;border-radius:50%;z-index:15;display:none;
   background:rgba(232,168,44,.15);border:2px solid rgba(232,168,44,.4);color:#E8A82C;font-weight:700;font-size:13px;touch-action:none}
 
 @media(max-width:500px){
@@ -100,28 +116,47 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 
 /* ---------- clean mobile HUD ---------- */
 .touch #minimap,.touch #jump,.touch #tag{display:none !important}
-.touch .wp{padding:4px 11px;font-size:11px}
-.touch #waypoints{bottom:42px;gap:5px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;
-  max-width:94vw;padding:3px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+/* bigger tap targets (min ~40px tall) — the old 4px/11px padding was
+   below any comfortable touch-target size and easy to mis-tap */
+.touch .wp{padding:11px 15px;font-size:12px}
+.touch #waypoints{bottom:calc(46px + var(--sab));gap:6px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;
+  max-width:94vw;padding:3px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:relative;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
 .touch #waypoints::-webkit-scrollbar{display:none}
-.touch #hint{font-size:11px;bottom:12px}
+.touch #hint{font-size:11px;bottom:calc(12px + var(--sab))}
 .touch #info{font-size:12px}
+.touch #lang button{padding:10px 17px}   /* comfortable tap target on phones */
+
+/* one-time "there's more, swipe →" cue on the waypoint row */
+#wp-hint{position:fixed;left:50%;bottom:calc(84px + var(--sab));transform:translateX(-50%);z-index:11;
+  display:none;align-items:center;gap:5px;background:rgba(10,26,31,.8);color:#E8A82C;font-size:11px;font-weight:600;
+  padding:5px 12px;border-radius:14px;backdrop-filter:blur(6px);pointer-events:none;opacity:0;transition:opacity .4s}
+#wp-hint.show{opacity:1}
+#wp-hint .arrow{display:inline-block;animation:swipehint 1.3s ease-in-out infinite}
+@keyframes swipehint{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
 
 /* exit-tour button */
-#exit-tour{position:fixed;top:14px;left:14px;z-index:14;display:none;align-items:center;gap:7px;
-  padding:8px 16px;border-radius:20px;border:1px solid rgba(232,168,44,.4);cursor:pointer;
+#exit-tour{position:fixed;top:calc(14px + var(--sat));left:calc(14px + var(--sal));z-index:14;display:none;align-items:center;gap:7px;
+  padding:10px 16px;border-radius:20px;border:1px solid rgba(232,168,44,.4);cursor:pointer;
   background:rgba(10,26,31,.85);color:#E8A82C;font-size:12.5px;font-weight:700;backdrop-filter:blur(8px)}
 #exit-tour:active{background:rgba(232,168,44,.2)}
 
 /* back-to-landing link on start screen */
-#to-landing{margin-top:10px;font-size:12.5px;color:#7ec8d0;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);padding-bottom:1px}
+#to-landing{margin-top:10px;font-size:12.5px;color:#7ec8d0;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);
+  padding:8px 10px}
 #to-landing:hover{color:#EDF7F9}
 
 /* rotate-to-landscape tip (portrait phones only) */
-#rot-tip{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;
+#rot-tip{position:fixed;top:calc(60px + var(--sat));left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;
   background:rgba(10,26,31,.88);border:1px solid rgba(232,168,44,.45);color:#E8A82C;padding:9px 18px;border-radius:22px;
   font-size:12.5px;font-weight:700;white-space:nowrap;backdrop-filter:blur(8px)}
 @media(orientation:landscape){#rot-tip{display:none !important}}
+
+/* page-transition veil: fades the screen before navigating to ar.html /
+   the landing, so it never feels like an abrupt reload/white-flash */
+#veil{position:fixed;inset:0;z-index:50;background:#0a1a1f;opacity:0;pointer-events:none;transition:opacity .28s}
+#veil.show{opacity:1;pointer-events:auto}
 </style>
 </head>
 <body>
@@ -131,6 +166,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <div id="tag"></div>
 <div id="hint"></div>
 <div id="waypoints"></div>
+<div id="wp-hint"><span id="wph-txt"></span> <span class="arrow">→</span></div>
 <div id="info"><button class="close-info" onclick="hideInfo()">&times;</button><h3 id="info-t"></h3><p id="info-p"></p></div>
 <button id="linkBtn"><span id="linkTxt"></span><span class="kbd" id="linkKbd">E</span></button>
 <div id="minimap"><canvas id="mmc" width="300" height="300"></canvas></div>
@@ -141,6 +177,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <video id="ar-video" playsinline autoplay muted></video>
 <button id="ar-close"></button>
 <div id="ar-hint"></div>
+<div id="veil"></div>
 
 <div id="loading"><div class="spin"></div><span>Construyendo el Concejo...</span></div>
 
@@ -824,16 +861,34 @@ addEventListener('keyup',e=>keys[e.code]=false);
 let locked=false;const startEl=document.getElementById('start'),cross=document.getElementById('cross'),hint=document.getElementById('hint'),
   joy=document.getElementById('joy'),tag=document.getElementById('tag'),minimap=document.getElementById('minimap'),jumpBtn=document.getElementById('jump');
 let mode='menu';
+
+// ---------- swipe-for-more cue on the waypoint row (touch, once per session) ----------
+const wpHint=document.getElementById('wp-hint');let wpHintTimer=null;
+function showWpHint(){
+  if(!isTouch||sessionStorage.getItem('wpHintSeen'))return;
+  wpHint.style.display='flex';requestAnimationFrame(()=>wpHint.classList.add('show'));
+  wpHintTimer=setTimeout(dismissWpHint,4000);
+}
+function dismissWpHint(){clearTimeout(wpHintTimer);wpHint.classList.remove('show');
+  sessionStorage.setItem('wpHintSeen','1');setTimeout(()=>{wpHint.style.display='none';},400);}
+wpEl.addEventListener('touchstart',dismissWpHint,{passive:true});
+wpEl.addEventListener('scroll',dismissWpHint,{passive:true});
+
+// ---------- smooth page-transition veil (no white-flash on outbound nav) ----------
+const veil=document.getElementById('veil');
+function navigateTo(url){veil.classList.add('show');setTimeout(()=>{location.href=url;},260);}
+
 function beginTour(){mode='tour';startEl.style.opacity='0';setTimeout(()=>startEl.style.display='none',500);
   cross.style.display='block';hint.style.display='block';wpEl.style.display='flex';
   document.getElementById('exit-tour').style.display='flex';
   if(!isTouch){tag.style.display='block';minimap.style.display='block';}   // phones: clean HUD, no minimap/zone chip
   hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
-  if(isTouch){joy.style.display='block';}else renderer.domElement.requestPointerLock();
+  if(isTouch){joy.style.display='block';setTimeout(showWpHint,900);}else renderer.domElement.requestPointerLock();
   updRot();
   scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
 function exitTour(){cancelAuto();mode='menu';
   if(locked)document.exitPointerLock();
+  dismissWpHint();
   ['exit-tour','cross','hint','tag','minimap','joy','jump','waypoints','linkBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   hideInfo();rotTip.style.display='none';
   pos.set(0,EYE,isTouch?25:17);yaw=0;pitch=0;vy=0;onGround=true;   // reset spawn for next visit
@@ -931,7 +986,8 @@ document.getElementById('enter-ar').addEventListener('click',beginAR);arClose.ad
 // ============================================================
 // AR now lives on its own page (ar.html): world-locked anchor, pinch-to-scale,
 // walk inside — proven to work great. One tap, no in-page duplicate flow.
-document.getElementById('enter-arx').addEventListener('click',()=>{location.href='ar.html';});
+document.getElementById('enter-arx').addEventListener('click',()=>navigateTo('ar.html'));
+document.getElementById('to-landing').addEventListener('click',e=>{e.preventDefault();navigateTo(e.currentTarget.href);});
 renderer.domElement.addEventListener('touchstart',e=>{if(mode!=='ar')return;if(e.touches.length===2)arPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);else{arDrag=e.touches[0].identifier;arLx=e.touches[0].clientX;arLy=e.touches[0].clientY;}},{passive:true});
 renderer.domElement.addEventListener('touchmove',e=>{if(mode!=='ar')return;e.preventDefault();if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);arDist=Math.max(16,Math.min(60,arDist*(arPinch/d)));arPinch=d;updateAR();}else if(arDrag!==null){const t=e.touches[0];arAX+=(t.clientX-arLx)*0.005;arAY=Math.max(0.12,Math.min(1.25,arAY+(t.clientY-arLy)*0.003));arLx=t.clientX;arLy=t.clientY;updateAR();}},{passive:false});
 renderer.domElement.addEventListener('touchend',()=>{if(mode==='ar')arDrag=null;},{passive:true});
@@ -973,6 +1029,7 @@ const HT={
   toLanding:{es:'← Volver a muninosara.org',en:'← Back to muninosara.org'},
   autoHint:{es:'Recorrido automático · tocá el joystick o un punto para tomar el control',en:'Auto tour · touch the joystick or a stop to take control'},
   rotTip:{es:'Girá el teléfono a horizontal para ver mejor',en:'Rotate your phone to landscape for a better view'},
+  wpSwipe:{es:'Deslizá para ver más paradas',en:'Swipe to see more stops'},
   arx:{es:'📱 Ver en AR (entrá caminando)',en:'📱 View in AR (walk inside)'},
   ar:{es:'AR simple (cámara)',en:'Simple AR (camera)'},
   foot:{es:'Basado en la propuesta real del Plebiscito de Nosara',en:'Based on the real Nosara Plebiscite proposal'},
@@ -990,6 +1047,7 @@ function applyHTMLLang(){
   document.getElementById('enter-arx').textContent=tr(HT.arx);
   document.getElementById('enter-guided').textContent=tr(HT.guided);
   document.getElementById('rot-txt').textContent=tr(HT.rotTip);
+  document.getElementById('wph-txt').textContent=tr(HT.wpSwipe);
   document.getElementById('exit-txt').textContent=tr(HT.exit);
   document.getElementById('to-landing').textContent=tr(HT.toLanding);
   document.getElementById('enter-ar').textContent=tr(HT.ar);

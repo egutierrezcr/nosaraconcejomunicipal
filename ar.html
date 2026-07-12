@@ -2,23 +2,31 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a1a1f">
 <title>Concejo Municipal de Nosara — Realidad Aumentada</title>
 <meta name="description" content="Ancla el edificio del Concejo Municipal de Nosara al piso de tu espacio real, escalalo con un pellizco y entrá caminando a recorrerlo por dentro.">
 <script type="module" src="lib/model-viewer.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{min-height:100%;background:linear-gradient(160deg,#071518 0%,#0d2a30 45%,#0a1a1f 100%);
-  font-family:Inter,system-ui,sans-serif;color:#EDF7F9}
-.wrap{max-width:760px;margin:0 auto;padding:56px 16px 40px;display:flex;flex-direction:column;gap:16px}
+  font-family:Inter,system-ui,sans-serif;color:#EDF7F9;overscroll-behavior:none}
+:root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px)}
+.wrap{max-width:760px;margin:0 auto;padding:calc(56px + var(--sat)) calc(16px + var(--sar)) calc(40px + var(--sab)) calc(16px + var(--sal));
+  display:flex;flex-direction:column;gap:16px}
 
 /* sticky top nav: always-visible way back, no scrolling needed */
 .topnav{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;gap:8px;
-  padding:10px 14px;background:rgba(7,21,24,.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(26,163,176,.15)}
+  padding:calc(10px + var(--sat)) calc(14px + var(--sar)) 10px calc(14px + var(--sal));
+  background:rgba(7,21,24,.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(26,163,176,.15)}
 .topnav a{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#7ec8d0;text-decoration:none;
-  padding:6px 13px;border-radius:16px;border:1px solid rgba(126,200,208,.2);white-space:nowrap}
-.topnav a:hover{color:#EDF7F9;border-color:rgba(126,200,208,.4)}
+  padding:9px 15px;border-radius:18px;border:1px solid rgba(126,200,208,.2);white-space:nowrap}
+.topnav a:active{color:#EDF7F9;border-color:rgba(126,200,208,.4);background:rgba(126,200,208,.08)}
 .topnav a.home{color:#E8A82C;border-color:rgba(232,168,44,.3)}
+
+/* page-transition veil, matches edificio.html — no white-flash between pages */
+#veil{position:fixed;inset:0;z-index:40;background:#0a1a1f;opacity:0;pointer-events:none;transition:opacity .28s}
+#veil.show{opacity:1;pointer-events:auto}
 
 header{text-align:center;padding-top:8px}
 .badge{display:inline-block;background:rgba(26,163,176,.12);border:1px solid rgba(26,163,176,.3);border-radius:20px;
@@ -40,6 +48,15 @@ model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;
 .hint-spin{position:absolute;top:12px;right:14px;background:rgba(10,26,31,.7);border:1px solid rgba(26,163,176,.2);
   color:#7ec8d0;font-size:11px;padding:5px 12px;border-radius:14px;backdrop-filter:blur(6px)}
 
+/* loading feedback: clear on slow mobile connections while the ~3MB glb downloads */
+.load-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:radial-gradient(circle at 50% 40%,#14333b,#0a1a1f);transition:opacity .35s;z-index:5}
+.load-overlay.hide{opacity:0;pointer-events:none}
+.load-pct{font-size:13px;font-weight:700;color:#1AA3B0}
+.load-bar{width:160px;height:5px;border-radius:4px;background:rgba(26,163,176,.15);overflow:hidden}
+.load-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#1AA3B0,#E8A82C);transition:width .2s;border-radius:4px}
+.load-lbl{font-size:11.5px;color:#5a7a82}
+
 /* ---------- steps ---------- */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 .st{background:rgba(14,110,124,.10);border:1px solid rgba(26,163,176,.2);border-radius:14px;padding:14px}
@@ -54,9 +71,10 @@ model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;
 </style>
 </head>
 <body>
+<div id="veil"></div>
 <nav class="topnav">
-  <a href="https://muninosara.org" class="home">🏠 Inicio</a>
-  <a href="edificio.html">🚶 Tour virtual</a>
+  <a href="https://muninosara.org" class="home" id="nav-home">🏠 Inicio</a>
+  <a href="edificio.html" id="nav-tour">🚶 Tour virtual</a>
 </nav>
 <div class="wrap">
 
@@ -87,6 +105,11 @@ model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;
         Ver en AR
       </button>
     </model-viewer>
+    <div class="load-overlay" id="load-overlay">
+      <span class="load-pct" id="load-pct">0%</span>
+      <div class="load-bar"><i id="load-bar-fill"></i></div>
+      <span class="load-lbl">Cargando el edificio… · Loading the building…</span>
+    </div>
     <span class="hint-spin">arrastrá para girar · 3D</span>
   </div>
 
@@ -110,5 +133,24 @@ model-viewer{width:100%;height:62vh;min-height:340px;--poster-color:transparent;
   optimizado para correr fluido en teléfonos de gama media (~3&nbsp;MB, 75 mallas).</div>
 
 </div>
+<script>
+// loading feedback: percentage tied to model-viewer's real download progress
+const mv=document.getElementById('mv'),ov=document.getElementById('load-overlay'),
+  pct=document.getElementById('load-pct'),bar=document.getElementById('load-bar-fill');
+mv.addEventListener('progress',e=>{
+  const p=Math.round((e.detail.totalProgress||0)*100);
+  pct.textContent=p+'%';bar.style.width=p+'%';
+});
+mv.addEventListener('load',()=>ov.classList.add('hide'));
+// safety net: never block the view if the load/progress events don't fire as expected
+setTimeout(()=>ov.classList.add('hide'),8000);
+
+// smooth veil transition on outbound nav — no white-flash between pages
+const veil=document.getElementById('veil');
+function goTo(e){e.preventDefault();const url=e.currentTarget.href;
+  veil.classList.add('show');setTimeout(()=>{location.href=url;},260);}
+document.getElementById('nav-home').addEventListener('click',goTo);
+document.getElementById('nav-tour').addEventListener('click',goTo);
+</script>
 </body>
 </html>
