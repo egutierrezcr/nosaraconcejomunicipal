@@ -150,6 +150,16 @@
     <h1 class="rw" data-en="Nosara can have its own Municipal Council">Nosara puede tener su propio Concejo Municipal</h1>
     <p class="lead fade" data-en="Nosara is already a large community, with needs, projects and complex problems that aren't solved from 60 kilometers away. Take a look at what this would mean for Nosara and add your support.">Ya Nosara es una comunidad grande, con necesidades, proyectos y problemas complejos que no se resuelven a 60 kilómetros de distancia. Dale una mirada a lo que esto significaría para Nosara y sumá tu apoyo.</p>
     <p class="ancla fade" data-en="The Municipal Council of Nosara has been <b>12 years</b> in the making. In 2018 we voted: <b>5,687 of us said YES</b> and we won, but we fell <b>461 votes</b> short. In 2026 we finish what we started.">El Concejo Municipal de Nosara lleva <b>12 años</b> construyéndose. En 2018 votamos: <b>5.687 dijimos SÍ</b> y ganamos, pero faltaron <b>461 votos</b>. Este 2026 cerramos lo que empezamos.</p>
+    <div class="fade mt-6 inline-flex flex-col gap-2 rounded-2xl px-5 py-4" style="background:rgba(177,32,40,.1);border:1px solid rgba(177,32,40,.4)">
+      <div class="text-[11px] font-bold tracking-widest uppercase text-dorado" data-en="Window closing to file the petition">Ventana cerrando para presentar la solicitud</div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center min-w-[46px]"><span class="cd-d text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="days">días</small></div>
+        <div class="flex flex-col items-center min-w-[46px]"><span class="cd-h text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="hrs">hrs</small></div>
+        <div class="flex flex-col items-center min-w-[46px]"><span class="cd-m text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="min">min</small></div>
+        <div class="flex flex-col items-center min-w-[46px]"><span class="cd-s text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="sec">seg</small></div>
+      </div>
+      <div class="text-[11.5px]" style="color:#8aa4a9" data-en="Deadline: July 31, 2027">Cierra: 31 de julio de 2027</div>
+    </div>
   </div></section>
 
   <!-- NARRATIVA -->
@@ -432,9 +442,20 @@
   <!-- SUMATE -->
   <section id="sumate" class="light py-16 px-6" style="background:#fff">
     <div class="max-w-2xl mx-auto">
-      <div class="bg-azul text-white rounded-2xl p-6 md:p-8 mb-10 text-center">
+      <div class="bg-azul text-white rounded-2xl p-6 md:p-8 mb-6 text-center">
         <p class="text-sm tracking-widest uppercase opacity-80 mb-3" data-en="The question that matters most TODAY">La pregunta que HOY más importa</p>
         <p class="text-xl md:text-2xl font-bold leading-snug" data-en="&quot;Do you agree with the creation of the Municipal Council of the District of Bocas de Nosara, Yes or No?&quot;">"¿Está de acuerdo con la creación del Concejo Municipal del Distrito de Bocas de Nosara, Sí o No?"</p>
+      </div>
+
+      <div class="border-2 border-rojo rounded-2xl p-5 mb-10 text-center">
+        <p class="text-xs font-bold tracking-widest uppercase text-rojo mb-3" data-en="Window closing to file the petition">Ventana cerrando para presentar la solicitud</p>
+        <div class="flex justify-center gap-5">
+          <div class="flex flex-col items-center min-w-[48px]"><span class="cd-d text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="days">días</small></div>
+          <div class="flex flex-col items-center min-w-[48px]"><span class="cd-h text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="hrs">hrs</small></div>
+          <div class="flex flex-col items-center min-w-[48px]"><span class="cd-m text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="min">min</small></div>
+          <div class="flex flex-col items-center min-w-[48px]"><span class="cd-s text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="sec">seg</small></div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3" data-en="Deadline: July 31, 2027 — sign today, it takes one minute">Cierra: 31 de julio de 2027 — firmá hoy, toma un minuto</p>
       </div>
 
       <!-- dashboard (oculto hasta que haya adhesiones reales) -->
@@ -808,6 +829,18 @@ function setLang(lang){
 }
 if(langBtn)langBtn.addEventListener('click',()=>setLang(LANG==='en'?'es':'en'));
 if(LANG==='en')setLang('en');
+
+// ===== Cronómetro: cierre de ventana para presentar la solicitud (31 jul 2027) =====
+const CD_DEADLINE=new Date('2027-07-31T23:59:59-06:00').getTime();
+function renderCountdown(){
+  const diff=Math.max(0,CD_DEADLINE-Date.now());
+  const d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  document.querySelectorAll('.cd-d').forEach(el=>el.textContent=d);
+  document.querySelectorAll('.cd-h').forEach(el=>el.textContent=String(h).padStart(2,'0'));
+  document.querySelectorAll('.cd-m').forEach(el=>el.textContent=String(m).padStart(2,'0'));
+  document.querySelectorAll('.cd-s').forEach(el=>el.textContent=String(s).padStart(2,'0'));
+}
+renderCountdown();setInterval(renderCountdown,1000);
 if(window.ResizeObserver)new ResizeObserver(setH).observe(content);
 document.querySelectorAll('nav a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const el=document.querySelector(a.getAttribute('href'));if(el){scrollTo({top:el.getBoundingClientRect().top+cur,behavior:'auto'});}}));
 function splitWords(el){const t=el.textContent.trim().split(/\s+/);el.innerHTML='';t.forEach((w,i)=>{const o=document.createElement('span');o.className='w';const inn=document.createElement('span');inn.className='i';inn.textContent=w;inn.style.transitionDelay=(i*0.05)+'s';o.appendChild(inn);el.appendChild(o);el.appendChild(document.createTextNode(' '));});}

@@ -142,6 +142,13 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
   background:rgba(10,26,31,.85);color:#E8A82C;font-size:12.5px;font-weight:700;backdrop-filter:blur(8px)}
 #exit-tour:active{background:rgba(232,168,44,.2)}
 
+/* resume-guided-tour button: a stray tap during "Enséñame un recorrido"
+   shouldn't force restarting the whole thing from the start screen */
+#resume-tour{position:fixed;top:calc(14px + var(--sat));right:calc(14px + var(--sar));z-index:14;display:none;align-items:center;gap:7px;
+  padding:10px 16px;border-radius:20px;border:1px solid rgba(26,163,176,.45);cursor:pointer;
+  background:rgba(10,26,31,.85);color:#1AA3B0;font-size:12.5px;font-weight:700;backdrop-filter:blur(8px)}
+#resume-tour:active{background:rgba(26,163,176,.2)}
+
 /* back-to-landing link on start screen */
 #to-landing{margin-top:10px;font-size:12.5px;color:#7ec8d0;text-decoration:none;border-bottom:1px dotted rgba(126,200,208,.5);
   padding:8px 10px}
@@ -173,6 +180,7 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 <div id="joy"><div id="stick"></div></div>
 <button id="jump"></button>
 <button id="exit-tour">✕ <span id="exit-txt"></span></button>
+<button id="resume-tour">▶ <span id="resume-txt"></span></button>
 <div id="rot-tip">📱 <span id="rot-txt"></span></div>
 <video id="ar-video" playsinline autoplay muted></video>
 <button id="ar-close"></button>
@@ -484,7 +492,23 @@ screen(-8.5,BZ1-5,0,3.0,1.9,{
     'Add your voice to the register toward 2028','Free, safe and takes a minute']},
   foot:{es:'muninosara.org/#sumate',en:'muninosara.org/#sumate'},
   url:SITE+'/#sumate',linkLabel:{es:'Firmar la petición',en:'Sign the petition'}});
-standing(-8.5,BZ1-3.6,Math.PI,PAL.gold);standing(-7.2,BZ1-3.8,Math.PI*0.85,0x2980B9);
+// nothing stands between the walker and this screen — it's the most important
+// call to action in the whole tour and needs a clear, unobstructed line of sight
+
+// urgency countdown floating above Súmate: refreshes on language switch + hourly
+(function(){
+  const deadline=new Date('2027-07-31T23:59:59-06:00').getTime();
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false}));
+  sp.position.set(-8.5,3.35,BZ1-5);scene.add(sp);
+  function render(){
+    const days=Math.max(0,Math.ceil((deadline-Date.now())/86400000));
+    const txt=lang==='es'?('⏳ '+days+' días para cerrar la ventana'):('⏳ '+days+' days left to close the window');
+    if(sp.material.map)sp.material.map.dispose();
+    sp.material.map=holoLabelTex(txt,'#E8A82C');sp.material.needsUpdate=true;
+    const w=3.1;sp.scale.set(w,w*68/560,1);
+  }
+  reg(render);setInterval(render,3600000);
+})();
 
 // Sistema de Información Distrital — interconnected data hub (budget ↔ communities ↔ needs)
 function sidTex(){const c=document.createElement('canvas');c.width=560;c.height=400;const x=c.getContext('2d');
@@ -823,7 +847,10 @@ WP.forEach((w,i)=>{const b=document.createElement('button');b.className='wp';b.d
 let transitioning=false;
 function goWP(i){const w=WP[i];if(transitioning)return;transitioning=true;visited.add(i);
   document.querySelectorAll('.wp').forEach(b=>{b.classList.toggle('visited',visited.has(+b.dataset.i));b.classList.toggle('active',+b.dataset.i===i);});
+  const activeBtn=wpEl.children[i];   // keep the current stop visible in the scrollable chip row
+  if(activeBtn)activeBtn.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
   showInfo(w.title,w.desc);
+  hint.textContent=autoTour?(i+1)+'/'+WP.length+' · '+tr(HT.autoHint):tr(isTouch?HT.hintTouch:HT.hintDesk);
   const s={x:pos.x,z:pos.z,yaw,pitch},t0=performance.now();
   (function step(now){const p=Math.min(1,(now-t0)/850),e=1-(1-p)*(1-p);
     pos.x=s.x+(w.x-s.x)*e;pos.z=s.z+(w.z-s.z)*e;yaw=s.yaw+(w.yaw-s.yaw)*e;pitch=s.pitch+(w.pitch-s.pitch)*e;
@@ -888,7 +915,7 @@ function beginTour(){mode='tour';startEl.style.opacity='0';setTimeout(()=>startE
   scene.background=new THREE.Color(PAL.sky);renderer.setClearAlpha(1);}
 function exitTour(){cancelAuto();mode='menu';
   if(locked)document.exitPointerLock();
-  dismissWpHint();
+  dismissWpHint();hideResumeTour();
   ['exit-tour','cross','hint','tag','minimap','joy','jump','waypoints','linkBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   hideInfo();rotTip.style.display='none';
   pos.set(0,EYE,isTouch?25:17);yaw=0;pitch=0;vy=0;onGround=true;   // reset spawn for next visit
@@ -902,8 +929,10 @@ document.getElementById('enter').addEventListener('click',beginTour);
 
 // ---------- guided tour: auto-visits every waypoint; any input takes control back ----------
 let autoTour=false,autoIdx=0,autoTimer=null;
-function startGuided(){beginTour();autoTour=true;autoIdx=0;
-  hint.textContent=tr(HT.autoHint);
+const resumeBtn=document.getElementById('resume-tour');
+function showResumeTour(){resumeBtn.style.display='flex';}
+function hideResumeTour(){resumeBtn.style.display='none';}
+function startGuided(){beginTour();autoTour=true;autoIdx=0;hideResumeTour();
   setTimeout(stepAuto,700);}
 function stepAuto(){if(!autoTour)return;
   transitioning=false;            // never let a stalled transition block the next stop
@@ -912,7 +941,10 @@ function stepAuto(){if(!autoTour)return;
     if(autoIdx>=WP.length){cancelAuto();return;}
     stepAuto();},5500);}
 function cancelAuto(){if(!autoTour)return;autoTour=false;clearTimeout(autoTimer);
-  hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);}
+  hint.textContent=tr(isTouch?HT.hintTouch:HT.hintDesk);
+  if(autoIdx<WP.length)showResumeTour();   // a stray tap shouldn't cost you the whole tour
+}
+resumeBtn.addEventListener('click',()=>{hideResumeTour();autoTour=true;stepAuto();});
 document.getElementById('enter-guided').addEventListener('click',startGuided);
 document.addEventListener('pointerlockchange',()=>locked=document.pointerLockElement===renderer.domElement);
 document.addEventListener('mousemove',e=>{if(!locked||mode!=='tour')return;yaw-=e.movementX*0.002;pitch-=e.movementY*0.002;pitch=Math.max(-1.35,Math.min(1.35,pitch));});
@@ -1027,7 +1059,8 @@ const HT={
   guided:{es:'…o enséñame un recorrido guiado',en:'…or show me a guided tour'},
   exit:{es:'Salir',en:'Exit'},
   toLanding:{es:'← Volver a muninosara.org',en:'← Back to muninosara.org'},
-  autoHint:{es:'Recorrido automático · tocá el joystick o un punto para tomar el control',en:'Auto tour · touch the joystick or a stop to take control'},
+  autoHint:{es:'tocá para tomar el control',en:'tap to take control'},
+  resumeTour:{es:'Reanudar recorrido',en:'Resume tour'},
   rotTip:{es:'Girá el teléfono a horizontal para ver mejor',en:'Rotate your phone to landscape for a better view'},
   wpSwipe:{es:'Deslizá para ver más paradas',en:'Swipe to see more stops'},
   arx:{es:'📱 Ver en AR (entrá caminando)',en:'📱 View in AR (walk inside)'},
@@ -1049,6 +1082,7 @@ function applyHTMLLang(){
   document.getElementById('rot-txt').textContent=tr(HT.rotTip);
   document.getElementById('wph-txt').textContent=tr(HT.wpSwipe);
   document.getElementById('exit-txt').textContent=tr(HT.exit);
+  document.getElementById('resume-txt').textContent=tr(HT.resumeTour);
   document.getElementById('to-landing').textContent=tr(HT.toLanding);
   document.getElementById('enter-ar').textContent=tr(HT.ar);
   document.getElementById('s-foot').textContent=tr(HT.foot);
