@@ -502,7 +502,7 @@ screen(-8.5,BZ1-5,0,3.0,1.9,{
   sp.position.set(-8.5,3.35,BZ1-5);scene.add(sp);
   function render(){
     const days=Math.max(0,Math.ceil((deadline-Date.now())/86400000));
-    const txt=lang==='es'?('⏳ '+days+' días para cerrar la ventana'):('⏳ '+days+' days left to close the window');
+    const txt=lang==='es'?('⏳ '+days+' días para ganar el plebiscito'):('⏳ '+days+' days left to win the plebiscite');
     if(sp.material.map)sp.material.map.dispose();
     sp.material.map=holoLabelTex(txt,'#E8A82C');sp.material.needsUpdate=true;
     const w=3.1;sp.scale.set(w,w*68/560,1);

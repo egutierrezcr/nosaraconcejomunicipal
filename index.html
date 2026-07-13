@@ -151,14 +151,14 @@
     <p class="lead fade" data-en="Nosara is already a large community, with needs, projects and complex problems that aren't solved from 60 kilometers away. Take a look at what this would mean for Nosara and add your support.">Ya Nosara es una comunidad grande, con necesidades, proyectos y problemas complejos que no se resuelven a 60 kilómetros de distancia. Dale una mirada a lo que esto significaría para Nosara y sumá tu apoyo.</p>
     <p class="ancla fade" data-en="The Municipal Council of Nosara has been <b>12 years</b> in the making. In 2018 we voted: <b>5,687 of us said YES</b> and we won, but we fell <b>461 votes</b> short. In 2026 we finish what we started.">El Concejo Municipal de Nosara lleva <b>12 años</b> construyéndose. En 2018 votamos: <b>5.687 dijimos SÍ</b> y ganamos, pero faltaron <b>461 votos</b>. Este 2026 cerramos lo que empezamos.</p>
     <div class="fade mt-6 inline-flex flex-col gap-2 rounded-2xl px-5 py-4" style="background:rgba(177,32,40,.1);border:1px solid rgba(177,32,40,.4)">
-      <div class="text-[11px] font-bold tracking-widest uppercase text-dorado" data-en="Window closing to file the petition">Ventana cerrando para presentar la solicitud</div>
+      <div class="text-[11px] font-bold tracking-widest uppercase text-dorado" data-en="Time left to win the plebiscite">Tiempo para ganar el plebiscito</div>
       <div class="flex gap-4">
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-d text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="days">días</small></div>
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-h text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="hrs">hrs</small></div>
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-m text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="min">min</small></div>
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-s text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="sec">seg</small></div>
       </div>
-      <div class="text-[11.5px]" style="color:#8aa4a9" data-en="Deadline: July 31, 2027">Cierra: 31 de julio de 2027</div>
+      <div class="text-[11.5px]" style="color:#8aa4a9" data-en="Must win by July 31, 2027">Hay que ganar antes del 31 de julio de 2027</div>
     </div>
   </div></section>
 
@@ -448,14 +448,14 @@
       </div>
 
       <div class="border-2 border-rojo rounded-2xl p-5 mb-10 text-center">
-        <p class="text-xs font-bold tracking-widest uppercase text-rojo mb-3" data-en="Window closing to file the petition">Ventana cerrando para presentar la solicitud</p>
+        <p class="text-xs font-bold tracking-widest uppercase text-rojo mb-3" data-en="Time left to win the plebiscite">Tiempo para ganar el plebiscito</p>
         <div class="flex justify-center gap-5">
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-d text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="days">días</small></div>
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-h text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="hrs">hrs</small></div>
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-m text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="min">min</small></div>
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-s text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="sec">seg</small></div>
         </div>
-        <p class="text-xs text-slate-500 mt-3" data-en="Deadline: July 31, 2027 — sign today, it takes one minute">Cierra: 31 de julio de 2027 — firmá hoy, toma un minuto</p>
+        <p class="text-xs text-slate-500 mt-3" data-en="Must win by July 31, 2027 — sign today, it takes one minute">Hay que ganar antes del 31 de julio de 2027 — firmá hoy, toma un minuto</p>
       </div>
 
       <!-- dashboard (oculto hasta que haya adhesiones reales) -->
@@ -830,7 +830,7 @@ function setLang(lang){
 if(langBtn)langBtn.addEventListener('click',()=>setLang(LANG==='en'?'es':'en'));
 if(LANG==='en')setLang('en');
 
-// ===== Cronómetro: cierre de ventana para presentar la solicitud (31 jul 2027) =====
+// ===== Cronómetro: tiempo para ganar el plebiscito (31 jul 2027) =====
 const CD_DEADLINE=new Date('2027-07-31T23:59:59-06:00').getTime();
 function renderCountdown(){
   const diff=Math.max(0,CD_DEADLINE-Date.now());
