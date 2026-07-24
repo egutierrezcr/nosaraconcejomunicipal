@@ -158,7 +158,7 @@
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-m text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="min">min</small></div>
         <div class="flex flex-col items-center min-w-[46px]"><span class="cd-s text-2xl font-extrabold text-crema" style="font-variant-numeric:tabular-nums">0</span><small class="text-[10px] uppercase tracking-wide" style="color:#9db8bd" data-en="sec">seg</small></div>
       </div>
-      <div class="text-[11.5px]" style="color:#8aa4a9" data-en="Must win by July 31, 2027">Hay que ganar antes del 31 de julio de 2027</div>
+      <div class="text-[11.5px]" style="color:#8aa4a9" data-en="Must win by December 6, 2026">Hay que ganar antes del 6 de diciembre de 2026</div>
     </div>
   </div></section>
 
@@ -455,7 +455,7 @@
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-m text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="min">min</small></div>
           <div class="flex flex-col items-center min-w-[48px]"><span class="cd-s text-3xl font-extrabold text-azul" style="font-variant-numeric:tabular-nums">0</span><small class="text-[11px] uppercase tracking-wide text-slate-500" data-en="sec">seg</small></div>
         </div>
-        <p class="text-xs text-slate-500 mt-3" data-en="Must win by July 31, 2027 — sign today, it takes one minute">Hay que ganar antes del 31 de julio de 2027 — firmá hoy, toma un minuto</p>
+        <p class="text-xs text-slate-500 mt-3" data-en="Must win by December 6, 2026 — sign today, it takes one minute">Hay que ganar antes del 6 de diciembre de 2026 — firmá hoy, toma un minuto</p>
       </div>
 
       <!-- dashboard (oculto hasta que haya adhesiones reales) -->
@@ -831,7 +831,7 @@ if(langBtn)langBtn.addEventListener('click',()=>setLang(LANG==='en'?'es':'en'));
 if(LANG==='en')setLang('en');
 
 // ===== Cronómetro: tiempo para ganar el plebiscito (31 jul 2027) =====
-const CD_DEADLINE=new Date('2027-07-31T23:59:59-06:00').getTime();
+const CD_DEADLINE=new Date('2026-12-06T23:59:59-06:00').getTime();
 function renderCountdown(){
   const diff=Math.max(0,CD_DEADLINE-Date.now());
   const d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
