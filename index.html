@@ -43,10 +43,13 @@
   .progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--azul),var(--dorado),var(--rojo));z-index:40}
   #content{position:fixed;top:0;left:0;width:100%;z-index:5;will-change:transform}
   #spacer{width:1px}
-  nav{position:fixed;top:0;left:0;right:0;z-index:45;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;font-size:12.5px;mix-blend-mode:difference}
+  nav{position:fixed;top:42px;left:0;right:0;z-index:45;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;font-size:12.5px;mix-blend-mode:difference}
   nav .b{font-weight:800;letter-spacing:.5px}nav .b small{font-weight:500;opacity:.65;margin-left:8px}
   nav .lk a{text-decoration:none;margin-left:24px;font-weight:500;opacity:.85;color:#fff}
   @media(max-width:760px){nav .lk{display:none}}
+  /* hypothetical-exercise disclaimer banner (top only — the bottom one is a plain in-flow block near the footer) */
+  #top-banner{background:rgba(10,18,22,.95);color:var(--dorado);text-align:center;font-size:11px;font-weight:700;
+    padding:6px 14px;line-height:1.4;letter-spacing:.2px;border-bottom:1px solid rgba(232,168,44,.25)}
   .darksec{position:relative;padding:0 28px}
   .wrap{max-width:1200px;margin:0 auto;width:100%}
   .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center}
@@ -136,6 +139,7 @@
 <div id="ui-controls"><button id="theme-btn" aria-label="Cambiar tema claro/oscuro" title="Tema claro / oscuro">🌙</button><button id="lang-btn" aria-label="Switch language">ENGLISH</button></div>
 
 <div id="content">
+  <div id="top-banner" data-en="What would an informative page about this process have looked like?">¿Cómo se hubiera visto una página informativa del proceso?</div>
   <nav><div class="b">CMD<small>Nosara, Guanacaste</small></div>
     <div class="lk"><a href="#cmd" data-en="The CMD">El CMD</a><a href="#como" data-en="Proposal">Propuesta</a><a href="#cifras" data-en="Figures">Cifras</a><a href="#ruta" data-en="Roadmap">Ruta</a><a href="#faq" data-en="FAQ">Preguntas</a><a href="#sumate" data-en="Join">Sumate</a><a href="edificio.html" data-en="3D Building">Edificio 3D</a></div></nav>
   <a href="edificio.html" id="edificio-pill" data-en-title="Walk the 3D building" title="Caminá el edificio 3D" style="position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:46;display:none;align-items:center;gap:7px;background:rgba(14,110,124,.92);color:#fff;font-weight:700;font-size:13px;padding:11px 17px;border-radius:24px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.3);backdrop-filter:blur(6px);-webkit-tap-highlight-color:transparent">🏛️ <span data-en="3D Building">Edificio 3D</span></a>
@@ -563,6 +567,10 @@
       <span data-en="District boundary: IGN 1:5,000 (SNIT). Public figures labeled by source. Personal data is never published.">Límite distrital: IGN 1:5.000 (SNIT). Cifras públicas con etiqueta de origen. Datos personales nunca se publican.</span>
     </div>
   </footer>
+  <div style="background:var(--crema);padding:22px 20px 34px;text-align:center;border-top:1px solid rgba(94,198,212,.35)">
+    <p style="max-width:640px;margin:0 auto 10px;font-size:12px;font-weight:700;color:var(--dorado);letter-spacing:.3px" data-en="What would an informative page about this process have looked like?">¿Cómo se hubiera visto una página informativa del proceso?</p>
+    <p style="max-width:640px;margin:0 auto;font-size:12px;color:#5f7a80;line-height:1.7" data-en="Designed and built by <b>Emmanuel Gutiérrez Pizarro</b> · <a href='mailto:adcdesarrollocomunitario@gmail.com' style='color:var(--oceano)'>adcdesarrollocomunitario@gmail.com</a> · <a href='tel:+50661427330' style='color:var(--oceano)'>+506 6142-7330</a><br>A hypothetical design exercise of how this process could have unfolded.">Diseñado y construido por <b>Emmanuel Gutiérrez Pizarro</b> · <a href="mailto:adcdesarrollocomunitario@gmail.com" style="color:var(--oceano)">adcdesarrollocomunitario@gmail.com</a> · <a href="tel:+50661427330" style="color:var(--oceano)">+506 6142-7330</a><br>Ejercicio de diseño hipotético de cómo hubiera podido darse este proceso.</p>
+  </div>
 </div>
 <div id="spacer"></div>
 
