@@ -9,7 +9,17 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,system-ui,sans-serif;color:#fff;overscroll-behavior:none}
 #app{position:fixed;inset:0;z-index:2}canvas{display:block}
-:root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px)}
+:root{--sat:calc(env(safe-area-inset-top,0px) + 28px);--sab:calc(env(safe-area-inset-bottom,0px) + 28px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px)}
+/* --sat/--sab include the disclaimer banners' height (28px) so every element already
+   built on them (lang toggle, exit-tour, joystick, waypoints, hint...) clears them for free */
+#top-banner{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(10,26,31,.95);color:#E8A82C;
+  text-align:center;font-size:11px;font-weight:700;padding:6px calc(14px + var(--sar)) 6px calc(14px + var(--sal));
+  line-height:1.4;letter-spacing:.2px;border-bottom:1px solid rgba(232,168,44,.25)}
+#bottom-banner{position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(10,26,31,.95);color:#7ec8d0;
+  text-align:center;font-size:10.5px;font-weight:600;padding:6px calc(14px + var(--sar)) calc(6px + env(safe-area-inset-bottom,0px)) calc(14px + var(--sal));
+  line-height:1.4;border-top:1px solid rgba(26,163,176,.25)}
+#bottom-banner b{color:#E8A82C}
+#bottom-banner a{color:#1AA3B0;text-decoration:underline}
 
 /* ---------- Loading ---------- */
 #loading{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;z-index:30;background:#0a1a1f}
@@ -167,6 +177,8 @@ html,body{height:100%;overflow:hidden;background:#0a1a1f;font-family:Inter,syste
 </style>
 </head>
 <body>
+<div id="top-banner"></div>
+<div id="bottom-banner"><b>Emmanuel Gutiérrez Pizarro</b> · <span id="bb-txt"></span> · <a href="mailto:adcdesarrollocomunitario@gmail.com">contacto</a></div>
 <div id="app"></div>
 <div id="cross"></div>
 <div id="lang"><button id="es" class="on">ES</button><button id="en">EN</button></div>
@@ -1073,8 +1085,12 @@ const HT={
   jump:{es:'Saltar',en:'Jump'},
   arClose:{es:'Salir de AR',en:'Exit AR'},arHint:{es:'Arrastrá para rotar · pellizcá para acercar',en:'Drag to rotate · pinch to zoom'},
   arErr:{es:'No se pudo acceder a la cámara. Revisá los permisos.',en:'Could not access the camera. Check permissions.'},
+  topBanner:{es:'¿Cómo se hubiera visto una página informativa del proceso?',en:'What would an informative page about this process have looked like?'},
+  bottomBanner:{es:'ejercicio de diseño hipotético',en:'hypothetical design exercise'},
 };
 function applyHTMLLang(){
+  document.getElementById('top-banner').textContent=tr(HT.topBanner);
+  document.getElementById('bb-txt').textContent=tr(HT.bottomBanner);
   document.getElementById('s-intro').innerHTML=tr(HT.intro);
   document.getElementById('enter').textContent=tr(HT.start);
   document.getElementById('enter-arx').textContent=tr(HT.arx);
